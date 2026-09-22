@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react"
-import { ArrowUp, ChartLine, House, Moon, Sun, UserRound, type LucideIcon } from "lucide-react"
+import { ArrowUp, ChartLine, House, Moon, Server, Sun, UserRound, type LucideIcon } from "lucide-react"
 
 import { NodePicker } from "@/components/NodePicker"
 import { ServerTable } from "@/components/ServerTable"
@@ -138,10 +138,10 @@ export default function App() {
 
   return (
     <div className="flex min-h-svh flex-col">
-      <header className="sticky top-0 z-10 border-b bg-nav shadow-[0_1px_10px_rgb(0_0_0/0.1)]">
+      <header className="sticky top-0 z-10 border-b bg-nav shadow-[0_1px_14px_rgb(23_64_37/0.08)] backdrop-blur-xl">
         <div className="mx-auto flex h-12 w-[95vw] max-w-[1680px] items-stretch max-md:w-full max-md:px-2">
           <Link href="/" className="mr-5 flex min-w-0 items-center gap-2 text-lg max-sm:mr-1 max-sm:text-base">
-            <img src="/favicon.svg" alt="" className="size-5 shrink-0" />
+            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/15"><Server className="size-4" /></span>
             <span className="truncate">{site}</span>
           </Link>
           <nav className="flex shrink-0 items-stretch">
@@ -159,7 +159,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto w-[95vw] max-w-[1680px] flex-1 space-y-4 py-5 max-md:w-full max-md:px-2 max-md:py-2.5">
+      <main className="mx-auto w-[95vw] max-w-[1680px] flex-1 space-y-4 py-5 max-md:w-full max-md:px-3 max-md:py-3">
         {error && (
           <p role="alert" className="rounded-md border border-destructive/25 bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
             {error}
