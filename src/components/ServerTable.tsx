@@ -310,7 +310,7 @@ function ServerCard({ node }: { node: Node }) {
               </span>
               <Flag code={node.country} className="shrink-0 text-[10px]" />
               {open && node.online && (
-                <span className="rounded-full bg-primary/12 px-1.5 py-0.5 text-[8px] font-semibold tracking-wide text-primary ring-1 ring-primary/15">
+                <span className="live-pill rounded-full px-1.5 py-0.5 text-[8px] font-semibold tracking-wide">
                   LIVE
                 </span>
               )}
