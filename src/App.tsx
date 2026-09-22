@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react"
-import { ArrowUp, ChartLine, House, Moon, Server, Sun, UserRound, type LucideIcon } from "lucide-react"
+import { ArrowUp, ChartLine, House, Moon, Sun, UserRound, type LucideIcon } from "lucide-react"
 
 import { NodePicker } from "@/components/NodePicker"
 import { ServerTable } from "@/components/ServerTable"
@@ -82,7 +82,7 @@ function NavItem({ href, active, icon: Icon, children }: { href: string; active:
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className="inline-flex items-center gap-1.5 px-3.5 text-sm transition-colors hover:text-primary aria-[current=page]:text-primary max-sm:px-2.5"
+      className="my-1.5 inline-flex items-center gap-1.5 rounded-full px-3.5 text-sm transition-colors hover:bg-foreground/5 hover:text-primary aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary max-sm:px-2.5"
     >
       <Icon className="size-3.5" />
       {children}
@@ -138,11 +138,10 @@ export default function App() {
 
   return (
     <div className="flex min-h-svh flex-col">
-      <header className="sticky top-0 z-10 border-b bg-nav shadow-[0_1px_14px_rgb(23_64_37/0.08)] backdrop-blur-xl">
+      <header className="sticky top-0 z-10 border-b bg-nav shadow-[0_8px_28px_rgb(88_102_132/0.08)] backdrop-blur-xl">
         <div className="mx-auto flex h-12 w-[95vw] max-w-[1680px] items-stretch max-md:w-full max-md:px-2">
           <Link href="/" className="mr-5 flex min-w-0 items-center gap-2 text-lg max-sm:mr-1 max-sm:text-base">
-            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/15"><Server className="size-4" /></span>
-            <span className="truncate">{site}</span>
+            <span className="truncate font-medium tracking-[-0.02em]">{site}</span>
           </Link>
           <nav className="flex shrink-0 items-stretch">
             <NavItem href="/" active={open === null} icon={House}>首页</NavItem>
@@ -175,7 +174,7 @@ export default function App() {
             <ServerTable nodes={sorted} />
           )
         ) : selected ? (
-          <div className="grid gap-5 rounded-md border bg-card p-5 text-card-foreground shadow-sm max-md:gap-3 max-md:p-2.5 md:grid-cols-[220px_minmax(0,1fr)]">
+          <div className="monitor-shell grid gap-3 rounded-[1.35rem] border p-3 text-card-foreground md:grid-cols-[220px_minmax(0,1fr)] md:gap-4 md:p-4">
             <NodePicker nodes={sorted} selected={selected.id} />
             <div className="min-w-0">
               <Suspense fallback={<Skeleton className="h-96" />}>
