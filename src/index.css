@@ -13,25 +13,25 @@
    without competing with the bars. */
 :root {
   --radius: 0.375rem;
-  --background: #f4f6fb;
-  --foreground: #212121;
-  --card: #fbfcff;
-  --card-foreground: #212121;
-  --popover: #fbfcff;
-  --popover-foreground: #212121;
+  --background: #d9dde2;
+  --foreground: #16191e;
+  --card: #eef0f2;
+  --card-foreground: #171a20;
+  --popover: #f1f2f4;
+  --popover-foreground: #171a20;
   --primary: #21c45b;
   --primary-foreground: #ffffff;
-  --secondary: #f1f4fa;
-  --secondary-foreground: #212121;
-  --muted: #f3f5f9;
-  --muted-foreground: #748094;
-  --accent: #eaf0f7;
-  --accent-foreground: #212121;
+  --secondary: #e3e6ea;
+  --secondary-foreground: #171a20;
+  --muted: #e6e8eb;
+  --muted-foreground: #68707a;
+  --accent: #dadddf;
+  --accent-foreground: #171a20;
   --destructive: #a94442;
-  --border: #dce4ee;
-  --input: #ccd7e4;
+  --border: #c8cdd3;
+  --input: #bcc2c9;
   --ring: #43c8a4;
-  --nav: rgb(250 252 255 / 86%);
+  --nav: rgb(224 227 231 / 78%);
   --chart-1: oklch(0.67 0.18 151);
   --chart-2: oklch(0.69 0.13 205);
   --chart-3: oklch(0.74 0.14 76);
@@ -51,25 +51,25 @@
 }
 
 .dark {
-  --background: #0d1119;
+  --background: #090a0d;
   --foreground: #f1f1f1;
-  --card: #121824;
+  --card: #121317;
   --card-foreground: #f1f1f1;
-  --popover: #151c29;
+  --popover: #17181d;
   --popover-foreground: #f1f1f1;
   --primary: #2bea5e;
   --primary-foreground: #ffffff;
-  --secondary: #161e2b;
+  --secondary: #17191e;
   --secondary-foreground: #f1f1f1;
-  --muted: #171f2d;
-  --muted-foreground: #97a4b7;
-  --accent: #1d2736;
+  --muted: #17191e;
+  --muted-foreground: #949aa4;
+  --accent: #202228;
   --accent-foreground: #f1f1f1;
   --destructive: #e0605c;
-  --border: #293547;
+  --border: #2b2e35;
   --input: rgb(255 255 255 / 15%);
   --ring: #53d8bd;
-  --nav: rgb(13 17 25 / 88%);
+  --nav: rgb(13 14 17 / 82%);
   --chart-1: oklch(0.78 0.17 145);
   --chart-2: oklch(0.72 0.08 162);
   --chart-3: oklch(0.78 0.1 76);
@@ -129,53 +129,108 @@
   html { scrollbar-gutter: stable; }
   body {
     @apply text-foreground;
-    background:
-      radial-gradient(circle at 8% -4%, rgb(128 205 255 / 23%), transparent 28rem),
-      radial-gradient(circle at 102% 20%, rgb(191 165 255 / 18%), transparent 30rem),
-      radial-gradient(circle at 28% 88%, rgb(112 232 196 / 14%), transparent 26rem),
-      var(--background);
-    background-attachment: fixed;
+    background: var(--background);
   }
-  .dark body {
-    background:
-      radial-gradient(circle at 4% -2%, rgb(65 155 214 / 14%), transparent 32rem),
-      radial-gradient(circle at 100% 22%, rgb(130 95 214 / 12%), transparent 34rem),
-      radial-gradient(circle at 35% 95%, rgb(35 181 144 / 8%), transparent 30rem),
-      var(--background);
+
+  #root {
+    min-height: 100svh;
   }
 }
 
 /* Tabular figures keep live numbers from shifting as they update. */
 .tnum { font-variant-numeric: tabular-nums; }
 
-/* Glass × Atlas floating surfaces. The background carries the cool mist; green is
-   reserved for live state and progress so the whole page no longer reads as one
-   large green glow. Cards stay mostly static on mobile; only a few shell surfaces
-   use backdrop blur. */
+/* Graphite Glass v1.4. The ambient field is a real page layer rather than a
+   barely-visible body tint, so its green/graphite pools remain visible around
+   cards on Safari. Green stays semantic; the base palette is neutral smoke. */
+
+.app-shell {
+  background: transparent;
+}
+
+.ambient-stage {
+  background:
+    radial-gradient(ellipse 55% 34% at 2% 18%,
+      rgb(58 255 126 / 34%) 0%,
+      rgb(58 255 126 / 18%) 18%,
+      rgb(58 255 126 / 7%) 38%,
+      transparent 66%),
+    radial-gradient(ellipse 58% 38% at 102% 8%,
+      rgb(22 24 29 / 48%) 0%,
+      rgb(42 45 52 / 27%) 28%,
+      rgb(72 76 85 / 9%) 50%,
+      transparent 72%),
+    radial-gradient(ellipse 50% 30% at 72% 82%,
+      rgb(255 231 126 / 15%) 0%,
+      rgb(255 231 126 / 6%) 30%,
+      transparent 68%),
+    radial-gradient(ellipse 42% 26% at 28% 62%,
+      rgb(255 255 255 / 32%) 0%,
+      rgb(255 255 255 / 10%) 34%,
+      transparent 72%);
+}
+
+.dark .ambient-stage {
+  background:
+    radial-gradient(ellipse 56% 36% at 0% 18%,
+      rgb(43 234 94 / 24%) 0%,
+      rgb(43 234 94 / 11%) 20%,
+      transparent 64%),
+    radial-gradient(ellipse 62% 40% at 102% 6%,
+      rgb(72 76 86 / 26%) 0%,
+      rgb(34 36 42 / 16%) 34%,
+      transparent 74%),
+    radial-gradient(ellipse 52% 32% at 70% 88%,
+      rgb(218 184 74 / 9%) 0%,
+      transparent 68%);
+}
+
+.graphite-header {
+  border-color: rgb(42 45 52 / 12%);
+  box-shadow:
+    0 12px 34px rgb(31 34 40 / 11%),
+    inset 0 -1px 0 rgb(255 255 255 / 28%);
+}
+
+.dark .graphite-header {
+  border-color: rgb(255 255 255 / 7%);
+  box-shadow:
+    0 14px 38px rgb(0 0 0 / 34%),
+    inset 0 -1px 0 rgb(255 255 255 / 4%);
+}
+
 .server-panel,
 .monitor-shell {
-  --card: rgb(255 255 255 / 76%);
-  --card-foreground: #182132;
-  --foreground: #182132;
-  --muted-foreground: #748094;
-  --border: rgb(83 102 132 / 13%);
-  --server-tile: rgb(255 255 255 / 56%);
-  --server-shadow: 0 10px 30px rgb(70 92 128 / 9%), 0 2px 7px rgb(70 92 128 / 5%);
-  --server-shadow-hover: 0 18px 42px rgb(70 92 128 / 14%), 0 4px 12px rgb(70 92 128 / 7%);
-  --server-glow: rgb(33 196 91 / 20%);
+  --card: rgb(236 238 241 / 78%);
+  --card-foreground: #181b21;
+  --foreground: #181b21;
+  --muted-foreground: #6f7680;
+  --border: rgb(46 50 58 / 12%);
+  --server-tile: rgb(255 255 255 / 48%);
+  --server-shadow:
+    0 11px 30px rgb(36 40 48 / 11%),
+    0 2px 7px rgb(36 40 48 / 6%);
+  --server-shadow-hover:
+    0 18px 44px rgb(30 33 39 / 17%),
+    0 5px 14px rgb(30 33 39 / 8%);
+  --server-glow: rgb(41 231 104 / 34%);
 }
 
 .dark .server-panel,
 .dark .monitor-shell {
-  --card: rgb(18 24 36 / 86%);
-  --card-foreground: #edf3fb;
-  --foreground: #edf3fb;
-  --muted-foreground: #97a4b7;
-  --border: rgb(188 209 239 / 10%);
-  --server-tile: rgb(255 255 255 / 4.2%);
-  --server-shadow: 0 14px 34px rgb(0 0 0 / 28%), 0 2px 8px rgb(0 0 0 / 16%);
-  --server-shadow-hover: 0 20px 46px rgb(0 0 0 / 34%), 0 0 28px rgb(87 174 255 / 7%);
-  --server-glow: rgb(43 234 94 / 16%);
+  --card: rgb(18 19 23 / 88%);
+  --card-foreground: #f1f3f5;
+  --foreground: #f1f3f5;
+  --muted-foreground: #989da6;
+  --border: rgb(255 255 255 / 8%);
+  --server-tile: rgb(255 255 255 / 5%);
+  --server-shadow:
+    0 14px 36px rgb(0 0 0 / 34%),
+    0 2px 8px rgb(0 0 0 / 20%);
+  --server-shadow-hover:
+    0 22px 50px rgb(0 0 0 / 42%),
+    0 0 34px rgb(43 234 94 / 10%);
+  --server-glow: rgb(43 234 94 / 34%);
 }
 
 .server-summary,
@@ -189,12 +244,11 @@
   position: relative;
   isolation: isolate;
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 52%), rgb(255 255 255 / 16%) 38%, transparent 68%),
+    linear-gradient(145deg, rgb(255 255 255 / 42%), rgb(255 255 255 / 10%) 38%, transparent 68%),
     var(--card);
   box-shadow: var(--server-shadow);
 }
 
-.dark .server-summary,
 .dark .server-card,
 .dark .monitor-shell,
 .dark .node-picker,
@@ -203,7 +257,7 @@
 .dark .monitor-chart-card,
 .dark .monitor-note {
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 5.5%), transparent 46%),
+    linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 48%),
     var(--card);
 }
 
@@ -217,15 +271,14 @@
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgb(255 255 255 / 56%), transparent 32%);
-  opacity: .66;
+  background: linear-gradient(180deg, rgb(255 255 255 / 52%), transparent 34%);
+  opacity: .62;
 }
 
-.dark .server-summary::before,
 .dark .server-card::before,
 .dark .monitor-chart-card::before,
 .dark .monitor-node-head::before {
-  background: linear-gradient(180deg, rgb(255 255 255 / 6%), transparent 36%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 5.5%), transparent 36%);
 }
 
 .server-summary,
@@ -234,12 +287,27 @@
 .monitor-range,
 .monitor-chart-card,
 .monitor-node-head {
-  backdrop-filter: blur(14px) saturate(112%);
-  -webkit-backdrop-filter: blur(14px) saturate(112%);
+  backdrop-filter: blur(16px) saturate(108%);
+  -webkit-backdrop-filter: blur(16px) saturate(108%);
 }
 
 .server-summary {
-  box-shadow: 0 16px 42px rgb(84 105 143 / 10%), 0 2px 8px rgb(84 105 143 / 4%);
+  --foreground: #f7f8fa;
+  --muted-foreground: #a8afb9;
+  --border: rgb(255 255 255 / 10%);
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at 11% 50%, rgb(45 235 107 / 12%), transparent 28%),
+    linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 38%),
+    rgb(25 27 32 / 92%);
+  box-shadow:
+    0 20px 48px rgb(29 31 36 / 24%),
+    0 8px 20px rgb(29 31 36 / 12%),
+    0 0 34px rgb(45 235 107 / 16%);
+}
+
+.server-summary::before {
+  background: linear-gradient(180deg, rgb(255 255 255 / 10%), transparent 34%);
 }
 
 .server-card {
@@ -248,6 +316,9 @@
   border-radius: 1rem;
   content-visibility: auto;
   contain-intrinsic-size: auto 72px;
+  box-shadow:
+    var(--server-shadow),
+    0 0 28px rgb(45 235 107 / 5%);
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -255,37 +326,34 @@
     background-color 180ms ease;
 }
 
-.server-card:nth-child(3n + 1) {
-  background:
-    linear-gradient(145deg, rgb(224 244 255 / 34%), transparent 46%),
-    var(--card);
-}
-
-.server-card:nth-child(3n + 2) {
-  background:
-    linear-gradient(145deg, rgb(236 229 255 / 26%), transparent 48%),
-    var(--card);
-}
-
+.server-card:nth-child(3n + 1),
+.server-card:nth-child(3n + 2),
 .server-card:nth-child(3n) {
   background:
-    linear-gradient(145deg, rgb(222 251 240 / 25%), transparent 46%),
+    linear-gradient(145deg, rgb(255 255 255 / 36%), rgb(78 82 90 / 5%) 55%, transparent),
     var(--card);
 }
 
 .server-card-open {
-  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  --card: rgb(25 27 32 / 91%);
+  --foreground: #f7f8fa;
+  --card-foreground: #f7f8fa;
+  --muted-foreground: #adb4be;
+  --server-tile: rgb(255 255 255 / 7%);
+  color: var(--foreground);
+  transform: translateY(-1px);
+  border-color: rgb(66 246 125 / 45%);
   box-shadow:
-    0 18px 46px rgb(33 196 91 / 12%),
-    0 0 0 1px rgb(33 196 91 / 9%),
-    var(--server-shadow);
+    0 24px 58px rgb(19 21 25 / 32%),
+    0 0 0 1px rgb(66 246 125 / 16%),
+    0 0 22px 5px rgb(66 246 125 / 22%),
+    0 0 52px 12px rgb(66 246 125 / 12%);
 }
 
-.dark .server-card-open {
-  box-shadow:
-    0 20px 50px rgb(0 0 0 / 32%),
-    0 0 28px var(--server-glow),
-    0 0 0 1px rgb(43 234 94 / 10%);
+.server-card-open::before {
+  background:
+    radial-gradient(circle at 8% 26%, rgb(66 246 125 / 18%), transparent 30%),
+    linear-gradient(180deg, rgb(255 255 255 / 7%), transparent 38%);
 }
 
 .server-card-hit {
@@ -299,30 +367,40 @@
 
 .metric-tile {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 26%), transparent),
+    linear-gradient(180deg, rgb(255 255 255 / 30%), transparent),
     var(--server-tile);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 50%),
-    0 1px 3px rgb(72 92 126 / 4%);
+    inset 0 1px 0 rgb(255 255 255 / 48%),
+    0 1px 3px rgb(25 28 34 / 5%);
 }
 
+.server-card-open .metric-tile,
 .dark .metric-tile {
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 5%),
-    0 1px 4px rgb(0 0 0 / 10%);
+    inset 0 1px 0 rgb(255 255 255 / 6%),
+    0 1px 4px rgb(0 0 0 / 14%);
 }
 
 .summary-icon,
 .status-orbit {
   background:
     radial-gradient(circle at 32% 24%, rgb(255 255 255 / 76%), transparent 42%),
-    rgb(33 196 91 / 7%);
+    rgb(36 211 92 / 8%);
   box-shadow:
-    inset 0 0 0 1px rgb(33 196 91 / 9%),
-    0 5px 16px rgb(33 196 91 / 7%);
+    inset 0 0 0 1px rgb(36 211 92 / 10%),
+    0 0 20px rgb(36 211 92 / 10%);
 }
 
-.dark .summary-icon,
+.server-summary .summary-icon {
+  color: #36e66f;
+  background:
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 12%), transparent 42%),
+    rgb(45 235 107 / 10%);
+  box-shadow:
+    inset 0 0 0 1px rgb(70 245 128 / 14%),
+    0 0 24px rgb(45 235 107 / 14%);
+}
+
 .dark .status-orbit {
   background:
     radial-gradient(circle at 32% 24%, rgb(255 255 255 / 8%), transparent 42%),
@@ -335,7 +413,9 @@
 }
 
 [data-online="true"] .server-status-dot {
-  box-shadow: 0 0 0 4px rgb(33 196 91 / 7%), 0 0 13px rgb(33 196 91 / 24%);
+  box-shadow:
+    0 0 0 4px rgb(41 226 101 / 9%),
+    0 0 16px rgb(41 226 101 / 34%);
 }
 
 [data-online="true"] .server-status-dot::after {
@@ -343,8 +423,8 @@
   position: absolute;
   inset: -5px;
   border-radius: 999px;
-  border: 1px solid rgb(33 196 91 / 18%);
-  animation: server-pulse 3.1s ease-out infinite;
+  border: 1px solid rgb(41 226 101 / 24%);
+  animation: server-pulse 3s ease-out infinite;
 }
 
 .server-card-detail {
@@ -353,57 +433,68 @@
 
 .monitor-shell {
   overflow: clip;
-  border-color: rgb(92 111 145 / 12%);
-  box-shadow: 0 20px 54px rgb(74 93 128 / 10%), 0 3px 10px rgb(74 93 128 / 5%);
+  border-color: rgb(47 51 59 / 12%);
+  box-shadow:
+    0 24px 58px rgb(31 34 40 / 17%),
+    0 4px 12px rgb(31 34 40 / 8%);
 }
 
 .node-picker,
 .monitor-node-head,
 .monitor-range,
 .monitor-chart-card {
-  border-color: rgb(92 111 145 / 11%);
-  box-shadow: 0 10px 28px rgb(75 94 130 / 7%), inset 0 1px 0 rgb(255 255 255 / 42%);
+  border-color: rgb(47 51 59 / 12%);
+  box-shadow:
+    0 12px 30px rgb(31 34 40 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 34%);
 }
 
 .monitor-chart-card {
   overflow: hidden;
   min-width: 0;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 28%), rgb(52 55 62 / 5%) 58%, transparent),
+    var(--card);
 }
 
 .monitor-chart-card:nth-child(1) {
-  background:
-    linear-gradient(145deg, rgb(219 247 235 / 35%), transparent 52%),
-    var(--card);
+  box-shadow:
+    0 12px 30px rgb(31 34 40 / 10%),
+    0 0 26px rgb(47 229 109 / 7%),
+    inset 0 1px 0 rgb(255 255 255 / 34%);
 }
 
 .monitor-chart-card:nth-child(2) {
-  background:
-    linear-gradient(145deg, rgb(231 223 255 / 30%), transparent 52%),
-    var(--card);
+  box-shadow:
+    0 12px 30px rgb(31 34 40 / 10%),
+    0 0 24px rgb(166 171 181 / 8%),
+    inset 0 1px 0 rgb(255 255 255 / 34%);
 }
 
 .monitor-chart-card:nth-child(3) {
-  background:
-    linear-gradient(145deg, rgb(215 241 255 / 34%), transparent 52%),
-    var(--card);
+  box-shadow:
+    0 12px 30px rgb(31 34 40 / 10%),
+    0 0 24px rgb(74 198 176 / 7%),
+    inset 0 1px 0 rgb(255 255 255 / 34%);
 }
 
 .monitor-chart-card:nth-child(4) {
-  background:
-    linear-gradient(145deg, rgb(228 237 255 / 30%), transparent 52%),
-    var(--card);
+  box-shadow:
+    0 12px 30px rgb(31 34 40 / 10%),
+    0 0 24px rgb(222 190 84 / 7%),
+    inset 0 1px 0 rgb(255 255 255 / 34%);
 }
 
 .monitor-note {
   background:
-    linear-gradient(145deg, rgb(255 245 218 / 30%), transparent 52%),
+    linear-gradient(145deg, rgb(255 255 255 / 28%), transparent 52%),
     var(--card);
 }
 
 .monitor-chip {
-  background: rgb(255 255 255 / 46%);
-  border-color: rgb(92 111 145 / 13%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%);
+  background: rgb(255 255 255 / 38%);
+  border-color: rgb(47 51 59 / 13%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%);
 }
 
 .dark .monitor-chip {
@@ -412,20 +503,33 @@
 
 @keyframes server-pulse {
   0%, 42% { transform: scale(.74); opacity: 0; }
-  54% { opacity: .65; }
-  100% { transform: scale(1.42); opacity: 0; }
+  54% { opacity: .72; }
+  100% { transform: scale(1.48); opacity: 0; }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .server-card:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, #6ca7ff 24%, var(--border));
-    box-shadow: var(--server-shadow-hover);
+    border-color: rgb(62 66 75 / 20%);
+    box-shadow:
+      var(--server-shadow-hover),
+      0 0 30px rgb(45 235 107 / 8%);
+  }
+
+  .server-card-open:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 26px 62px rgb(19 21 25 / 34%),
+      0 0 0 1px rgb(66 246 125 / 18%),
+      0 0 24px 6px rgb(66 246 125 / 24%),
+      0 0 56px 14px rgb(66 246 125 / 13%);
   }
 
   .monitor-chart-card:hover {
     transform: translateY(-1px);
-    box-shadow: 0 14px 32px rgb(75 94 130 / 10%), inset 0 1px 0 rgb(255 255 255 / 42%);
+    box-shadow:
+      0 16px 36px rgb(31 34 40 / 14%),
+      inset 0 1px 0 rgb(255 255 255 / 40%);
   }
 }
 
@@ -436,8 +540,24 @@
   .monitor-range,
   .monitor-chart-card,
   .monitor-node-head {
-    backdrop-filter: blur(10px) saturate(108%);
-    -webkit-backdrop-filter: blur(10px) saturate(108%);
+    backdrop-filter: blur(12px) saturate(106%);
+    -webkit-backdrop-filter: blur(12px) saturate(106%);
+  }
+
+  .ambient-stage {
+    background:
+      radial-gradient(ellipse 85% 32% at -8% 20%,
+        rgb(58 255 126 / 30%) 0%,
+        rgb(58 255 126 / 14%) 22%,
+        rgb(58 255 126 / 5%) 40%,
+        transparent 66%),
+      radial-gradient(ellipse 90% 32% at 112% 7%,
+        rgb(26 28 33 / 42%) 0%,
+        rgb(56 59 66 / 20%) 30%,
+        transparent 70%),
+      radial-gradient(ellipse 82% 28% at 86% 76%,
+        rgb(255 230 117 / 12%) 0%,
+        transparent 68%);
   }
 
   .server-card {
@@ -463,5 +583,7 @@
   }
 
   .server-card:hover,
-  .monitor-chart-card:hover { transform: none; }
+  .monitor-chart-card:hover {
+    transform: none;
+  }
 }
