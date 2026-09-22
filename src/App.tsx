@@ -62,7 +62,7 @@ function Toolbox({ dark, toggle }: { dark: boolean; toggle: () => void }) {
     addEventListener("scroll", sync, { passive: true })
     return () => removeEventListener("scroll", sync)
   }, [])
-  const style = "size-10 bg-card/85 text-primary shadow-md backdrop-blur hover:bg-card hover:text-primary max-md:size-9"
+  const style = "threeui-tool-button size-10 rounded-xl max-md:size-9"
   return (
     <div className="fixed right-3 bottom-5 z-20 flex flex-col gap-2.5 max-md:bottom-3">
       {scrolled && (
@@ -82,7 +82,7 @@ function NavItem({ href, active, icon: Icon, children }: { href: string; active:
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className="my-1.5 inline-flex items-center gap-1.5 rounded-full px-3.5 text-sm transition-colors hover:bg-foreground/5 hover:text-primary aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary max-sm:px-2.5"
+      className="threeui-nav-item inline-flex items-center gap-1.5 rounded-full px-3.5 text-sm max-sm:px-2.5"
     >
       <Icon className="size-3.5" />
       {children}
@@ -139,12 +139,12 @@ export default function App() {
   return (
     <div className="app-shell relative isolate flex min-h-svh flex-col overflow-x-clip">
       <div className="ambient-stage fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
-      <header className="graphite-header sticky top-0 z-20 border-b bg-nav backdrop-blur-xl">
-        <div className="mx-auto flex h-12 w-[95vw] max-w-[1680px] items-stretch max-md:w-full max-md:px-2">
-          <Link href="/" className="mr-5 flex min-w-0 items-center gap-2 text-lg max-sm:mr-1 max-sm:text-base">
+      <header className="threeui-header sticky top-0 z-20">
+        <div className="threeui-glass-bar mx-auto flex h-12 w-[95vw] max-w-[1680px] items-center px-2 max-md:w-[calc(100%-16px)]">
+          <Link href="/" className="threeui-brand mr-5 flex min-w-0 items-center gap-2 px-2 text-lg max-sm:mr-1 max-sm:text-base">
             <span className="truncate font-medium tracking-[-0.02em]">{site}</span>
           </Link>
-          <nav className="flex shrink-0 items-stretch">
+          <nav className="threeui-nav flex shrink-0 items-center gap-1">
             <NavItem href="/" active={open === null} icon={House}>首页</NavItem>
             {sorted.length > 0 && (
               <NavItem href={`/node/${open ?? sorted[0].id}`} active={open !== null} icon={ChartLine}>监控</NavItem>
@@ -152,7 +152,7 @@ export default function App() {
           </nav>
           {/* The panel is a separate app built into the hub, so this is a
               navigation rather than a route. */}
-          <a href="/admin/" className="ml-auto inline-flex shrink-0 items-center gap-1.5 px-3.5 text-sm transition-colors hover:text-primary max-sm:px-2">
+          <a href="/admin/" className="threeui-admin ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm max-sm:px-2">
             <UserRound className="size-3.5" />
             <span className="max-sm:sr-only">{me.authed ? "后台" : "登录"}</span>
           </a>
