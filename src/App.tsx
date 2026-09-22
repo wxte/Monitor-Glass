@@ -137,8 +137,9 @@ export default function App() {
   if (!me.public_page && !me.authed) return null
 
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="sticky top-0 z-10 border-b bg-nav shadow-[0_8px_28px_rgb(88_102_132/0.08)] backdrop-blur-xl">
+    <div className="app-shell relative isolate flex min-h-svh flex-col overflow-x-clip">
+      <div className="ambient-stage fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
+      <header className="graphite-header sticky top-0 z-20 border-b bg-nav backdrop-blur-xl">
         <div className="mx-auto flex h-12 w-[95vw] max-w-[1680px] items-stretch max-md:w-full max-md:px-2">
           <Link href="/" className="mr-5 flex min-w-0 items-center gap-2 text-lg max-sm:mr-1 max-sm:text-base">
             <span className="truncate font-medium tracking-[-0.02em]">{site}</span>
@@ -158,7 +159,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto w-[95vw] max-w-[1680px] flex-1 space-y-4 py-5 max-md:w-full max-md:px-3 max-md:py-3">
+      <main className="relative z-10 mx-auto w-[95vw] max-w-[1680px] flex-1 space-y-4 py-5 max-md:w-full max-md:px-3 max-md:py-3">
         {error && (
           <p role="alert" className="rounded-md border border-destructive/25 bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
             {error}
@@ -189,7 +190,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="pb-5 text-center text-xs text-muted-foreground max-md:pb-3">
+      <footer className="relative z-10 pb-5 text-center text-xs text-muted-foreground max-md:pb-3">
         {site} | ServerStatus | Powered by{" "}
         <a href="https://github.com/monitor-probe/monitor" target="_blank" rel="noreferrer" className="hover:text-primary">
           monitor
