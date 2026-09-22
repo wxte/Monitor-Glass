@@ -387,7 +387,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
           <h2 className="text-xl font-semibold tracking-[-0.03em] md:text-2xl">服务器</h2>
           <p className="mt-0.5 text-[11px] text-muted-foreground md:text-xs">实时监控 · 稳定运行 · 全局总览</p>
         </div>
-        <span className="rounded-full border border-border/60 bg-card/70 px-2.5 py-1 text-[10px] text-muted-foreground shadow-sm">
+        <span className="server-online-pill rounded-full border px-2.5 py-1 text-[10px] shadow-sm">
           {onlineCount === nodes.length ? "全部在线" : "在线 " + onlineCount + " / " + nodes.length}
         </span>
       </div>
