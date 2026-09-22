@@ -212,8 +212,8 @@ function Details({ node }: { node: Node }) {
 
   return (
     <div className="space-y-2.5 p-2.5 text-[13px] leading-6 md:p-3">
-      <div className="detail-card-grid grid grid-cols-2 gap-2 @4xl:grid-cols-3">
-        <DetailCard title="系统" icon={Server} className="col-span-2 @4xl:col-span-1">
+      <div className="detail-card-grid grid gap-2 @4xl:grid-cols-3">
+        <DetailCard title="系统" icon={Server}>
           <Line label="系统">
             <span className="inline-flex items-center gap-1.5 align-middle">
               <OsIcon os={node.os} className="detail-os-icon" />
@@ -229,18 +229,15 @@ function Details({ node }: { node: Node }) {
             {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
             {m && `（${m.cpu.toFixed(1)}%）`}
           </Line>
+          <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
         </DetailCard>
 
-        <DetailCard title="资源" icon={MemoryStick}>
+        <DetailCard title="资源与运行" icon={MemoryStick}>
           <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
           <Line label="交换">
             {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
           </Line>
           <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
-        </DetailCard>
-
-        <DetailCard title="运行" icon={Cpu}>
-          <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
           <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
           <Line label="网速">
             {m ? (
@@ -253,13 +250,10 @@ function Details({ node }: { node: Node }) {
           </Line>
         </DetailCard>
 
-        <DetailCard title="流量" icon={Network}>
+        <DetailCard title="流量与服务" icon={Database}>
           <Line label="今日">{flow(node.day_rx, node.day_tx)}</Line>
           <Line label="本月">{flow(node.month_rx, node.month_tx)}</Line>
           <Line label="累计">{flow(node.total_rx, node.total_tx)}</Line>
-        </DetailCard>
-
-        <DetailCard title="服务" icon={Database} className="col-span-2 @4xl:col-span-1">
           <Line label={node.online ? "在线" : "离线"}>
             {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
           </Line>
