@@ -62,7 +62,7 @@ function Toolbox({ dark, toggle }: { dark: boolean; toggle: () => void }) {
     addEventListener("scroll", sync, { passive: true })
     return () => removeEventListener("scroll", sync)
   }, [])
-  const style = "size-10 bg-card/85 text-primary shadow-md backdrop-blur hover:bg-card hover:text-primary max-md:size-9"
+  const style = "threeui-tool-button size-10 rounded-xl max-md:size-9"
   return (
     <div className="fixed right-3 bottom-5 z-20 flex flex-col gap-2.5 max-md:bottom-3">
       {scrolled && (
