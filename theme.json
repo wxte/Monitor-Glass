@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "冷银灰背景、深灰石墨玻璃卡片与大范围绿色光晕",
-  "version": "1.6.0",
+  "description": "冷钢蓝玻璃卡片、淡青高光与三块整齐展开信息面板",
+  "version": "1.7.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
