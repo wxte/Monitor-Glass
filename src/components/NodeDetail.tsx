@@ -82,10 +82,10 @@ const TIP = {
 
 function Panel({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div>
+    <section className="monitor-chart-card rounded-2xl border border-border/55 p-3 md:p-4">
       <h4 className="mb-2 text-xs font-medium text-muted-foreground">{title}</h4>
-      <div className="h-40 w-full text-muted-foreground">{children}</div>
-    </div>
+      <div className="h-44 w-full text-muted-foreground">{children}</div>
+    </section>
   )
 }
 
@@ -93,8 +93,10 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
   return (
     <button
       onClick={onClick}
-      className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
-        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+      className={`rounded-full border px-3 py-1.5 text-xs transition-all ${
+        active
+          ? "border-primary/20 bg-primary text-primary-foreground shadow-[0_6px_18px_rgb(33_196_91/0.18)]"
+          : "border-border/55 bg-background/35 text-muted-foreground hover:bg-white/45 dark:hover:bg-white/5"
       }`}
     >
       {children}
@@ -307,7 +309,7 @@ export function Latency({ id, className }: { id: number; className?: string }) {
               onClick={() =>
                 setHiddenProbes((h) => (shown ? [...h, s.id] : h.filter((id) => id !== s.id)))
               }
-              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-opacity ${
+              className={`monitor-chip inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-opacity ${
                 shown ? "" : "opacity-40"
               }`}
             >
@@ -329,7 +331,7 @@ export function Latency({ id, className }: { id: number; className?: string }) {
           onClick={() => setSmooth((on) => !on)}
           aria-pressed={smooth}
           title="把孤立的异常值换成邻近若干桶的中位数，持续的变化保持原样"
-          className={`rounded-md border px-2 py-1 text-xs transition-opacity ${smooth ? "" : "opacity-40"}`}
+          className={`monitor-chip rounded-full border px-2.5 py-1 text-xs transition-opacity ${smooth ? "" : "opacity-40"}`}
         >
           削峰
         </button>
@@ -443,8 +445,8 @@ export function NodeDetail({ node }: { node: Node }) {
   }, [metricRows])
 
   return (
-    <div className="space-y-4">
-      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+    <div className="monitor-detail space-y-3">
+      <div className="monitor-node-head flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-border/55 p-3 md:p-4">
         <Dot node={node} />
         <h2 className="truncate text-lg font-semibold">{node.name}</h2>
         <Flag code={node.country} className="text-sm" />
@@ -455,10 +457,10 @@ export function NodeDetail({ node }: { node: Node }) {
       </div>
 
       {node.remark && (
-        <p className="rounded-md bg-muted px-3 py-2 text-sm whitespace-pre-wrap">{node.remark}</p>
+        <p className="monitor-note rounded-xl border border-border/50 px-3 py-2 text-sm whitespace-pre-wrap">{node.remark}</p>
       )}
 
-      <div className="flex gap-1 border-t pt-4">
+      <div className="monitor-range flex flex-wrap gap-1.5 rounded-2xl border border-border/50 p-1.5">
         {RANGES.map((r) => (
           <Tab key={r.hours} active={hours === r.hours} onClick={() => setHours(r.hours)}>
             {r.label}
@@ -473,7 +475,7 @@ export function NodeDetail({ node }: { node: Node }) {
       ) : data.metrics.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">这段时间没有历史数据</p>
       ) : (
-        <div className="space-y-5">
+        <div className="grid gap-3 lg:grid-cols-2">
           <Panel title="CPU">
             <ResponsiveContainer>
               <AreaChart data={metricRows}>
