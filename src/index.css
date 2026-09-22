@@ -13,25 +13,25 @@
    without competing with the bars. */
 :root {
   --radius: 0.375rem;
-  --background: #cfd4da;
-  --foreground: #16191e;
-  --card: #eef0f2;
-  --card-foreground: #171a20;
-  --popover: #f1f2f4;
-  --popover-foreground: #171a20;
-  --primary: #21c45b;
+  --background: #d8dee6;
+  --foreground: #18202a;
+  --card: #edf2f6;
+  --card-foreground: #18202a;
+  --popover: #f2f6f9;
+  --popover-foreground: #18202a;
+  --primary: #59bddd;
   --primary-foreground: #ffffff;
-  --secondary: #e3e6ea;
-  --secondary-foreground: #171a20;
-  --muted: #e6e8eb;
-  --muted-foreground: #68707a;
-  --accent: #dadddf;
-  --accent-foreground: #171a20;
+  --secondary: #e4e9ee;
+  --secondary-foreground: #18202a;
+  --muted: #e8edf1;
+  --muted-foreground: #6e7886;
+  --accent: #dfe6ec;
+  --accent-foreground: #18202a;
   --destructive: #a94442;
-  --border: #c8cdd3;
-  --input: #bcc2c9;
-  --ring: #43c8a4;
-  --nav: rgb(224 228 233 / 84%);
+  --border: #c8d0d8;
+  --input: #bcc7d0;
+  --ring: #6bc8e6;
+  --nav: rgb(227 233 239 / 86%);
   --chart-1: oklch(0.67 0.18 151);
   --chart-2: oklch(0.69 0.13 205);
   --chart-3: oklch(0.74 0.14 76);
@@ -51,25 +51,25 @@
 }
 
 .dark {
-  --background: #090a0d;
+  --background: #111820;
   --foreground: #f1f1f1;
-  --card: #121317;
+  --card: #202833;
   --card-foreground: #f1f1f1;
-  --popover: #17181d;
-  --popover-foreground: #f1f1f1;
-  --primary: #2bea5e;
+  --popover: #242d39;
+  --popover-foreground: #f2f6fa;
+  --primary: #6fd4f2;
   --primary-foreground: #ffffff;
-  --secondary: #17191e;
+  --secondary: #25303c;
   --secondary-foreground: #f1f1f1;
-  --muted: #17191e;
-  --muted-foreground: #949aa4;
-  --accent: #202228;
+  --muted: #25303c;
+  --muted-foreground: #9ca9b8;
+  --accent: #2b3744;
   --accent-foreground: #f1f1f1;
   --destructive: #e0605c;
-  --border: #2b2e35;
+  --border: #344250;
   --input: rgb(255 255 255 / 15%);
-  --ring: #53d8bd;
-  --nav: rgb(13 14 17 / 82%);
+  --ring: #79d7f3;
+  --nav: rgb(20 27 35 / 84%);
   --chart-1: oklch(0.78 0.17 145);
   --chart-2: oklch(0.72 0.08 162);
   --chart-3: oklch(0.78 0.1 76);
@@ -151,35 +151,35 @@
 .ambient-stage {
   background:
     radial-gradient(ellipse 72% 34% at 18% -2%,
-      rgb(255 255 255 / 62%) 0%,
-      rgb(246 248 251 / 26%) 30%,
+      rgb(255 255 255 / 68%) 0%,
+      rgb(244 248 252 / 30%) 30%,
       transparent 68%),
     radial-gradient(ellipse 64% 34% at 108% 12%,
-      rgb(83 90 101 / 24%) 0%,
-      rgb(109 117 130 / 10%) 34%,
+      rgb(122 155 182 / 18%) 0%,
+      rgb(122 155 182 / 7%) 34%,
       transparent 72%),
     radial-gradient(ellipse 70% 32% at 72% 88%,
-      rgb(151 166 184 / 17%) 0%,
-      rgb(151 166 184 / 6%) 36%,
+      rgb(136 166 191 / 14%) 0%,
+      rgb(136 166 191 / 5%) 36%,
       transparent 72%),
     radial-gradient(ellipse 58% 28% at 8% 68%,
-      rgb(240 243 247 / 35%) 0%,
-      rgb(240 243 247 / 10%) 36%,
+      rgb(242 246 249 / 34%) 0%,
+      rgb(242 246 249 / 9%) 36%,
       transparent 74%);
 }
 
 .dark .ambient-stage {
   background:
     radial-gradient(ellipse 72% 34% at 12% -4%,
-      rgb(61 66 76 / 30%) 0%,
-      rgb(37 40 47 / 15%) 36%,
+      rgb(76 101 125 / 22%) 0%,
+      rgb(42 57 72 / 11%) 36%,
       transparent 72%),
     radial-gradient(ellipse 68% 36% at 104% 16%,
-      rgb(105 112 124 / 17%) 0%,
-      rgb(49 53 61 / 8%) 38%,
+      rgb(87 126 156 / 14%) 0%,
+      rgb(49 67 82 / 7%) 38%,
       transparent 74%),
     radial-gradient(ellipse 70% 32% at 72% 90%,
-      rgb(33 39 47 / 30%) 0%,
+      rgb(28 38 49 / 28%) 0%,
       transparent 72%);
 }
 
@@ -199,11 +199,11 @@
 
 .server-panel,
 .monitor-shell {
-  --card: rgb(236 238 241 / 78%);
-  --card-foreground: #181b21;
-  --foreground: #181b21;
-  --muted-foreground: #6f7680;
-  --border: rgb(46 50 58 / 12%);
+  --card: rgb(230 236 241 / 80%);
+  --card-foreground: #17212b;
+  --foreground: #17212b;
+  --muted-foreground: #6e7886;
+  --border: rgb(72 91 108 / 13%);
   --server-tile: rgb(255 255 255 / 48%);
   --server-shadow:
     0 11px 30px rgb(36 40 48 / 11%),
@@ -211,24 +211,24 @@
   --server-shadow-hover:
     0 18px 44px rgb(30 33 39 / 17%),
     0 5px 14px rgb(30 33 39 / 8%);
-  --server-glow: rgb(41 231 104 / 34%);
+  --server-glow: rgb(96 194 226 / 20%);
 }
 
 .dark .server-panel,
 .dark .monitor-shell {
-  --card: rgb(18 19 23 / 88%);
-  --card-foreground: #f1f3f5;
-  --foreground: #f1f3f5;
-  --muted-foreground: #989da6;
-  --border: rgb(255 255 255 / 8%);
-  --server-tile: rgb(255 255 255 / 5%);
+  --card: rgb(33 42 52 / 90%);
+  --card-foreground: #f2f6fa;
+  --foreground: #f2f6fa;
+  --muted-foreground: #a3afbc;
+  --border: rgb(174 211 234 / 10%);
+  --server-tile: rgb(255 255 255 / 6%);
   --server-shadow:
     0 14px 36px rgb(0 0 0 / 34%),
     0 2px 8px rgb(0 0 0 / 20%);
   --server-shadow-hover:
     0 22px 50px rgb(0 0 0 / 42%),
     0 0 34px rgb(43 234 94 / 10%);
-  --server-glow: rgb(43 234 94 / 34%);
+  --server-glow: rgb(96 194 226 / 20%);
 }
 
 .server-summary,
@@ -295,14 +295,13 @@
   --border: rgb(255 255 255 / 10%);
   color: var(--foreground);
   background:
-    radial-gradient(circle at 11% 50%, rgb(45 235 107 / 12%), transparent 28%),
-    linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 38%),
-    rgb(25 27 32 / 92%);
+    radial-gradient(circle at 14% 48%, rgb(111 212 242 / 10%), transparent 30%),
+    linear-gradient(145deg, rgb(255 255 255 / 8%), transparent 38%),
+    rgb(42 51 62 / 94%);
   box-shadow:
-    0 20px 48px rgb(29 31 36 / 24%),
-    0 8px 20px rgb(29 31 36 / 12%),
-    0 0 52px 10px rgb(45 235 107 / 18%),
-    0 0 94px 20px rgb(45 235 107 / 7%);
+    0 20px 48px rgb(30 39 49 / 24%),
+    0 8px 20px rgb(30 39 49 / 12%),
+    0 0 34px 6px rgb(103 197 225 / 8%);
 }
 
 .server-summary::before {
@@ -310,13 +309,13 @@
 }
 
 .server-card {
-  --card: rgb(25 27 32 / 91%);
-  --foreground: #f7f8fa;
-  --card-foreground: #f7f8fa;
-  --muted-foreground: #aeb4bd;
+  --card: rgb(47 57 69 / 94%);
+  --foreground: #f3f7fb;
+  --card-foreground: #f3f7fb;
+  --muted-foreground: #a9b4c0;
   --server-tile: rgb(255 255 255 / 7%);
-  --background: #17191e;
-  --border: rgb(255 255 255 / 9%);
+  --background: #2c3742;
+  --border: rgb(181 214 234 / 11%);
   color: var(--foreground);
   overflow: clip;
   border: 1px solid var(--border);
@@ -324,10 +323,9 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 72px;
   box-shadow:
-    0 18px 42px rgb(18 20 24 / 23%),
-    0 3px 10px rgb(18 20 24 / 11%),
-    0 0 46px 8px rgb(45 235 107 / 10%),
-    0 0 88px 18px rgb(45 235 107 / 5%);
+    0 18px 42px rgb(25 34 43 / 24%),
+    0 3px 10px rgb(25 34 43 / 12%),
+    0 0 34px 7px rgb(100 199 230 / 8%);
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -339,26 +337,25 @@
 .server-card:nth-child(3n + 2),
 .server-card:nth-child(3n) {
   background:
-    radial-gradient(circle at 7% 28%, rgb(53 235 111 / 8%), transparent 24%),
-    linear-gradient(145deg, rgb(255 255 255 / 6%), rgb(255 255 255 / 1.5%) 46%, transparent 70%),
+    radial-gradient(circle at 8% 24%, rgb(111 212 242 / 8%), transparent 26%),
+    linear-gradient(145deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%) 46%, transparent 70%),
     var(--card);
 }
 
 .server-card-open {
   transform: translateY(-1px);
-  border-color: rgb(66 246 125 / 48%);
+  border-color: rgb(117 215 242 / 34%);
   box-shadow:
-    0 28px 66px rgb(14 16 20 / 40%),
-    0 0 0 1px rgb(66 246 125 / 20%),
-    0 0 34px 10px rgb(66 246 125 / 30%),
-    0 0 74px 22px rgb(66 246 125 / 18%),
-    0 0 116px 34px rgb(66 246 125 / 9%);
+    0 26px 62px rgb(22 31 40 / 36%),
+    0 0 0 1px rgb(117 215 242 / 12%),
+    0 0 42px 9px rgb(111 212 242 / 12%),
+    0 0 78px 18px rgb(111 212 242 / 5%);
 }
 
 .server-card-open::before {
   background:
-    radial-gradient(circle at 8% 26%, rgb(66 246 125 / 18%), transparent 30%),
-    linear-gradient(180deg, rgb(255 255 255 / 7%), transparent 38%);
+    radial-gradient(circle at 8% 26%, rgb(111 212 242 / 14%), transparent 30%),
+    linear-gradient(180deg, rgb(255 255 255 / 9%), transparent 38%);
 }
 
 .server-card-hit {
@@ -390,21 +387,21 @@
 .summary-icon,
 .status-orbit {
   background:
-    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 10%), transparent 42%),
-    rgb(36 211 92 / 9%);
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 12%), transparent 42%),
+    rgb(111 212 242 / 8%);
   box-shadow:
-    inset 0 0 0 1px rgb(72 240 126 / 13%),
-    0 0 22px rgb(36 211 92 / 14%);
+    inset 0 0 0 1px rgb(136 222 246 / 12%),
+    0 0 18px rgb(111 212 242 / 10%);
 }
 
 .server-summary .summary-icon {
-  color: #36e66f;
+  color: #76d7f3;
   background:
-    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 12%), transparent 42%),
-    rgb(45 235 107 / 10%);
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 14%), transparent 42%),
+    rgb(111 212 242 / 9%);
   box-shadow:
-    inset 0 0 0 1px rgb(70 245 128 / 14%),
-    0 0 24px rgb(45 235 107 / 14%);
+    inset 0 0 0 1px rgb(134 222 247 / 13%),
+    0 0 20px rgb(111 212 242 / 10%);
 }
 
 .dark .status-orbit {
@@ -438,23 +435,23 @@
 }
 
 .monitor-shell {
-  --card: rgb(25 27 32 / 91%);
-  --foreground: #f7f8fa;
-  --card-foreground: #f7f8fa;
-  --muted-foreground: #aeb4bd;
-  --background: #17191e;
-  --border: rgb(255 255 255 / 9%);
+  --card: rgb(39 49 60 / 93%);
+  --foreground: #f2f6fa;
+  --card-foreground: #f2f6fa;
+  --muted-foreground: #a7b2bf;
+  --background: #27313c;
+  --border: rgb(176 211 232 / 10%);
   --input: rgb(255 255 255 / 12%);
   color: var(--foreground);
   overflow: clip;
   border-color: rgb(255 255 255 / 9%);
   background:
-    radial-gradient(circle at 8% 12%, rgb(52 234 110 / 8%), transparent 24%),
-    linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 46%),
+    radial-gradient(circle at 8% 12%, rgb(111 212 242 / 8%), transparent 24%),
+    linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 46%),
     var(--card);
   box-shadow:
-    0 26px 64px rgb(16 18 22 / 31%),
-    0 0 36px rgb(45 235 107 / 8%);
+    0 26px 64px rgb(23 31 39 / 28%),
+    0 0 30px rgb(111 212 242 / 6%);
 }
 
 .node-picker,
@@ -526,11 +523,11 @@
 
 
 .server-online-pill {
-  color: #aeb4bd;
+  color: #aeb8c4;
   border-color: rgb(255 255 255 / 9%);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 5%), transparent),
-    rgb(25 27 32 / 88%);
+    rgb(45 55 67 / 90%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 6%),
     0 8px 18px rgb(18 20 24 / 14%);
@@ -538,17 +535,16 @@
 
 .detail-float-card,
 .latency-float-card {
-  color: #f7f8fa;
-  border-color: rgb(255 255 255 / 9%);
+  color: #f3f7fb;
+  border-color: rgb(174 211 234 / 10%);
   background:
-    radial-gradient(circle at 8% 18%, rgb(58 235 114 / 7%), transparent 24%),
-    linear-gradient(145deg, rgb(255 255 255 / 6%), rgb(255 255 255 / 2%) 48%, transparent 74%),
-    rgb(31 33 39 / 82%);
+    radial-gradient(circle at 8% 18%, rgb(111 212 242 / 7%), transparent 24%),
+    linear-gradient(145deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 2%) 48%, transparent 74%),
+    rgb(42 51 62 / 86%);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 7%),
-    0 12px 26px rgb(0 0 0 / 18%),
-    0 0 38px 8px rgb(48 229 108 / 8%),
-    0 0 68px 14px rgb(48 229 108 / 4%);
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 12px 26px rgb(21 29 37 / 20%),
+    0 0 28px 6px rgb(111 212 242 / 5%);
 }
 
 .detail-float-card:nth-child(2) {
@@ -580,10 +576,10 @@
 }
 
 .detail-card-icon {
-  background: rgb(58 235 114 / 8%);
+  background: rgb(111 212 242 / 9%);
   box-shadow:
-    inset 0 0 0 1px rgb(70 245 128 / 10%),
-    0 0 16px rgb(58 235 114 / 8%);
+    inset 0 0 0 1px rgb(137 224 247 / 10%),
+    0 0 14px rgb(111 212 242 / 7%);
 }
 
 .detail-float-card .detail-os-icon {
@@ -608,18 +604,16 @@
     border-color: rgb(62 66 75 / 20%);
     box-shadow:
       var(--server-shadow-hover),
-      0 0 52px 10px rgb(45 235 107 / 13%),
-      0 0 96px 22px rgb(45 235 107 / 6%);
+      0 0 38px 8px rgb(111 212 242 / 9%);
   }
 
   .server-card-open:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 30px 70px rgb(19 21 25 / 38%),
-      0 0 0 1px rgb(66 246 125 / 20%),
-      0 0 38px 12px rgb(66 246 125 / 32%),
-      0 0 82px 24px rgb(66 246 125 / 19%),
-      0 0 128px 38px rgb(66 246 125 / 10%);
+      0 30px 70px rgb(22 31 40 / 38%),
+      0 0 0 1px rgb(117 215 242 / 13%),
+      0 0 46px 10px rgb(111 212 242 / 13%),
+      0 0 84px 20px rgb(111 212 242 / 6%);
   }
 
   .monitor-chart-card:hover {
@@ -644,15 +638,15 @@
   .ambient-stage {
     background:
       radial-gradient(ellipse 105% 30% at 16% -4%,
-        rgb(255 255 255 / 62%) 0%,
-        rgb(246 248 251 / 24%) 32%,
+        rgb(255 255 255 / 66%) 0%,
+        rgb(244 248 252 / 25%) 32%,
         transparent 72%),
       radial-gradient(ellipse 105% 30% at 116% 12%,
-        rgb(77 84 95 / 22%) 0%,
-        rgb(101 109 122 / 8%) 36%,
+        rgb(115 151 180 / 16%) 0%,
+        rgb(115 151 180 / 6%) 36%,
         transparent 74%),
       radial-gradient(ellipse 96% 26% at 78% 84%,
-        rgb(145 160 179 / 16%) 0%,
+        rgb(133 162 187 / 13%) 0%,
         transparent 72%);
   }
 
