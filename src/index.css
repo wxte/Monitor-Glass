@@ -132,3 +132,54 @@
 
 /* Tabular figures keep live numbers from shifting as they update. */
 .tnum { font-variant-numeric: tabular-nums; }
+
+/* Atlas v1.0.0 surfaces, scoped to the server table. */
+.server-panel {
+  --card: #fafaf9;
+  --card-foreground: #191918;
+  --foreground: #191918;
+  --muted-foreground: #74746f;
+  --border: rgb(0 0 0 / 5.5%);
+  --server-soft: #f3f3f2;
+  --server-border-hover: rgb(0 0 0 / 10%);
+}
+
+.dark .server-panel {
+  --card: #181818;
+  --card-foreground: #ededed;
+  --foreground: #ededed;
+  --muted-foreground: #8a8a8a;
+  --border: rgb(255 255 255 / 6.5%);
+  --server-soft: #202020;
+  --server-border-hover: rgb(255 255 255 / 11%);
+}
+
+.server-row {
+  background: var(--card);
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.server-row > td { height: 44px; }
+.server-detail-row { background: var(--card); }
+
+.server-row:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .server-row:hover {
+    background: color-mix(in srgb, var(--card) 94%, var(--server-soft));
+    box-shadow: inset 0 0 0 1px var(--server-border-hover);
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 760px) {
+  .server-row > td { height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-row { transition: none; }
+  .server-row:hover { transform: none; }
+}

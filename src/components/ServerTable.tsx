@@ -258,13 +258,10 @@ function Details({ node }: { node: Node }) {
   )
 }
 
-function Row({ node, index }: { node: Node; index: number }) {
+function Row({ node }: { node: Node }) {
   const [open, setOpen] = useState(false)
   const m = node.online ? node.metrics : null
   const traffic = monthUsage(node)
-  // Parity from the node rather than :nth-child, so an opened detail row takes its
-  // node's shade instead of shifting every row beneath it.
-  const shade = index % 2 ? "bg-muted" : ""
   const toggle = () => setOpen((o) => !o)
 
   return (
@@ -274,7 +271,7 @@ function Row({ node, index }: { node: Node; index: number }) {
         tabIndex={0}
         onClick={toggle}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), toggle())}
-        className={cn("cursor-pointer border-0 hover:bg-accent", shade)}
+        className="server-row cursor-pointer border-0"
       >
         <TableCell className={COL.status}><Dot node={node} className="mx-auto block @max-3xl:size-2.5" /></TableCell>
         <TableCell className={COL.name} title={node.name}>{node.name}</TableCell>
@@ -315,7 +312,7 @@ function Row({ node, index }: { node: Node; index: number }) {
         </TableCell>
       </TableRow>
       {open && (
-        <TableRow className={cn("border-0 hover:bg-transparent", shade)}>
+        <TableRow className="server-detail-row border-0 hover:bg-transparent">
           <TableCell colSpan={12} className="border-t-0! p-0! text-left whitespace-normal">
             <Details node={node} />
           </TableCell>
@@ -337,7 +334,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
   ]
 
   return (
-    <section className="@container rounded-md border bg-card p-5 text-card-foreground shadow-sm max-md:p-2">
+    <section className="server-panel @container rounded-md border bg-card p-5 text-card-foreground shadow-sm max-md:p-2">
       <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-3 gap-y-1 px-1 pb-3 max-md:pb-2 @max-3xl:grid-cols-1">
         <h2 className="text-lg font-semibold max-md:text-sm">服务器</h2>
         <div className="tnum flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground max-md:text-[10px]">
@@ -364,9 +361,9 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
           </TableRow>
         </TableHeader>
         {/* Rules between rows rather than under them, as the header row starts. */}
-        <TableBody className="[&_td]:h-[29px] [&_td]:border-t [&_td]:px-1.5 [&_td]:py-1 @max-3xl:[&_td]:px-0.5">
-          {nodes.map((n, i) => (
-            <Row key={n.id} node={n} index={i} />
+        <TableBody className="[&_td]:border-t [&_td]:px-1.5 [&_td]:py-1 @max-3xl:[&_td]:px-0.5">
+          {nodes.map((n) => (
+            <Row key={n.id} node={n} />
           ))}
         </TableBody>
       </Table>
