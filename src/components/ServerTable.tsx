@@ -102,13 +102,6 @@ function Num({ ch, className, children }: { ch: number; className?: string; chil
   )
 }
 
-function Expiry({ node }: { node: Node }) {
-  const days = daysUntil(node.expires_at)
-  if (days === null) return <span className="text-muted-foreground" title="永不到期">{FOREVER}</span>
-  if (days < 0) return <span className="text-danger">已过期</span>
-  return <span className={cn(days <= 7 && "text-warn")}>{days} 天</span>
-}
-
 function Line({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="grid min-w-0 grid-cols-[5.5em_minmax(0,1fr)] gap-x-2">
