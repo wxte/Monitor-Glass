@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "黑色背景、冷钢蓝玻璃卡片与单一系统详情面板",
-  "version": "1.8.0",
+  "description": "黑色背景、白透磨砂玻璃与 RGB 正蓝资源指标",
+  "version": "1.9.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
