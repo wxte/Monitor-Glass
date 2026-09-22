@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "ThreeUI Liquid Glass 风格：深色光场、强高光玻璃、白色选中胶囊与动态悬浮 UI",
-  "version": "2.0.0",
+  "description": "ThreeUI Liquid Glass 精修：更黑透玻璃、局部蓝紫光场、轻薄 Dock 与白色选中胶囊",
+  "version": "2.1.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
