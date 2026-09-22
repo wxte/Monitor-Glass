@@ -144,12 +144,12 @@ function MetricTile({
   className?: string
 }) {
   return (
-    <div className={cn("metric-tile min-w-0 rounded-xl border border-border/55 px-2 py-1.5 md:px-2.5 md:py-2", className)}>
-      <div className="flex min-w-0 items-center gap-1 text-[9px] leading-none text-muted-foreground md:text-[10px]">
+    <div className={cn("metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2", className)}>
+      <div className="flex min-w-0 items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
         <Icon className="size-3 shrink-0 text-primary/85" />
         <span className="truncate">{label}</span>
       </div>
-      <div className="tnum mt-1 truncate text-[10px] font-medium leading-none md:text-xs">{value}</div>
+      <div className="tnum mt-1 truncate text-[9px] font-medium leading-none md:text-xs">{value}</div>
       <MiniMeter pct={pct} />
     </div>
   )
@@ -157,12 +157,12 @@ function MetricTile({
 
 function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
   return (
-    <div className="metric-tile min-w-0 rounded-xl border border-border/55 px-2 py-1.5 md:px-2.5 md:py-2">
-      <div className="flex items-center gap-1 text-[9px] leading-none text-muted-foreground md:text-[10px]">
+    <div className="metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2">
+      <div className="flex items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
         <Network className="size-3 text-primary/85" />
         <span>网速</span>
       </div>
-      <div className="tnum mt-1 grid gap-0.5 text-[10px] font-medium leading-none md:text-xs">
+      <div className="tnum mt-1 grid gap-0.5 text-[9px] font-medium leading-none md:text-xs">
         <span className="flex min-w-0 items-center gap-1">
           <ArrowDown className="size-3 shrink-0 text-primary" />
           <span className="truncate">{compact(rx)}/s</span>
@@ -286,11 +286,11 @@ function ServerCard({ node }: { node: Node }) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className="server-card-hit grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-2.5 text-left sm:p-3 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,4fr)_28px] md:gap-2.5"
+        className="server-card-hit grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 p-2 text-left sm:p-2.5 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,4fr)_28px] md:gap-2.5 md:p-3"
       >
-        <div className="flex min-w-0 items-center gap-2.5 md:gap-3">
-          <span className="status-orbit grid size-8 shrink-0 place-items-center rounded-full md:size-9">
-            <Dot node={node} className="server-status-dot size-3 md:size-3.5" />
+        <div className="flex min-w-0 items-center gap-2 md:gap-3">
+          <span className="status-orbit grid size-7 shrink-0 place-items-center rounded-full md:size-9">
+            <Dot node={node} className="server-status-dot size-2.5 md:size-3.5" />
           </span>
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
@@ -304,7 +304,7 @@ function ServerCard({ node }: { node: Node }) {
                 </span>
               )}
             </div>
-            <div className="mt-1 truncate text-[10px] text-muted-foreground md:text-[11px]">{sub || "—"}</div>
+            <div className="mt-0.5 truncate text-[9px] text-muted-foreground md:mt-1 md:text-[11px]">{sub || "—"}</div>
           </div>
         </div>
 
@@ -315,7 +315,7 @@ function ServerCard({ node }: { node: Node }) {
           )}
         />
 
-        <div className="col-span-2 grid min-w-0 grid-cols-[1.22fr_repeat(4,minmax(0,1fr))] gap-1.5 md:col-span-1 md:col-start-2 md:row-start-1 md:gap-2">
+        <div className="col-span-2 grid min-w-0 grid-cols-[1.15fr_repeat(4,minmax(0,1fr))] gap-1 md:col-span-1 md:col-start-2 md:row-start-1 md:gap-2">
           <SpeedTile rx={m?.net_rx ?? 0} tx={m?.net_tx ?? 0} />
           <MetricTile label="CPU" value={m ? m.cpu.toFixed(1) + "%" : "—"} pct={m?.cpu ?? null} icon={Cpu} />
           <MetricTile label="内存" value={memPct === null ? "—" : memPct.toFixed(1) + "%"} pct={memPct} icon={MemoryStick} />
@@ -367,7 +367,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
         </span>
       </div>
 
-      <div className="server-summary grid grid-cols-3 overflow-hidden rounded-2xl border border-border/60">
+      <div className="server-summary grid grid-cols-3 overflow-hidden rounded-[1.35rem] border border-border/60">
         <div className="flex min-w-0 items-center gap-2.5 p-3 md:p-4">
           <span className="summary-icon grid size-9 shrink-0 place-items-center rounded-xl text-primary md:size-11">
             <Server className="size-4 md:size-5" />
@@ -395,7 +395,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5 md:space-y-2">
         {nodes.map((node) => <ServerCard key={node.id} node={node} />)}
       </div>
     </section>
