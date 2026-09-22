@@ -104,10 +104,34 @@ function Num({ ch, className, children }: { ch: number; className?: string; chil
 
 function Line({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid min-w-0 grid-cols-[5.5em_minmax(0,1fr)] gap-x-2">
+    <div className="grid min-w-0 grid-cols-[4.6em_minmax(0,1fr)] gap-x-2">
       <span className="text-muted-foreground">{label}</span>
-      <span className="tnum break-words">{children}</span>
+      <span className="tnum min-w-0 break-words text-foreground/95">{children}</span>
     </div>
+  )
+}
+
+function DetailCard({
+  title,
+  icon: Icon,
+  className,
+  children,
+}: {
+  title: string
+  icon: LucideIcon
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <section className={cn("detail-float-card rounded-2xl border p-3", className)}>
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium tracking-wide text-muted-foreground">
+        <span className="detail-card-icon grid size-6 place-items-center rounded-lg">
+          <Icon className="size-3.5 text-primary" />
+        </span>
+        <span>{title}</span>
+      </div>
+      <div className="space-y-1 text-[12px] leading-5 md:text-[13px]">{children}</div>
+    </section>
   )
 }
 
@@ -187,73 +211,75 @@ function Details({ node }: { node: Node }) {
   const days = daysUntil(node.expires_at)
 
   return (
-    <div className="space-y-3 p-3 text-[13px] leading-6 md:p-4 @max-3xl:text-xs @max-3xl:leading-5">
-      {/* Three across, one topic a row: the machine, what it holds, what it is
-          doing, what it has moved, and its term. Low enough that the chart
-          beneath stays in view when a row opens. */}
-      <div className="grid gap-x-8 @2xl:grid-cols-2 @5xl:grid-cols-3">
-        <Line label="系统">
-          <span className="inline-flex items-center gap-1.5 align-middle">
-            <OsIcon os={node.os} />
-            {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
-          </span>
-        </Line>
-        <Line label="架构">
-          {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
-            .filter(Boolean)
-            .join(" · ") || "—"}
-        </Line>
-        <Line label="CPU">
-          {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
-          {m && `（${m.cpu.toFixed(1)}%）`}
-        </Line>
+    <div className="space-y-2.5 p-2.5 text-[13px] leading-6 md:p-3">
+      <div className="detail-card-grid grid grid-cols-2 gap-2 @4xl:grid-cols-3">
+        <DetailCard title="系统" icon={Server} className="col-span-2 @4xl:col-span-1">
+          <Line label="系统">
+            <span className="inline-flex items-center gap-1.5 align-middle">
+              <OsIcon os={node.os} className="detail-os-icon" />
+              {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
+            </span>
+          </Line>
+          <Line label="架构">
+            {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
+              .filter(Boolean)
+              .join(" · ") || "—"}
+          </Line>
+          <Line label="CPU">
+            {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
+            {m && `（${m.cpu.toFixed(1)}%）`}
+          </Line>
+        </DetailCard>
 
-        <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
-        <Line label="交换">
-          {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
-        </Line>
-        <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
+        <DetailCard title="资源" icon={MemoryStick}>
+          <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
+          <Line label="交换">
+            {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
+          </Line>
+          <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
+        </DetailCard>
 
-        <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
-        <Line label="进程 / 连接">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
-        <Line label="网速">
-          {m ? (
-            <>
-              ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
-            </>
-          ) : (
-            "—"
-          )}
-        </Line>
+        <DetailCard title="运行" icon={Cpu}>
+          <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
+          <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
+          <Line label="网速">
+            {m ? (
+              <>
+                ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
+              </>
+            ) : (
+              "—"
+            )}
+          </Line>
+        </DetailCard>
 
-        <Line label="今日流量">{flow(node.day_rx, node.day_tx)}</Line>
-        <Line label="本月流量">{flow(node.month_rx, node.month_tx)}</Line>
-        <Line label="总流量">{flow(node.total_rx, node.total_tx)}</Line>
+        <DetailCard title="流量" icon={Network}>
+          <Line label="今日">{flow(node.day_rx, node.day_tx)}</Line>
+          <Line label="本月">{flow(node.month_rx, node.month_tx)}</Line>
+          <Line label="累计">{flow(node.total_rx, node.total_tx)}</Line>
+        </DetailCard>
 
-        <Line label={node.online ? "在线" : "离线"}>
-          {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
-        </Line>
-        <Line label="续费">
-          {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
-        </Line>
-        <Line label="到期">
-          {node.expires_at
-            ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
-            : "长期有效"}
-        </Line>
-
-        {node.traffic_reset_day > 0 && (
-          <Line label="流量重置">每月 {node.traffic_reset_day} 日重置</Line>
-        )}
+        <DetailCard title="服务" icon={Database} className="col-span-2 @4xl:col-span-1">
+          <Line label={node.online ? "在线" : "离线"}>
+            {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
+          </Line>
+          <Line label="续费">
+            {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
+          </Line>
+          <Line label="到期">
+            {node.expires_at
+              ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
+              : "长期有效"}
+          </Line>
+          {node.traffic_reset_day > 0 && <Line label="重置">每月 {node.traffic_reset_day} 日</Line>}
+        </DetailCard>
       </div>
 
-      <div className="space-y-2 rounded-2xl border border-border/60 bg-background/45 p-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.45)] dark:bg-black/10">
+      <div className="latency-float-card space-y-2 rounded-2xl border p-3">
         <div className="flex items-baseline justify-between gap-3 text-xs">
           <span className="text-muted-foreground">网络延迟 · 最近 24 小时</span>
           <Link href={`/node/${node.id}`} className="text-primary hover:underline">查看资源图表 →</Link>
         </div>
-        {/* Fetched when the row opens, from the chart page's chunk, which App
-            warms at start, so the table itself carries no recharts. */}
         <Suspense fallback={<Skeleton className="h-[280px] @max-3xl:h-[220px]" />}>
           <Latency id={node.id} className="h-[280px] @max-3xl:h-[220px]" />
         </Suspense>
@@ -261,7 +287,6 @@ function Details({ node }: { node: Node }) {
     </div>
   )
 }
-
 
 function ServerCard({ node }: { node: Node }) {
   const [open, setOpen] = useState(false)
@@ -362,7 +387,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
           <h2 className="text-xl font-semibold tracking-[-0.03em] md:text-2xl">服务器</h2>
           <p className="mt-0.5 text-[11px] text-muted-foreground md:text-xs">实时监控 · 稳定运行 · 全局总览</p>
         </div>
-        <span className="rounded-full border border-border/60 bg-card/70 px-2.5 py-1 text-[10px] text-muted-foreground shadow-sm">
+        <span className="server-online-pill rounded-full border px-2.5 py-1 text-[10px] shadow-sm">
           {onlineCount === nodes.length ? "全部在线" : "在线 " + onlineCount + " / " + nodes.length}
         </span>
       </div>

@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "灰黑石墨玻璃与可见环境光晕，统一首页与监控图表",
-  "version": "1.4.0",
+  "description": "统一深灰石墨玻璃卡片、环境光晕与悬浮系统信息面板",
+  "version": "1.5.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
