@@ -82,7 +82,7 @@ function NavItem({ href, active, icon: Icon, children }: { href: string; active:
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className="threeui-nav-item inline-flex items-center gap-1.5 rounded-full px-3.5 text-sm max-sm:px-2.5"
+      className="threeui-nav-item inline-flex items-center gap-1.5 rounded-full px-3 text-sm max-sm:px-2.5"
     >
       <Icon className="size-3.5" />
       {children}
@@ -140,8 +140,8 @@ export default function App() {
     <div className="app-shell relative isolate flex min-h-svh flex-col overflow-x-clip">
       <div className="ambient-stage fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
       <header className="threeui-header sticky top-0 z-20">
-        <div className="threeui-glass-bar mx-auto flex h-12 w-[95vw] max-w-[1680px] items-center px-2 max-md:w-[calc(100%-16px)]">
-          <Link href="/" className="threeui-brand mr-5 flex min-w-0 items-center gap-2 px-2 text-lg max-sm:mr-1 max-sm:text-base">
+        <div className="threeui-glass-bar mx-auto flex h-10 w-[94vw] max-w-[1680px] items-center px-1.5 max-md:w-[calc(100%-20px)]">
+          <Link href="/" className="threeui-brand mr-4 flex min-w-0 items-center gap-2 px-2 text-base max-sm:mr-1">
             <span className="truncate font-medium tracking-[-0.02em]">{site}</span>
           </Link>
           <nav className="threeui-nav flex shrink-0 items-center gap-1">
@@ -152,7 +152,7 @@ export default function App() {
           </nav>
           {/* The panel is a separate app built into the hub, so this is a
               navigation rather than a route. */}
-          <a href="/admin/" className="threeui-admin ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm max-sm:px-2">
+          <a href="/admin/" className="threeui-admin ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 text-sm max-sm:px-2">
             <UserRound className="size-3.5" />
             <span className="max-sm:sr-only">{me.authed ? "后台" : "登录"}</span>
           </a>
