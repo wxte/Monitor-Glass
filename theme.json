@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "黑色背景、白透磨砂玻璃与 RGB 正蓝资源指标",
-  "version": "1.9.0",
+  "description": "ThreeUI Liquid Glass 风格：深色光场、强高光玻璃、白色选中胶囊与动态悬浮 UI",
+  "version": "2.0.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
