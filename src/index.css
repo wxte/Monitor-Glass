@@ -13,7 +13,7 @@
    without competing with the bars. */
 :root {
   --radius: 0.375rem;
-  --background: #d9dde2;
+  --background: #cfd4da;
   --foreground: #16191e;
   --card: #eef0f2;
   --card-foreground: #171a20;
@@ -31,7 +31,7 @@
   --border: #c8cdd3;
   --input: #bcc2c9;
   --ring: #43c8a4;
-  --nav: rgb(224 227 231 / 78%);
+  --nav: rgb(224 228 233 / 84%);
   --chart-1: oklch(0.67 0.18 151);
   --chart-2: oklch(0.69 0.13 205);
   --chart-3: oklch(0.74 0.14 76);
@@ -150,39 +150,37 @@
 
 .ambient-stage {
   background:
-    radial-gradient(ellipse 55% 34% at 2% 18%,
-      rgb(58 255 126 / 34%) 0%,
-      rgb(58 255 126 / 18%) 18%,
-      rgb(58 255 126 / 7%) 38%,
-      transparent 66%),
-    radial-gradient(ellipse 58% 38% at 102% 8%,
-      rgb(22 24 29 / 48%) 0%,
-      rgb(42 45 52 / 27%) 28%,
-      rgb(72 76 85 / 9%) 50%,
-      transparent 72%),
-    radial-gradient(ellipse 50% 30% at 72% 82%,
-      rgb(255 231 126 / 15%) 0%,
-      rgb(255 231 126 / 6%) 30%,
+    radial-gradient(ellipse 72% 34% at 18% -2%,
+      rgb(255 255 255 / 62%) 0%,
+      rgb(246 248 251 / 26%) 30%,
       transparent 68%),
-    radial-gradient(ellipse 42% 26% at 28% 62%,
-      rgb(255 255 255 / 32%) 0%,
-      rgb(255 255 255 / 10%) 34%,
-      transparent 72%);
+    radial-gradient(ellipse 64% 34% at 108% 12%,
+      rgb(83 90 101 / 24%) 0%,
+      rgb(109 117 130 / 10%) 34%,
+      transparent 72%),
+    radial-gradient(ellipse 70% 32% at 72% 88%,
+      rgb(151 166 184 / 17%) 0%,
+      rgb(151 166 184 / 6%) 36%,
+      transparent 72%),
+    radial-gradient(ellipse 58% 28% at 8% 68%,
+      rgb(240 243 247 / 35%) 0%,
+      rgb(240 243 247 / 10%) 36%,
+      transparent 74%);
 }
 
 .dark .ambient-stage {
   background:
-    radial-gradient(ellipse 56% 36% at 0% 18%,
-      rgb(43 234 94 / 24%) 0%,
-      rgb(43 234 94 / 11%) 20%,
-      transparent 64%),
-    radial-gradient(ellipse 62% 40% at 102% 6%,
-      rgb(72 76 86 / 26%) 0%,
-      rgb(34 36 42 / 16%) 34%,
+    radial-gradient(ellipse 72% 34% at 12% -4%,
+      rgb(61 66 76 / 30%) 0%,
+      rgb(37 40 47 / 15%) 36%,
+      transparent 72%),
+    radial-gradient(ellipse 68% 36% at 104% 16%,
+      rgb(105 112 124 / 17%) 0%,
+      rgb(49 53 61 / 8%) 38%,
       transparent 74%),
-    radial-gradient(ellipse 52% 32% at 70% 88%,
-      rgb(218 184 74 / 9%) 0%,
-      transparent 68%);
+    radial-gradient(ellipse 70% 32% at 72% 90%,
+      rgb(33 39 47 / 30%) 0%,
+      transparent 72%);
 }
 
 .graphite-header {
@@ -303,7 +301,8 @@
   box-shadow:
     0 20px 48px rgb(29 31 36 / 24%),
     0 8px 20px rgb(29 31 36 / 12%),
-    0 0 34px rgb(45 235 107 / 16%);
+    0 0 52px 10px rgb(45 235 107 / 18%),
+    0 0 94px 20px rgb(45 235 107 / 7%);
 }
 
 .server-summary::before {
@@ -327,7 +326,8 @@
   box-shadow:
     0 18px 42px rgb(18 20 24 / 23%),
     0 3px 10px rgb(18 20 24 / 11%),
-    0 0 30px rgb(45 235 107 / 7%);
+    0 0 46px 8px rgb(45 235 107 / 10%),
+    0 0 88px 18px rgb(45 235 107 / 5%);
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -348,10 +348,11 @@
   transform: translateY(-1px);
   border-color: rgb(66 246 125 / 48%);
   box-shadow:
-    0 26px 62px rgb(14 16 20 / 38%),
-    0 0 0 1px rgb(66 246 125 / 18%),
-    0 0 24px 6px rgb(66 246 125 / 24%),
-    0 0 58px 14px rgb(66 246 125 / 14%);
+    0 28px 66px rgb(14 16 20 / 40%),
+    0 0 0 1px rgb(66 246 125 / 20%),
+    0 0 34px 10px rgb(66 246 125 / 30%),
+    0 0 74px 22px rgb(66 246 125 / 18%),
+    0 0 116px 34px rgb(66 246 125 / 9%);
 }
 
 .server-card-open::before {
@@ -546,7 +547,8 @@
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 7%),
     0 12px 26px rgb(0 0 0 / 18%),
-    0 0 24px rgb(48 229 108 / 6%);
+    0 0 38px 8px rgb(48 229 108 / 8%),
+    0 0 68px 14px rgb(48 229 108 / 4%);
 }
 
 .detail-float-card:nth-child(2) {
@@ -606,16 +608,18 @@
     border-color: rgb(62 66 75 / 20%);
     box-shadow:
       var(--server-shadow-hover),
-      0 0 30px rgb(45 235 107 / 8%);
+      0 0 52px 10px rgb(45 235 107 / 13%),
+      0 0 96px 22px rgb(45 235 107 / 6%);
   }
 
   .server-card-open:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 26px 62px rgb(19 21 25 / 34%),
-      0 0 0 1px rgb(66 246 125 / 18%),
-      0 0 24px 6px rgb(66 246 125 / 24%),
-      0 0 56px 14px rgb(66 246 125 / 13%);
+      0 30px 70px rgb(19 21 25 / 38%),
+      0 0 0 1px rgb(66 246 125 / 20%),
+      0 0 38px 12px rgb(66 246 125 / 32%),
+      0 0 82px 24px rgb(66 246 125 / 19%),
+      0 0 128px 38px rgb(66 246 125 / 10%);
   }
 
   .monitor-chart-card:hover {
@@ -639,18 +643,17 @@
 
   .ambient-stage {
     background:
-      radial-gradient(ellipse 85% 32% at -8% 20%,
-        rgb(58 255 126 / 30%) 0%,
-        rgb(58 255 126 / 14%) 22%,
-        rgb(58 255 126 / 5%) 40%,
-        transparent 66%),
-      radial-gradient(ellipse 90% 32% at 112% 7%,
-        rgb(26 28 33 / 42%) 0%,
-        rgb(56 59 66 / 20%) 30%,
-        transparent 70%),
-      radial-gradient(ellipse 82% 28% at 86% 76%,
-        rgb(255 230 117 / 12%) 0%,
-        transparent 68%);
+      radial-gradient(ellipse 105% 30% at 16% -4%,
+        rgb(255 255 255 / 62%) 0%,
+        rgb(246 248 251 / 24%) 32%,
+        transparent 72%),
+      radial-gradient(ellipse 105% 30% at 116% 12%,
+        rgb(77 84 95 / 22%) 0%,
+        rgb(101 109 122 / 8%) 36%,
+        transparent 74%),
+      radial-gradient(ellipse 96% 26% at 78% 84%,
+        rgb(145 160 179 / 16%) 0%,
+        transparent 72%);
   }
 
   .server-card {
