@@ -13,30 +13,30 @@
    without competing with the bars. */
 :root {
   --radius: 0.375rem;
-  --background: #eef3f1;
+  --background: #f4f6fb;
   --foreground: #212121;
-  --card: #ffffff;
+  --card: #fbfcff;
   --card-foreground: #212121;
-  --popover: #ffffff;
+  --popover: #fbfcff;
   --popover-foreground: #212121;
-  --primary: #20be35;
+  --primary: #21c45b;
   --primary-foreground: #ffffff;
-  --secondary: #f2f6f3;
+  --secondary: #f1f4fa;
   --secondary-foreground: #212121;
-  --muted: #f3f7f4;
-  --muted-foreground: #777777;
-  --accent: #e6efe9;
+  --muted: #f3f5f9;
+  --muted-foreground: #748094;
+  --accent: #eaf0f7;
   --accent-foreground: #212121;
   --destructive: #a94442;
-  --border: #dddddd;
-  --input: #cccccc;
-  --ring: #31d85b;
-  --nav: rgb(250 252 251 / 94%);
-  --chart-1: oklch(0.68 0.18 145);
-  --chart-2: oklch(0.62 0.08 162);
-  --chart-3: oklch(0.7 0.1 72);
-  --chart-4: oklch(0.58 0.09 342);
-  --chart-5: oklch(0.62 0.06 212);
+  --border: #dce4ee;
+  --input: #ccd7e4;
+  --ring: #43c8a4;
+  --nav: rgb(250 252 255 / 86%);
+  --chart-1: oklch(0.67 0.18 151);
+  --chart-2: oklch(0.69 0.13 205);
+  --chart-3: oklch(0.74 0.14 76);
+  --chart-4: oklch(0.66 0.13 305);
+  --chart-5: oklch(0.66 0.1 250);
   /* Text on the card. Bootstrap's own text shades, since the bar colours are too
      light to read as text on white. */
   --warn: #8a6d3b;
@@ -51,25 +51,25 @@
 }
 
 .dark {
-  --background: #0c120f;
+  --background: #0d1119;
   --foreground: #f1f1f1;
-  --card: #121915;
+  --card: #121824;
   --card-foreground: #f1f1f1;
-  --popover: #151d18;
+  --popover: #151c29;
   --popover-foreground: #f1f1f1;
   --primary: #2bea5e;
   --primary-foreground: #ffffff;
-  --secondary: #17201b;
+  --secondary: #161e2b;
   --secondary-foreground: #f1f1f1;
-  --muted: #17201b;
-  --muted-foreground: #aaaaaa;
-  --accent: #1d2a22;
+  --muted: #171f2d;
+  --muted-foreground: #97a4b7;
+  --accent: #1d2736;
   --accent-foreground: #f1f1f1;
   --destructive: #e0605c;
-  --border: #26332b;
+  --border: #293547;
   --input: rgb(255 255 255 / 15%);
-  --ring: #39ef69;
-  --nav: rgb(13 19 16 / 94%);
+  --ring: #53d8bd;
+  --nav: rgb(13 17 25 / 88%);
   --chart-1: oklch(0.78 0.17 145);
   --chart-2: oklch(0.72 0.08 162);
   --chart-3: oklch(0.78 0.1 76);
@@ -130,15 +130,17 @@
   body {
     @apply text-foreground;
     background:
-      radial-gradient(circle at 8% 0%, rgb(32 190 53 / 9%), transparent 28rem),
-      radial-gradient(circle at 100% 24%, rgb(181 253 206 / 22%), transparent 30rem),
+      radial-gradient(circle at 8% -4%, rgb(128 205 255 / 23%), transparent 28rem),
+      radial-gradient(circle at 102% 20%, rgb(191 165 255 / 18%), transparent 30rem),
+      radial-gradient(circle at 28% 88%, rgb(112 232 196 / 14%), transparent 26rem),
       var(--background);
     background-attachment: fixed;
   }
   .dark body {
     background:
-      radial-gradient(circle at 6% 0%, rgb(43 234 94 / 9%), transparent 30rem),
-      radial-gradient(circle at 100% 26%, rgb(32 190 53 / 8%), transparent 34rem),
+      radial-gradient(circle at 4% -2%, rgb(65 155 214 / 14%), transparent 32rem),
+      radial-gradient(circle at 100% 22%, rgb(130 95 214 / 12%), transparent 34rem),
+      radial-gradient(circle at 35% 95%, rgb(35 181 144 / 8%), transparent 30rem),
       var(--background);
   }
 }
@@ -146,69 +148,98 @@
 /* Tabular figures keep live numbers from shifting as they update. */
 .tnum { font-variant-numeric: tabular-nums; }
 
-/* Glass × Atlas floating server cards. Static gradients and shadows provide the
-   glass depth; per-card backdrop filters are deliberately avoided so nine live
-   cards stay cheap on mobile Safari. */
-.server-panel {
-  --card: rgb(255 255 255 / 88%);
-  --card-foreground: #172019;
-  --foreground: #172019;
-  --muted-foreground: #718078;
-  --border: rgb(18 50 31 / 9%);
-  --server-tile: rgb(255 255 255 / 66%);
-  --server-shadow: 0 10px 28px rgb(46 83 61 / 8%), 0 2px 7px rgb(46 83 61 / 5%);
-  --server-shadow-hover: 0 16px 36px rgb(39 103 61 / 13%), 0 4px 12px rgb(39 103 61 / 7%);
-  --server-glow: rgb(32 190 53 / 24%);
+/* Glass × Atlas floating surfaces. The background carries the cool mist; green is
+   reserved for live state and progress so the whole page no longer reads as one
+   large green glow. Cards stay mostly static on mobile; only a few shell surfaces
+   use backdrop blur. */
+.server-panel,
+.monitor-shell {
+  --card: rgb(255 255 255 / 76%);
+  --card-foreground: #182132;
+  --foreground: #182132;
+  --muted-foreground: #748094;
+  --border: rgb(83 102 132 / 13%);
+  --server-tile: rgb(255 255 255 / 56%);
+  --server-shadow: 0 10px 30px rgb(70 92 128 / 9%), 0 2px 7px rgb(70 92 128 / 5%);
+  --server-shadow-hover: 0 18px 42px rgb(70 92 128 / 14%), 0 4px 12px rgb(70 92 128 / 7%);
+  --server-glow: rgb(33 196 91 / 20%);
 }
 
-.dark .server-panel {
-  --card: rgb(18 25 21 / 91%);
-  --card-foreground: #eef5f0;
-  --foreground: #eef5f0;
-  --muted-foreground: #8f9e95;
-  --border: rgb(255 255 255 / 8%);
-  --server-tile: rgb(255 255 255 / 4.5%);
-  --server-shadow: 0 12px 32px rgb(0 0 0 / 24%), 0 2px 8px rgb(0 0 0 / 18%);
-  --server-shadow-hover: 0 18px 42px rgb(0 0 0 / 32%), 0 0 26px rgb(43 234 94 / 7%);
-  --server-glow: rgb(43 234 94 / 19%);
+.dark .server-panel,
+.dark .monitor-shell {
+  --card: rgb(18 24 36 / 86%);
+  --card-foreground: #edf3fb;
+  --foreground: #edf3fb;
+  --muted-foreground: #97a4b7;
+  --border: rgb(188 209 239 / 10%);
+  --server-tile: rgb(255 255 255 / 4.2%);
+  --server-shadow: 0 14px 34px rgb(0 0 0 / 28%), 0 2px 8px rgb(0 0 0 / 16%);
+  --server-shadow-hover: 0 20px 46px rgb(0 0 0 / 34%), 0 0 28px rgb(87 174 255 / 7%);
+  --server-glow: rgb(43 234 94 / 16%);
 }
 
 .server-summary,
-.server-card {
+.server-card,
+.monitor-shell,
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card,
+.monitor-note {
   position: relative;
   isolation: isolate;
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 48%), transparent 42%),
+    linear-gradient(145deg, rgb(255 255 255 / 52%), rgb(255 255 255 / 16%) 38%, transparent 68%),
     var(--card);
   box-shadow: var(--server-shadow);
 }
 
 .dark .server-summary,
-.dark .server-card {
+.dark .server-card,
+.dark .monitor-shell,
+.dark .node-picker,
+.dark .monitor-node-head,
+.dark .monitor-range,
+.dark .monitor-chart-card,
+.dark .monitor-note {
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 4%), transparent 42%),
+    linear-gradient(145deg, rgb(255 255 255 / 5.5%), transparent 46%),
     var(--card);
 }
 
 .server-summary::before,
-.server-card::before {
+.server-card::before,
+.monitor-chart-card::before,
+.monitor-node-head::before {
   content: "";
   position: absolute;
   z-index: -1;
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgb(255 255 255 / 45%), transparent 34%);
-  opacity: .7;
+  background: linear-gradient(180deg, rgb(255 255 255 / 56%), transparent 32%);
+  opacity: .66;
 }
 
 .dark .server-summary::before,
-.dark .server-card::before {
-  background: linear-gradient(180deg, rgb(255 255 255 / 5.5%), transparent 36%);
+.dark .server-card::before,
+.dark .monitor-chart-card::before,
+.dark .monitor-node-head::before {
+  background: linear-gradient(180deg, rgb(255 255 255 / 6%), transparent 36%);
+}
+
+.server-summary,
+.monitor-shell,
+.node-picker,
+.monitor-range,
+.monitor-chart-card,
+.monitor-node-head {
+  backdrop-filter: blur(14px) saturate(112%);
+  -webkit-backdrop-filter: blur(14px) saturate(112%);
 }
 
 .server-summary {
-  box-shadow: 0 14px 38px rgb(46 83 61 / 9%), 0 2px 8px rgb(46 83 61 / 4%);
+  box-shadow: 0 16px 42px rgb(84 105 143 / 10%), 0 2px 8px rgb(84 105 143 / 4%);
 }
 
 .server-card {
@@ -216,7 +247,7 @@
   border: 1px solid var(--border);
   border-radius: 1rem;
   content-visibility: auto;
-  contain-intrinsic-size: auto 78px;
+  contain-intrinsic-size: auto 72px;
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -224,19 +255,37 @@
     background-color 180ms ease;
 }
 
+.server-card:nth-child(3n + 1) {
+  background:
+    linear-gradient(145deg, rgb(224 244 255 / 34%), transparent 46%),
+    var(--card);
+}
+
+.server-card:nth-child(3n + 2) {
+  background:
+    linear-gradient(145deg, rgb(236 229 255 / 26%), transparent 48%),
+    var(--card);
+}
+
+.server-card:nth-child(3n) {
+  background:
+    linear-gradient(145deg, rgb(222 251 240 / 25%), transparent 46%),
+    var(--card);
+}
+
 .server-card-open {
-  border-color: color-mix(in srgb, var(--primary) 48%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
   box-shadow:
-    0 18px 46px rgb(32 190 53 / 14%),
-    0 0 0 1px rgb(32 190 53 / 10%),
+    0 18px 46px rgb(33 196 91 / 12%),
+    0 0 0 1px rgb(33 196 91 / 9%),
     var(--server-shadow);
 }
 
 .dark .server-card-open {
   box-shadow:
     0 20px 50px rgb(0 0 0 / 32%),
-    0 0 30px var(--server-glow),
-    0 0 0 1px rgb(43 234 94 / 11%);
+    0 0 28px var(--server-glow),
+    0 0 0 1px rgb(43 234 94 / 10%);
 }
 
 .server-card-hit {
@@ -250,11 +299,11 @@
 
 .metric-tile {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 28%), transparent),
+    linear-gradient(180deg, rgb(255 255 255 / 26%), transparent),
     var(--server-tile);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 38%),
-    0 1px 3px rgb(30 68 43 / 3%);
+    inset 0 1px 0 rgb(255 255 255 / 50%),
+    0 1px 3px rgb(72 92 126 / 4%);
 }
 
 .dark .metric-tile {
@@ -266,18 +315,18 @@
 .summary-icon,
 .status-orbit {
   background:
-    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 72%), transparent 42%),
-    rgb(32 190 53 / 9%);
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 76%), transparent 42%),
+    rgb(33 196 91 / 7%);
   box-shadow:
-    inset 0 0 0 1px rgb(32 190 53 / 8%),
-    0 5px 16px rgb(32 190 53 / 8%);
+    inset 0 0 0 1px rgb(33 196 91 / 9%),
+    0 5px 16px rgb(33 196 91 / 7%);
 }
 
 .dark .summary-icon,
 .dark .status-orbit {
   background:
     radial-gradient(circle at 32% 24%, rgb(255 255 255 / 8%), transparent 42%),
-    rgb(43 234 94 / 8%);
+    rgb(43 234 94 / 7%);
 }
 
 .server-status-dot {
@@ -286,7 +335,7 @@
 }
 
 [data-online="true"] .server-status-dot {
-  box-shadow: 0 0 0 4px rgb(32 190 53 / 8%), 0 0 14px rgb(32 190 53 / 28%);
+  box-shadow: 0 0 0 4px rgb(33 196 91 / 7%), 0 0 13px rgb(33 196 91 / 24%);
 }
 
 [data-online="true"] .server-status-dot::after {
@@ -294,38 +343,117 @@
   position: absolute;
   inset: -5px;
   border-radius: 999px;
-  border: 1px solid rgb(32 190 53 / 22%);
-  animation: server-pulse 2.8s ease-out infinite;
+  border: 1px solid rgb(33 196 91 / 18%);
+  animation: server-pulse 3.1s ease-out infinite;
 }
 
 .server-card-detail {
-  background: color-mix(in srgb, var(--card) 86%, transparent);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+}
+
+.monitor-shell {
+  overflow: clip;
+  border-color: rgb(92 111 145 / 12%);
+  box-shadow: 0 20px 54px rgb(74 93 128 / 10%), 0 3px 10px rgb(74 93 128 / 5%);
+}
+
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card {
+  border-color: rgb(92 111 145 / 11%);
+  box-shadow: 0 10px 28px rgb(75 94 130 / 7%), inset 0 1px 0 rgb(255 255 255 / 42%);
+}
+
+.monitor-chart-card {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.monitor-chart-card:nth-child(1) {
+  background:
+    linear-gradient(145deg, rgb(219 247 235 / 35%), transparent 52%),
+    var(--card);
+}
+
+.monitor-chart-card:nth-child(2) {
+  background:
+    linear-gradient(145deg, rgb(231 223 255 / 30%), transparent 52%),
+    var(--card);
+}
+
+.monitor-chart-card:nth-child(3) {
+  background:
+    linear-gradient(145deg, rgb(215 241 255 / 34%), transparent 52%),
+    var(--card);
+}
+
+.monitor-chart-card:nth-child(4) {
+  background:
+    linear-gradient(145deg, rgb(228 237 255 / 30%), transparent 52%),
+    var(--card);
+}
+
+.monitor-note {
+  background:
+    linear-gradient(145deg, rgb(255 245 218 / 30%), transparent 52%),
+    var(--card);
+}
+
+.monitor-chip {
+  background: rgb(255 255 255 / 46%);
+  border-color: rgb(92 111 145 / 13%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%);
+}
+
+.dark .monitor-chip {
+  background: rgb(255 255 255 / 4%);
 }
 
 @keyframes server-pulse {
-  0%, 38% { transform: scale(.72); opacity: 0; }
-  52% { opacity: .75; }
-  100% { transform: scale(1.45); opacity: 0; }
+  0%, 42% { transform: scale(.74); opacity: 0; }
+  54% { opacity: .65; }
+  100% { transform: scale(1.42); opacity: 0; }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .server-card:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+    border-color: color-mix(in srgb, #6ca7ff 24%, var(--border));
     box-shadow: var(--server-shadow-hover);
+  }
+
+  .monitor-chart-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px rgb(75 94 130 / 10%), inset 0 1px 0 rgb(255 255 255 / 42%);
   }
 }
 
 @media (max-width: 760px) {
+  .server-summary,
+  .monitor-shell,
+  .node-picker,
+  .monitor-range,
+  .monitor-chart-card,
+  .monitor-node-head {
+    backdrop-filter: blur(10px) saturate(108%);
+    -webkit-backdrop-filter: blur(10px) saturate(108%);
+  }
+
   .server-card {
     border-radius: .95rem;
-    contain-intrinsic-size: auto 92px;
+    contain-intrinsic-size: auto 76px;
+  }
+
+  .metric-tile {
+    min-height: 40px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .server-card,
-  .server-card * {
+  .server-card *,
+  .monitor-chart-card {
     scroll-behavior: auto !important;
     transition-duration: 0s !important;
   }
@@ -334,5 +462,6 @@
     animation: none;
   }
 
-  .server-card:hover { transform: none; }
+  .server-card:hover,
+  .monitor-chart-card:hover { transform: none; }
 }

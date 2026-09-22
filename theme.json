@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Atlas 风格悬浮玻璃服务器卡片，支持暗色与实时指标",
-  "version": "1.2.0",
+  "description": "冷色雾面玻璃服务器卡片与统一监控图表，支持暗色与实时指标",
+  "version": "1.3.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
