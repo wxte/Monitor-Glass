@@ -204,7 +204,7 @@ function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
           <span className="truncate">{compact(rx)}/s</span>
         </span>
         <span className="flex min-w-0 items-center gap-1">
-          <ArrowUp className="size-3 shrink-0 text-orange-500" />
+          <ArrowUp className="size-3 shrink-0 text-foreground/65 dark:text-white/70" />
           <span className="truncate">{compact(tx)}/s</span>
         </span>
       </div>
@@ -444,8 +444,8 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
         <div className="flex min-w-0 items-center justify-center gap-2 border-x border-border/55 p-3 md:p-4">
           <Network className="hidden size-5 shrink-0 text-primary/80 sm:block" />
           <div className="tnum min-w-0 text-[10px] font-medium md:text-xs">
-            <p className="flex items-center gap-1"><ArrowDown className="size-3 text-primary" />{compact(rxRate)}/s</p>
-            <p className="mt-1 flex items-center gap-1"><ArrowUp className="size-3 text-orange-500" />{compact(txRate)}/s</p>
+            <p className="flex items-center gap-1"><ArrowDown className="size-3 text-foreground/65 dark:text-white/70" />{compact(rxRate)}/s</p>
+            <p className="mt-1 flex items-center gap-1"><ArrowUp className="size-3 text-foreground/65 dark:text-white/70" />{compact(txRate)}/s</p>
           </div>
         </div>
 
