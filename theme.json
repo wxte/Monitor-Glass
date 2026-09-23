@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 网站风格：浅色 Slate 界面、Emerald 品牌色、扁平卡片与扩散式在线状态光晕",
-  "version": "2.4.0",
+  "description": "Once UI 官方 Docs 预设：Gray + Emerald + Orange、Contrast、Flat、Filled",
+  "version": "2.5.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
