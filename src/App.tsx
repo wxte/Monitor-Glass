@@ -77,11 +77,25 @@ function Toolbox({ dark, toggle }: { dark: boolean; toggle: () => void }) {
   )
 }
 
-function NavItem({ href, active, icon: Icon, children }: { href: string; active: boolean; icon: LucideIcon; children: ReactNode }) {
+function NavItem({
+  href,
+  active,
+  icon: Icon,
+  preload,
+  children,
+}: {
+  href: string
+  active: boolean
+  icon: LucideIcon
+  preload?: () => void
+  children: ReactNode
+}) {
   return (
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
+      onPointerEnter={preload}
+      onFocus={preload}
       className="once-nav-item inline-flex items-center gap-1.5 rounded-xl px-3 text-sm max-sm:px-2.5"
     >
       <Icon className="size-3.5" />
@@ -107,7 +121,10 @@ export default function App() {
 
   useEffect(() => {
     loadMe()
-    void loadDetail()
+    // Keep first paint light. Recharts is the largest lazy chunk, so warm it
+    // after the list has had time to settle instead of parsing it during startup.
+    const warm = setTimeout(() => void loadDetail(), 1200)
+    return () => clearTimeout(warm)
   }, [loadMe])
 
   // The status page was closed while this tab was open: re-query, so the effect
@@ -147,7 +164,7 @@ export default function App() {
           <nav className="once-nav flex shrink-0 items-center gap-1">
             <NavItem href="/" active={open === null} icon={House}>首页</NavItem>
             {sorted.length > 0 && (
-              <NavItem href={`/node/${open ?? sorted[0].id}`} active={open !== null} icon={ChartLine}>监控</NavItem>
+              <NavItem href={`/node/${open ?? sorted[0].id}`} active={open !== null} icon={ChartLine} preload={() => void loadDetail()}>监控</NavItem>
             )}
           </nav>
           {/* The panel is a separate app built into the hub, so this is a
@@ -175,7 +192,7 @@ export default function App() {
             <ServerTable nodes={sorted} />
           )
         ) : selected ? (
-          <div className="monitor-shell grid gap-3 rounded-[1.35rem] border p-3 text-card-foreground md:grid-cols-[220px_minmax(0,1fr)] md:gap-4 md:p-4">
+          <div className="monitor-shell grid gap-3 text-card-foreground md:grid-cols-[220px_minmax(0,1fr)] md:gap-4">
             <NodePicker nodes={sorted} selected={selected.id} />
             <div className="min-w-0">
               <Suspense fallback={<Skeleton className="h-96" />}>
