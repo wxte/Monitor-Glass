@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 视觉 + ServerStatus 详情交互：全局流量箭头统一详情页状态，三网延迟灰绿红配色",
-  "version": "2.8.5",
+  "description": "Once UI 视觉 + ServerStatus 详情交互：网络速率灰黑中性色，三网延迟灰绿红配色",
+  "version": "2.8.6",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
