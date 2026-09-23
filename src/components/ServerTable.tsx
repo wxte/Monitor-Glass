@@ -200,11 +200,11 @@ function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
       </div>
       <div className="tnum mt-1 grid gap-0.5 text-[9px] font-medium leading-none md:text-xs">
         <span className="flex min-w-0 items-center gap-1">
-          <ArrowDown className="size-3 shrink-0 text-foreground/65 dark:text-white/70" />
+          <ArrowDown className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
           <span className="truncate">{compact(rx)}/s</span>
         </span>
         <span className="flex min-w-0 items-center gap-1">
-          <ArrowUp className="size-3 shrink-0 text-foreground/65 dark:text-white/70" />
+          <ArrowUp className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
           <span className="truncate">{compact(tx)}/s</span>
         </span>
       </div>
@@ -444,16 +444,22 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
         <div className="flex min-w-0 items-center justify-center gap-2 border-x border-border/55 p-3 md:p-4">
           <Network className="hidden size-5 shrink-0 text-primary/80 sm:block" />
           <div className="tnum min-w-0 text-[10px] font-medium md:text-xs">
-            <p className="flex items-center gap-1"><ArrowDown className="size-3 text-foreground/65 dark:text-white/70" />{compact(rxRate)}/s</p>
-            <p className="mt-1 flex items-center gap-1"><ArrowUp className="size-3 text-foreground/65 dark:text-white/70" />{compact(txRate)}/s</p>
+            <p className="flex items-center gap-1"><ArrowDown className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />{compact(rxRate)}/s</p>
+            <p className="mt-1 flex items-center gap-1"><ArrowUp className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />{compact(txRate)}/s</p>
           </div>
         </div>
 
         <div className="flex min-w-0 items-center justify-end gap-2 p-3 md:p-4">
           <Database className="hidden size-5 shrink-0 text-primary/80 sm:block" />
           <div className="tnum min-w-0 text-right text-[10px] md:text-xs">
-            <p className="truncate font-semibold">↓ {bytes(totalRx)}</p>
-            <p className="mt-1 truncate text-muted-foreground">↑ {bytes(totalTx)}</p>
+            <p className="flex items-center justify-end gap-1 truncate font-semibold">
+              <ArrowDown className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+              {bytes(totalRx)}
+            </p>
+            <p className="mt-1 flex items-center justify-end gap-1 truncate">
+              <ArrowUp className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+              {bytes(totalTx)}
+            </p>
           </div>
         </div>
       </div>
