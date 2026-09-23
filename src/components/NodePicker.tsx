@@ -25,7 +25,7 @@ export function NodePicker({ nodes, selected }: { nodes: Node[]; selected: numbe
             key={n.id}
             href={`/node/${n.id}`}
             aria-current={n.id === selected ? "page" : undefined}
-            className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm transition-colors hover:bg-secondary aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary"
+            className="monitor-node-link flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm transition-colors"
           >
             <Dot node={n} className="size-2" />
             <span className="min-w-0 flex-1 truncate">{n.name}</span>
