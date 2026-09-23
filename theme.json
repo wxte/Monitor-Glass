@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 官网复刻：Gray/Black 主结构、Moss 稀疏强调、Orange 辅助，首页与监控页统一",
-  "version": "2.7.0",
+  "description": "Once UI 官网复刻：Gray/Black 主结构 + Once UI Pulse 在线状态动效",
+  "version": "2.7.1",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
