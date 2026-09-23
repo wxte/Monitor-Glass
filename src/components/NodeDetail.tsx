@@ -535,8 +535,8 @@ function NodeDetailView({ node }: { node: Node }) {
             title={
               <>
                 网络速率
-                <span className="ml-3 text-chart-2">● 下行</span>
-                <span className="ml-2 text-chart-3">● 上行</span>
+                <span className="ml-3" style={{ color: "var(--network-rx)" }}>● 下行</span>
+                <span className="ml-2" style={{ color: "var(--network-tx)" }}>● 上行</span>
               </>
             }
           >
@@ -550,8 +550,8 @@ function NodeDetailView({ node }: { node: Node }) {
                   formatter={(v) => rate(Number(v))}
                   contentStyle={TIP}
                 />
-                <Line dataKey="net_rx" name="下行" stroke="var(--color-chart-2)" {...SERIES} />
-                <Line dataKey="net_tx" name="上行" stroke="var(--color-chart-3)" {...SERIES} />
+                <Line dataKey="net_rx" name="下行" stroke="var(--network-rx)" {...SERIES} />
+                <Line dataKey="net_tx" name="上行" stroke="var(--network-tx)" {...SERIES} />
               </LineChart>
             </ResponsiveContainer>
           </Panel>
