@@ -631,3 +631,223 @@
   background-size: 220% 100%;
   border-color: var(--once-gray-400);
 }
+
+
+/* v2.7 — closer to the actual Once UI site:
+   gray/black carries structure; Moss is no longer painted across every metric. */
+:root {
+  --chart-1: var(--once-gray-300);
+  --chart-2: var(--once-gray-500);
+  --chart-3: var(--once-orange-600);
+  --chart-4: var(--once-gray-400);
+  --chart-5: var(--once-gray-600);
+  --bar-ok: linear-gradient(to right, var(--once-gray-400), var(--once-gray-300));
+}
+
+.dark {
+  --chart-1: var(--once-gray-1000);
+  --chart-2: var(--once-gray-800);
+  --chart-3: var(--once-orange-700);
+  --chart-4: var(--once-gray-900);
+  --chart-5: var(--once-gray-700);
+  --bar-ok: linear-gradient(to right, var(--once-gray-800), var(--once-gray-1000));
+}
+
+/* Home summary: neutral filled surface, not a green-tinted status panel. */
+.server-summary {
+  border-radius: 22px;
+  border-color: var(--once-gray-1000);
+  background: var(--once-gray-1200);
+}
+
+.dark .server-summary {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-200);
+}
+
+.summary-icon {
+  color: var(--once-gray-300) !important;
+  border-color: var(--once-gray-900) !important;
+  background: var(--once-gray-1100) !important;
+}
+
+.dark .summary-icon {
+  color: var(--once-gray-1000) !important;
+  border-color: var(--once-gray-400) !important;
+  background: var(--once-gray-300) !important;
+}
+
+/* Server cards echo Once UI's large rounded editorial cards. */
+.server-card {
+  border-radius: 22px;
+}
+
+.server-metrics {
+  border-radius: 14px;
+  background: var(--once-gray-1200);
+}
+
+.metric-tile svg {
+  color: var(--once-gray-400) !important;
+}
+
+.dark .metric-tile svg {
+  color: var(--once-gray-900) !important;
+}
+
+.live-pill {
+  color: var(--once-gray-500);
+  border-color: var(--once-gray-900);
+  background: var(--once-gray-1100);
+}
+
+.dark .live-pill {
+  color: var(--once-gray-800);
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-300);
+}
+
+/* Monitor page: neutral group hierarchy instead of Moss-selected rows and green charts. */
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card,
+.monitor-note {
+  border-radius: 24px;
+  border-color: var(--once-gray-1000);
+  background: #fff;
+}
+
+.dark .node-picker,
+.dark .monitor-node-head,
+.dark .monitor-range,
+.dark .monitor-chart-card,
+.dark .monitor-note {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-200);
+}
+
+.node-picker {
+  padding: 12px;
+}
+
+.monitor-node-link {
+  color: var(--foreground);
+}
+
+.monitor-node-link:hover {
+  background: var(--once-gray-1200);
+}
+
+.monitor-node-link[aria-current="page"] {
+  color: var(--foreground);
+  background: var(--once-gray-1100);
+  font-weight: 560;
+}
+
+.dark .monitor-node-link:hover {
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-node-link[aria-current="page"] {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
+}
+
+.monitor-range {
+  gap: 6px;
+  padding: 7px;
+}
+
+.monitor-range-tab {
+  color: var(--once-gray-500);
+  border-color: var(--once-gray-900);
+  background: #fff;
+}
+
+.monitor-range-tab:hover {
+  color: var(--once-gray-200);
+  background: var(--once-gray-1200);
+}
+
+.monitor-range-tab-active {
+  color: #fff;
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-range-tab {
+  color: var(--once-gray-700);
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-200);
+}
+
+.dark .monitor-range-tab:hover {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-range-tab-active {
+  color: #000;
+  border-color: var(--once-gray-1000);
+  background: var(--once-gray-1000);
+}
+
+.monitor-node-head {
+  padding: 18px 20px;
+}
+
+.monitor-chart-card {
+  padding: 18px;
+  box-shadow: none;
+}
+
+.monitor-chart-card h4 {
+  color: var(--once-gray-500);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.monitor-chip {
+  color: var(--once-gray-500);
+  border-color: var(--once-gray-900);
+  background: #fff;
+}
+
+.dark .monitor-chip {
+  color: var(--once-gray-700);
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-200);
+}
+
+/* Brand Moss stays available for rare actions, but data visualization is neutral. */
+.detail-card-icon {
+  color: var(--once-gray-400) !important;
+  border-color: var(--once-gray-900) !important;
+  background: var(--once-gray-1100) !important;
+}
+
+.dark .detail-card-icon {
+  color: var(--once-gray-900) !important;
+  border-color: var(--once-gray-400) !important;
+  background: var(--once-gray-300) !important;
+}
+
+@media (max-width: 760px) {
+  .server-summary,
+  .server-card {
+    border-radius: 20px;
+  }
+
+  .node-picker,
+  .monitor-node-head,
+  .monitor-range,
+  .monitor-chart-card,
+  .monitor-note {
+    border-radius: 22px;
+  }
+
+  .monitor-chart-card {
+    padding: 16px;
+  }
+}
