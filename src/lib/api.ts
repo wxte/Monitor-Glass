@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 
 export type Metrics = {
   uptime: number
@@ -112,7 +112,10 @@ export function useNodes() {
     let closed = false
 
     const receive = (list: Node[]) => {
-      setNodes(safeNodes(list))
+      const next = safeNodes(list)
+      // Live telemetry arrives every two seconds. Treat those paints as
+      // non-urgent so taps, route changes and scrolling win on mobile Safari.
+      startTransition(() => setNodes(next))
       setError(null)
       setClosed(false)
     }
