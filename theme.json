@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 视觉 + ServerStatus 详情交互：Portal 详情抽屉、可见关闭按钮与稳定移动端层级",
-  "version": "2.8.2",
+  "description": "Once UI 视觉 + ServerStatus 详情交互：Portal 详情抽屉与轻量无底色关闭按钮",
+  "version": "2.8.3",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }

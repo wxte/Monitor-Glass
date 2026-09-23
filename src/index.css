@@ -949,26 +949,32 @@
 }
 
 .server-detail-close {
-  color: #fff;
-  border: 1px solid var(--once-gray-300);
-  background: var(--once-gray-300);
-  box-shadow: 0 1px 2px rgb(0 0 0 / .08);
+  color: var(--once-gray-500);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.server-detail-close:hover {
-  color: #fff;
-  background: var(--once-gray-200);
+.server-detail-close:hover,
+.server-detail-close:focus-visible {
+  color: var(--once-gray-200);
+  background: var(--once-gray-1100);
+}
+
+.server-detail-close:active {
+  transform: scale(.94);
 }
 
 .dark .server-detail-close {
-  color: #000;
-  border-color: var(--once-gray-1000);
-  background: var(--once-gray-1000);
+  color: var(--once-gray-800);
+  background: transparent;
 }
 
-.dark .server-detail-close:hover {
-  color: #000;
-  background: #fff;
+.dark .server-detail-close:hover,
+.dark .server-detail-close:focus-visible {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
 }
 
 .server-detail-scroll {
