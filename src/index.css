@@ -506,7 +506,8 @@
   background: var(--once-green-600);
   transform: translate(-50%, -50%) scale(0);
   transform-origin: center;
-  opacity: 1;
+  --once-pulse-opacity: .55;
+  opacity: var(--once-pulse-opacity);
   animation: once-status-pulse 2s infinite ease-out;
 }
 
@@ -518,7 +519,7 @@
 @keyframes once-status-pulse {
   0% {
     transform: translate(-50%, -50%) scale(0);
-    opacity: .55;
+    opacity: var(--once-pulse-opacity, .55);
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
@@ -591,7 +592,7 @@
 }
 
 .dark .once-pulse-dot::after {
-  opacity: .68;
+  --once-pulse-opacity: .68;
 }
 
 @media (hover: hover) and (pointer: fine) {
