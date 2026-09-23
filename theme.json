@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 视觉 + ServerStatus 详情交互：Portal 详情抽屉与轻量无底色关闭按钮",
-  "version": "2.8.3",
+  "description": "Once UI 视觉 + ServerStatus 详情交互：首页网速箭头统一灰阶，三网延迟使用灰绿红配色",
+  "version": "2.8.4",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
