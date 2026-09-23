@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "ThreeUI 玻璃结构 + Once UI Slate/Blue/Indigo 配色与扩散式在线状态光晕",
-  "version": "2.3.0",
+  "description": "Once UI 网站风格：浅色 Slate 界面、Emerald 品牌色、扁平卡片与扩散式在线状态光晕",
+  "version": "2.4.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
