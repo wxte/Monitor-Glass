@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { memo, useEffect, useMemo, useState } from "react"
 import {
   Area, AreaChart, Brush, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis,
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { deployed, Dot, Flag } from "@/components/ServerTable"
 import { api, type Node } from "@/lib/api"
 import {
-  axisBytes, axisTop, bytes, clockFor, despike, quarters, rate, timeTicks, uptime,
+  axisBytes, axisTop, bytes, clockFor, despike, quarters, rate, timeTicks,
 } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -416,12 +416,9 @@ export function Latency({ id, className }: { id: number; className?: string }) {
   )
 }
 
-export function NodeDetail({ node }: { node: Node }) {
+function NodeDetailView({ node }: { node: Node }) {
   const [hours, setHours] = useState(6)
   const { data, failed, retry } = useHistory(node.id, hours, "metrics")
-
-  const m = node.metrics
-  const away = node.last_seen ? Date.now() / 1000 - node.last_seen : 0
 
   // The hub answers in seconds; the time axis requires milliseconds.
   const metricRows = useMemo(
@@ -447,27 +444,29 @@ export function NodeDetail({ node }: { node: Node }) {
 
   return (
     <div className="monitor-detail space-y-4">
-      <div className="monitor-node-head flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-border/55 p-3 md:p-4">
-        <Dot node={node} />
-        <h2 className="truncate text-lg font-semibold">{node.name}</h2>
-        <Flag code={node.country} className="text-sm" />
-        <span className="tnum text-xs text-muted-foreground">
-          {node.online ? `在线 ${m ? uptime(m.uptime) : ""}` : deployed(node) ? `离线 ${away >= 60 ? uptime(away) : ""}` : "未接入"}
-        </span>
-        {node.agent_version && <span className="text-xs text-muted-foreground">agent {node.agent_version}</span>}
-      </div>
+      <section className="monitor-overview overflow-hidden rounded-[1.5rem] border">
+        <div className="monitor-node-head flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-0 px-4 py-3.5 md:px-5 md:py-4">
+          <Dot node={node} />
+          <h2 className="truncate text-lg font-semibold tracking-[-0.02em]">{node.name}</h2>
+          <Flag code={node.country} className="text-sm" />
+          <span className="text-xs text-muted-foreground">
+            {node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
+          </span>
+          {node.agent_version && <span className="text-xs text-muted-foreground">agent {node.agent_version}</span>}
+        </div>
 
-      {node.remark && (
-        <p className="monitor-note rounded-xl border border-border/50 px-3 py-2 text-sm whitespace-pre-wrap">{node.remark}</p>
-      )}
+        {node.remark && (
+          <p className="monitor-note border-x-0 border-b-0 border-t px-4 py-2.5 text-sm whitespace-pre-wrap md:px-5">{node.remark}</p>
+        )}
 
-      <div className="monitor-range flex flex-wrap gap-1.5 rounded-2xl border border-border/50 p-1.5">
-        {RANGES.map((r) => (
-          <Tab key={r.hours} active={hours === r.hours} onClick={() => setHours(r.hours)}>
-            {r.label}
-          </Tab>
-        ))}
-      </div>
+        <div className="monitor-range flex flex-wrap gap-1.5 border-x-0 border-b-0 border-t p-2 md:px-3">
+          {RANGES.map((r) => (
+            <Tab key={r.hours} active={hours === r.hours} onClick={() => setHours(r.hours)}>
+              {r.label}
+            </Tab>
+          ))}
+        </div>
+      </section>
 
       {!data ? (
         <Skeleton className="h-40 w-full" />
@@ -564,3 +563,21 @@ export function NodeDetail({ node }: { node: Node }) {
     </div>
   )
 }
+
+function sameNodeDetail(prev: { node: Node }, next: { node: Node }) {
+  const a = prev.node
+  const b = next.node
+  return (
+    a.id === b.id &&
+    a.name === b.name &&
+    a.online === b.online &&
+    a.country === b.country &&
+    a.last_seen === b.last_seen &&
+    a.agent_version === b.agent_version &&
+    a.remark === b.remark &&
+    a.mem_total === b.mem_total &&
+    a.disk_total === b.disk_total
+  )
+}
+
+export const NodeDetail = memo(NodeDetailView, sameNodeDetail)
