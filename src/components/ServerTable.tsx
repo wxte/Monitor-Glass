@@ -1,5 +1,5 @@
-import { lazy, Suspense, useState, type CSSProperties, type ReactNode } from "react"
-import { ArrowDown, ArrowUp, ChevronDown, Cpu, Database, HardDrive, MemoryStick, Network, Server, type LucideIcon } from "lucide-react"
+import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react"
+import { ArrowDown, ArrowUp, ChevronRight, Cpu, Database, HardDrive, MemoryStick, Network, Server, X, type LucideIcon } from "lucide-react"
 import {
   siAlmalinux, siAlpinelinux, siArchlinux, siCentos, siDebian, siFedora, siLinux, siOpensuse, siRedhat,
   siRockylinux, siUbuntu, type SimpleIcon,
@@ -145,6 +145,15 @@ function DetailCard({
   )
 }
 
+function DetailGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="detail-group min-w-0">
+      <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-muted-foreground">{title}</h4>
+      <div className="space-y-1">{children}</div>
+    </section>
+  )
+}
+
 function meterTone(pct: number | null) {
   if (pct === null) return "bg-muted-foreground/25"
   if (pct >= 90) return "bg-red-500"
@@ -212,7 +221,7 @@ function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
 
 function Details({ node }: { node: Node }) {
   if (!deployed(node)) {
-    return <p className="px-4 py-3 text-muted-foreground">尚未接入。在后台生成安装命令并执行一次。</p>
+    return <p className="px-4 py-6 text-center text-muted-foreground">尚未接入。在后台生成安装命令并执行一次。</p>
   }
   const m = node.online ? node.metrics : null
   const usage = (used: number, total: number) => `${pair(used, total)}（${percent(used, total).toFixed(1)}%）`
@@ -221,92 +230,135 @@ function Details({ node }: { node: Node }) {
   const days = daysUntil(node.expires_at)
 
   return (
-    <div className="space-y-2.5 p-2.5 text-[13px] leading-6 md:p-3">
-      <DetailCard title="系统" icon={Server} className="system-detail-card">
-        <Line label="系统">
-          <span className="inline-flex items-center gap-1.5 align-middle">
-            <OsIcon os={node.os} className="detail-os-icon" />
-            {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
-          </span>
-        </Line>
-        <Line label="架构">
-          {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
-            .filter(Boolean)
-            .join(" · ") || "—"}
-        </Line>
-        <Line label="CPU">
-          {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
-          {m && `（${m.cpu.toFixed(1)}%）`}
-        </Line>
-        <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
-        <Line label="交换">
-          {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
-        </Line>
-        <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
-        <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
-        <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
-        <Line label="网速">
-          {m ? (
-            <>
-              ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
-            </>
-          ) : (
-            "—"
-          )}
-        </Line>
-        <Line label="今日流量">{flow(node.day_rx, node.day_tx)}</Line>
-        <Line label="本月流量">{flow(node.month_rx, node.month_tx)}</Line>
-        <Line label="总流量">{flow(node.total_rx, node.total_tx)}</Line>
-        <Line label={node.online ? "在线" : "离线"}>
-          {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
-        </Line>
-        <Line label="续费">
-          {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
-        </Line>
-        <Line label="到期">
-          {node.expires_at
-            ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
-            : "长期有效"}
-        </Line>
-        {node.traffic_reset_day > 0 && <Line label="流量重置">每月 {node.traffic_reset_day} 日</Line>}
+    <div className="space-y-3 text-[13px] leading-6">
+      <DetailCard title="节点详情" icon={Server} className="system-detail-card">
+        <div className="detail-groups grid gap-0 md:grid-cols-2">
+          <DetailGroup title="身份">
+            <Line label="系统">
+              <span className="inline-flex items-center gap-1.5 align-middle">
+                <OsIcon os={node.os} className="detail-os-icon" />
+                {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
+              </span>
+            </Line>
+            <Line label="架构">
+              {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
+                .filter(Boolean)
+                .join(" · ") || "—"}
+            </Line>
+            <Line label="CPU">
+              {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
+              {m && `（${m.cpu.toFixed(1)}%）`}
+            </Line>
+          </DetailGroup>
+
+          <DetailGroup title="资源">
+            <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
+            <Line label="交换">
+              {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
+            </Line>
+            <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
+            <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
+          </DetailGroup>
+
+          <DetailGroup title="网络与连接">
+            <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
+            <Line label="网速">
+              {m ? (
+                <>
+                  ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
+                </>
+              ) : "—"}
+            </Line>
+            <Line label="今日">{flow(node.day_rx, node.day_tx)}</Line>
+            <Line label="本月">{flow(node.month_rx, node.month_tx)}</Line>
+            <Line label="总流量">{flow(node.total_rx, node.total_tx)}</Line>
+          </DetailGroup>
+
+          <DetailGroup title="服务">
+            <Line label={node.online ? "在线" : "离线"}>
+              {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
+            </Line>
+            <Line label="续费">
+              {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
+            </Line>
+            <Line label="到期">
+              {node.expires_at
+                ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
+                : "长期有效"}
+            </Line>
+            {node.traffic_reset_day > 0 && <Line label="流量重置">每月 {node.traffic_reset_day} 日</Line>}
+          </DetailGroup>
+        </div>
       </DetailCard>
 
       <div className="latency-float-card space-y-2 rounded-2xl border p-3">
         <div className="flex items-baseline justify-between gap-3 text-xs">
           <span className="text-muted-foreground">网络延迟 · 最近 24 小时</span>
-          <Link href={`/node/${node.id}`} className="text-primary hover:underline">查看资源图表 →</Link>
+          <Link href={`/node/${node.id}`} className="text-foreground/70 hover:text-foreground">查看资源图表 →</Link>
         </div>
-        <Suspense fallback={<Skeleton className="h-[280px] @max-3xl:h-[220px]" />}>
-          <Latency id={node.id} className="h-[280px] @max-3xl:h-[220px]" />
+        <Suspense fallback={<Skeleton className="h-[240px] @max-3xl:h-[190px]" />}>
+          <Latency id={node.id} className="h-[240px] @max-3xl:h-[190px]" />
         </Suspense>
       </div>
     </div>
   )
 }
 
-function ServerCard({ node }: { node: Node }) {
-  const [open, setOpen] = useState(false)
+function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void }) {
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose()
+    }
+    addEventListener("keydown", close)
+    return () => removeEventListener("keydown", close)
+  }, [onClose])
+
+  return (
+    <div
+      className="server-detail-backdrop fixed inset-0 z-40 flex justify-end"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <aside className="server-detail-drawer flex h-full w-full max-w-[620px] flex-col" role="dialog" aria-modal="true" aria-label={`${node.name} 详情`}>
+        <header className="server-detail-head flex shrink-0 items-center gap-3 border-b px-4 py-3 md:px-5">
+          <Dot node={node} className="size-3" />
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <h3 className="truncate text-base font-semibold tracking-[-0.02em]">{node.name}</h3>
+              <Flag code={node.country} className="shrink-0 text-xs text-muted-foreground" />
+            </div>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              {[node.online ? "在线" : deployed(node) ? "离线" : "未接入", distro(node.os)].filter(Boolean).join(" · ")}
+            </p>
+          </div>
+          <button type="button" className="server-detail-close grid size-9 shrink-0 place-items-center rounded-full" onClick={onClose} aria-label="关闭详情">
+            <X className="size-4" />
+          </button>
+        </header>
+        <div className="server-detail-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 md:p-4">
+          <Details node={node} />
+        </div>
+      </aside>
+    </div>
+  )
+}
+
+function ServerCard({ node, onOpen }: { node: Node; onOpen: (id: number) => void }) {
   const m = node.online ? node.metrics : null
   const traffic = monthUsage(node)
   const memPct = m ? percent(m.mem_used, m.mem_total) : null
   const diskPct = m ? percent(m.disk_used, m.disk_total) : null
   const trafficPct = node.traffic_limit > 0 ? percent(traffic, node.traffic_limit) : null
   const state = node.online ? "在线" : deployed(node) ? "离线" : "未接入"
-  const sub = [
-    state,
-    m ? duration(m.uptime) : "",
-    distro(node.os),
-  ].filter(Boolean).join(" · ")
+  const sub = [state, m ? duration(m.uptime) : "", distro(node.os)].filter(Boolean).join(" · ")
 
   return (
-    <article
-      className={cn("server-card", open && "server-card-open")}
-      data-online={node.online ? "true" : "false"}
-    >
+    <article className="server-card" data-online={node.online ? "true" : "false"}>
       <button
         type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => onOpen(node.id)}
         className="server-card-hit grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 p-2 text-left sm:p-2.5 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,4fr)_28px] md:gap-2.5 md:p-3"
       >
         <div className="flex min-w-0 items-center gap-2 md:gap-3">
@@ -315,26 +367,14 @@ function ServerCard({ node }: { node: Node }) {
           </span>
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-sm font-semibold tracking-[-0.01em] md:text-[15px]" title={node.name}>
-                {node.name}
-              </span>
+              <span className="truncate text-sm font-semibold tracking-[-0.01em] md:text-[15px]" title={node.name}>{node.name}</span>
               <Flag code={node.country} className="shrink-0 text-[10px]" />
-              {open && node.online && (
-                <span className="live-pill rounded-full px-1.5 py-0.5 text-[8px] font-semibold tracking-wide">
-                  LIVE
-                </span>
-              )}
             </div>
             <div className="mt-0.5 truncate text-[9px] text-muted-foreground md:mt-1 md:text-[11px]">{sub || "—"}</div>
           </div>
         </div>
 
-        <ChevronDown
-          className={cn(
-            "size-4 shrink-0 text-muted-foreground transition-transform duration-200 md:order-last md:justify-self-end",
-            open && "rotate-180 text-foreground",
-          )}
-        />
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground md:order-last md:justify-self-end" />
 
         <div className="server-metrics col-span-2 grid min-w-0 grid-cols-[1.15fr_repeat(4,minmax(0,1fr))] md:col-span-1 md:col-start-2 md:row-start-1">
           <SpeedTile rx={m?.net_rx ?? 0} tx={m?.net_tx ?? 0} />
@@ -349,17 +389,13 @@ function ServerCard({ node }: { node: Node }) {
           />
         </div>
       </button>
-
-      {open && (
-        <div className="server-card-detail border-t border-border/55">
-          <Details node={node} />
-        </div>
-      )}
     </article>
   )
 }
 
 export function ServerTable({ nodes }: { nodes: Node[] }) {
+  const [detailId, setDetailId] = useState<number | null>(null)
+  const detailNode = detailId === null ? null : nodes.find((node) => node.id === detailId) ?? null
   let onlineCount = 0
   let rxRate = 0
   let txRate = 0
@@ -417,8 +453,10 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
       </div>
 
       <div className="space-y-1.5 md:space-y-2">
-        {nodes.map((node) => <ServerCard key={node.id} node={node} />)}
+        {nodes.map((node) => <ServerCard key={node.id} node={node} onOpen={setDetailId} />)}
       </div>
+
+      {detailNode && <ServerDetailDrawer node={detailNode} onClose={() => setDetailId(null)} />}
     </section>
   )
 }
