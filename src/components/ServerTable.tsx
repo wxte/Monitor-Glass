@@ -40,19 +40,11 @@ export function Dot({ node, className }: { node: Node; className?: string }) {
     <span
       title={state === "online" ? "在线" : state === "offline" ? "离线" : "未接入"}
       data-status={state}
-      className={cn(
-        "status-dot relative inline-grid size-3 shrink-0 place-items-center align-middle",
-        className,
-      )}
+      className={cn("status-dot relative inline-block size-4 shrink-0 align-middle", className)}
     >
       {node.online && <span aria-hidden="true" className="status-dot-pulse absolute rounded-full" />}
-      <span
-        aria-hidden="true"
-        className={cn(
-          "status-dot-core relative z-[1] block size-full rounded-full",
-          node.online ? "bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
-        )}
-      />
+      <span aria-hidden="true" className="status-dot-halo absolute inset-0 rounded-full" />
+      <span aria-hidden="true" className="status-dot-core absolute rounded-full" />
     </span>
   )
 }
@@ -233,7 +225,7 @@ function Details({ node }: { node: Node }) {
     <div className="space-y-3 text-[13px] leading-6">
       <DetailCard title="节点详情" icon={Server} className="system-detail-card">
         <div className="detail-groups grid gap-0 md:grid-cols-2">
-          <DetailGroup title="身份">
+          <DetailGroup title="系统信息">
             <Line label="系统">
               <span className="inline-flex items-center gap-1.5 align-middle">
                 <OsIcon os={node.os} className="detail-os-icon" />
@@ -322,7 +314,7 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
       }}
     >
       <aside className="server-detail-drawer flex h-full w-full max-w-[620px] flex-col" role="dialog" aria-modal="true" aria-label={`${node.name} 详情`}>
-        <header className="server-detail-head flex shrink-0 items-center gap-3 border-b px-4 py-3 md:px-5">
+        <header className="server-detail-head sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b px-4 py-3 md:px-5">
           <Dot node={node} className="size-3" />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
@@ -333,8 +325,14 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
               {[node.online ? "在线" : deployed(node) ? "离线" : "未接入", distro(node.os)].filter(Boolean).join(" · ")}
             </p>
           </div>
-          <button type="button" className="server-detail-close grid size-9 shrink-0 place-items-center rounded-full" onClick={onClose} aria-label="关闭详情">
-            <X className="size-4" />
+          <button
+            type="button"
+            className="server-detail-close grid size-9 shrink-0 place-items-center rounded-full"
+            onClick={onClose}
+            aria-label="关闭详情"
+            title="关闭详情"
+          >
+            <X className="size-4.5" strokeWidth={2.2} />
           </button>
         </header>
         <div className="server-detail-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 md:p-4">
@@ -363,7 +361,7 @@ function ServerCard({ node, onOpen }: { node: Node; onOpen: (id: number) => void
       >
         <div className="flex min-w-0 items-center gap-2 md:gap-3">
           <span className="status-orbit grid size-5 shrink-0 place-items-center rounded-full md:size-6">
-            <Dot node={node} className="server-status-dot size-2.5 md:size-3.5" />
+            <Dot node={node} className="server-status-dot" />
           </span>
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
