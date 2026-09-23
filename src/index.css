@@ -926,3 +926,271 @@
     background: var(--once-gray-1000);
   }
 }
+
+
+/* v2.8 — ServerStatus interaction model + Once UI presentation.
+   Details live in an overlay drawer so opening a node never reflows the server list. */
+.server-detail-backdrop {
+  background: rgb(0 0 0 / .26);
+  animation: detail-backdrop-in .16s ease-out both;
+}
+
+.server-detail-drawer {
+  contain: layout paint style;
+  color: var(--foreground);
+  border-left: 1px solid var(--border);
+  background: var(--background);
+  box-shadow: -24px 0 64px -36px rgb(0 0 0 / .42);
+  animation: detail-drawer-in .22s cubic-bezier(.2,.8,.2,1) both;
+  will-change: transform;
+}
+
+.server-detail-head {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--background) 94%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.server-detail-close {
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+}
+
+.server-detail-close:hover {
+  color: var(--foreground);
+  background: var(--once-gray-1000);
+}
+
+.dark .server-detail-close:hover {
+  background: var(--once-gray-300);
+}
+
+.server-detail-scroll {
+  scrollbar-gutter: stable;
+}
+
+.detail-groups {
+  overflow: hidden;
+  margin: .15rem -.15rem -.15rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--once-gray-1200);
+}
+
+.dark .detail-groups {
+  background: var(--once-gray-200);
+}
+
+.detail-group {
+  padding: 12px 14px;
+}
+
+.detail-group + .detail-group {
+  border-top: 1px solid var(--border);
+}
+
+.system-detail-card {
+  padding: 12px;
+}
+
+.latency-float-card {
+  overflow: hidden;
+}
+
+@keyframes detail-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes detail-drawer-in {
+  from { transform: translate3d(26px,0,0); opacity: .72; }
+  to { transform: translate3d(0,0,0); opacity: 1; }
+}
+
+/* Monitor: one grouped identity/range surface, then the data cards. */
+.monitor-overview {
+  border-color: var(--once-gray-1000);
+  background: #fff;
+}
+
+.dark .monitor-overview {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-200);
+}
+
+.monitor-overview .monitor-node-head,
+.monitor-overview .monitor-range,
+.monitor-overview .monitor-note {
+  border-radius: 0;
+  background: transparent;
+}
+
+.monitor-overview .monitor-node-head {
+  padding: 14px 18px;
+}
+
+.monitor-overview .monitor-range {
+  padding: 8px 12px;
+}
+
+.monitor-overview .monitor-note {
+  color: var(--muted-foreground);
+}
+
+/* Keep expensive historical charts visually stable while live WS telemetry updates. */
+.monitor-chart-card {
+  contain: layout style;
+}
+
+/* ServerStatus-like calm interaction: no list geometry shift on hover. */
+@media (hover: hover) and (pointer: fine) {
+  .server-card:hover {
+    transform: none;
+  }
+}
+
+@media (min-width: 761px) {
+  .detail-groups {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .detail-group:nth-child(2n) {
+    border-left: 1px solid var(--border);
+  }
+
+  .detail-group:nth-child(2) {
+    border-top: 0;
+  }
+}
+
+/* On phones the node picker becomes a light horizontal rail instead of a tall
+   card list. The detail content starts almost immediately, like ServerStatus's
+   full-width mobile drawer. */
+@media (max-width: 760px) {
+  .monitor-shell {
+    display: block;
+  }
+
+  .node-picker {
+    position: static !important;
+    max-height: none !important;
+    margin-bottom: 12px;
+    padding: 7px !important;
+    overflow: hidden;
+    border-radius: 18px !important;
+  }
+
+  .node-picker > input {
+    display: none;
+  }
+
+  .node-picker > nav {
+    display: flex;
+    min-height: 0;
+    gap: 6px;
+    margin-top: 0 !important;
+    padding: 0 1px 1px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .node-picker > nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .monitor-node-link {
+    flex: 0 0 auto;
+    min-width: max-content;
+    gap: 7px;
+    padding: 7px 10px !important;
+    border: 1px solid var(--once-gray-1000);
+    border-radius: 999px !important;
+    background: #fff;
+  }
+
+  .monitor-node-link span.min-w-0 {
+    max-width: 132px;
+  }
+
+  .monitor-node-link[aria-current="page"],
+  .monitor-node-link[aria-current="page"]:hover {
+    color: #fff;
+    border-color: var(--once-gray-300);
+    background: var(--once-gray-300);
+  }
+
+  .dark .monitor-node-link {
+    border-color: var(--once-gray-400);
+    background: var(--once-gray-200);
+  }
+
+  .dark .monitor-node-link[aria-current="page"],
+  .dark .monitor-node-link[aria-current="page"]:hover {
+    color: #000;
+    border-color: var(--once-gray-1000);
+    background: var(--once-gray-1000);
+  }
+
+  .monitor-overview {
+    border-radius: 20px !important;
+  }
+
+  .monitor-overview .monitor-node-head {
+    padding: 13px 14px;
+  }
+
+  .monitor-overview .monitor-range {
+    flex-wrap: nowrap;
+    gap: 5px;
+    padding: 7px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .monitor-overview .monitor-range::-webkit-scrollbar {
+    display: none;
+  }
+
+  .monitor-range-tab {
+    flex: 0 0 auto;
+  }
+
+  .server-detail-backdrop {
+    background: rgb(0 0 0 / .20);
+  }
+
+  .server-detail-drawer {
+    width: 100vw;
+    max-width: none;
+    border-left: 0;
+    box-shadow: none;
+  }
+
+  .server-detail-head {
+    padding-top: calc(.75rem + env(safe-area-inset-top));
+  }
+
+  .server-detail-scroll {
+    padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+  }
+
+  .detail-groups {
+    border-radius: 14px;
+  }
+
+  .detail-group {
+    padding: 11px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-detail-backdrop,
+  .server-detail-drawer {
+    animation: none;
+  }
+}
