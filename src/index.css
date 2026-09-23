@@ -948,29 +948,25 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-.server-detail-close,
-.monitor-detail-close {
+.server-detail-close {
   color: #fff;
   border: 1px solid var(--once-gray-300);
   background: var(--once-gray-300);
   box-shadow: 0 1px 2px rgb(0 0 0 / .08);
 }
 
-.server-detail-close:hover,
-.monitor-detail-close:hover {
+.server-detail-close:hover {
   color: #fff;
   background: var(--once-gray-200);
 }
 
-.dark .server-detail-close,
-.dark .monitor-detail-close {
+.dark .server-detail-close {
   color: #000;
   border-color: var(--once-gray-1000);
   background: var(--once-gray-1000);
 }
 
-.dark .server-detail-close:hover,
-.dark .monitor-detail-close:hover {
+.dark .server-detail-close:hover {
   color: #000;
   background: #fff;
 }
