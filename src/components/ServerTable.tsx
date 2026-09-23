@@ -332,7 +332,7 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
             aria-label="关闭详情"
             title="关闭详情"
           >
-            <X className="size-4.5" strokeWidth={2.2} />
+            <X className="size-4" strokeWidth={2.2} />
           </button>
         </header>
         <div className="server-detail-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 md:p-4">
