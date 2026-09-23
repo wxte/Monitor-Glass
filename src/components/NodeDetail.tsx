@@ -93,10 +93,8 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
   return (
     <button
       onClick={onClick}
-      className={`rounded-full border px-3 py-1.5 text-xs transition-all ${
-        active
-          ? "border-primary/20 bg-primary text-primary-foreground"
-          : "border-border bg-background text-muted-foreground hover:bg-secondary"
+      className={`monitor-range-tab rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
+        active ? "monitor-range-tab-active" : ""
       }`}
     >
       {children}
@@ -445,7 +443,7 @@ export function NodeDetail({ node }: { node: Node }) {
   }, [metricRows])
 
   return (
-    <div className="monitor-detail space-y-3">
+    <div className="monitor-detail space-y-4">
       <div className="monitor-node-head flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-border/55 p-3 md:p-4">
         <Dot node={node} />
         <h2 className="truncate text-lg font-semibold">{node.name}</h2>
