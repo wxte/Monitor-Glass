@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react"
+import { createPortal } from "react-dom"
 import { ArrowDown, ArrowUp, ChevronRight, Cpu, Database, HardDrive, MemoryStick, Network, Server, X, type LucideIcon } from "lucide-react"
 import {
   siAlmalinux, siAlpinelinux, siArchlinux, siCentos, siDebian, siFedora, siLinux, siOpensuse, siRedhat,
@@ -301,13 +302,18 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
     const close = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose()
     }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
     addEventListener("keydown", close)
-    return () => removeEventListener("keydown", close)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      removeEventListener("keydown", close)
+    }
   }, [onClose])
 
-  return (
+  return createPortal(
     <div
-      className="server-detail-backdrop fixed inset-0 z-40 flex justify-end"
+      className="server-detail-backdrop fixed inset-0 z-[60] flex justify-end"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
@@ -315,7 +321,7 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
     >
       <aside className="server-detail-drawer flex h-full w-full max-w-[620px] flex-col" role="dialog" aria-modal="true" aria-label={`${node.name} 详情`}>
         <header className="server-detail-head sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b px-4 py-3 md:px-5">
-          <Dot node={node} className="size-3" />
+          <Dot node={node} />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
               <h3 className="truncate text-base font-semibold tracking-[-0.02em]">{node.name}</h3>
@@ -339,7 +345,8 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
           <Details node={node} />
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
