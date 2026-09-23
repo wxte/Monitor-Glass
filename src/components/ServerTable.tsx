@@ -139,7 +139,7 @@ function meterTone(pct: number | null) {
   if (pct === null) return "bg-muted-foreground/25"
   if (pct >= 90) return "bg-red-500"
   if (pct >= 75) return "bg-orange-400"
-  return "bg-primary"
+  return "bg-foreground/65 dark:bg-white/70"
 }
 
 function MiniMeter({ pct }: { pct: number | null }) {
@@ -170,7 +170,7 @@ function MetricTile({
   return (
     <div className={cn("metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2", className)}>
       <div className="flex min-w-0 items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
-        <Icon className="size-3 shrink-0 text-primary/85" />
+        <Icon className="size-3 shrink-0 text-foreground/60 dark:text-white/65" />
         <span className="truncate">{label}</span>
       </div>
       <div className="tnum mt-1 truncate text-[9px] font-medium leading-none md:text-xs">{value}</div>
@@ -183,12 +183,12 @@ function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
   return (
     <div className="metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2">
       <div className="flex items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
-        <Network className="size-3 text-primary/85" />
+        <Network className="size-3 text-foreground/60 dark:text-white/65" />
         <span>网速</span>
       </div>
       <div className="tnum mt-1 grid gap-0.5 text-[9px] font-medium leading-none md:text-xs">
         <span className="flex min-w-0 items-center gap-1">
-          <ArrowDown className="size-3 shrink-0 text-primary" />
+          <ArrowDown className="size-3 shrink-0 text-foreground/65 dark:text-white/70" />
           <span className="truncate">{compact(rx)}/s</span>
         </span>
         <span className="flex min-w-0 items-center gap-1">
@@ -322,7 +322,7 @@ function ServerCard({ node }: { node: Node }) {
         <ChevronDown
           className={cn(
             "size-4 shrink-0 text-muted-foreground transition-transform duration-200 md:order-last md:justify-self-end",
-            open && "rotate-180 text-primary",
+            open && "rotate-180 text-foreground",
           )}
         />
 
