@@ -65,10 +65,21 @@ const SERIES = { dot: false as const, strokeWidth: 1.5, isAnimationActive: false
 // 28px, placing a CPU spike and the network spike that caused it at different x.
 const Y_WIDTH = 68
 
-// Hue alone separates the probes. A dash pattern would not: once every ping in a
-// day is on the chart its period is shorter than the jitter, and dotted and dashed
-// lines both read as texture.
+// The three mainland carrier probes use the visual language requested for the
+// dashboard: neutral gray, reference green #2BEA5E and reference red #FA471E.
+// Unknown/custom probes still fall back to the theme chart palette.
 const PALETTE = [1, 2, 3, 4, 5].map((i) => `var(--color-chart-${i})`)
+const PROBE_GRAY = "#7A7A7A"
+const PROBE_GREEN = "#2BEA5E"
+const PROBE_RED = "#FA471E"
+
+function probeColor(name: string, fallbackIndex: number) {
+  const key = name.toLowerCase()
+  if (key.includes("联通") || key.includes("unicom")) return PROBE_GRAY
+  if (key.includes("电信") || key.includes("telecom")) return PROBE_GREEN
+  if (key.includes("移动") || key.includes("mobile")) return PROBE_RED
+  return PALETTE[Math.max(0, fallbackIndex) % PALETTE.length]
+}
 
 // recharts paints its tooltip white unless told otherwise, which is a white box
 // on the dark theme.
@@ -237,7 +248,10 @@ function LatencyView({ id, className }: { id: number; className?: string }) {
     [pingSeries, hiddenProbes],
   )
   // Keyed on the full list, so a line keeps its colour when others are hidden.
-  const color = (id: number) => PALETTE[pingSeries.findIndex((p) => p.id === id) % PALETTE.length]
+  const color = (id: number) => {
+    const index = pingSeries.findIndex((p) => p.id === id)
+    return probeColor(index >= 0 ? pingSeries[index].name : "", index)
+  }
 
   // The hub stamps every sample with its bucket rather than the second the probe
   // finished, so probes reporting at the bucket's rate share rows instead of each
