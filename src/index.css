@@ -1204,3 +1204,15 @@
     animation: none;
   }
 }
+
+
+/* Network chart uses Once UI neutral hierarchy rather than an accent color. */
+:root {
+  --network-rx: #8a8a8a;
+  --network-tx: #2f2f2f;
+}
+
+.dark {
+  --network-rx: #8f8f8f;
+  --network-tx: #e7e7e7;
+}
