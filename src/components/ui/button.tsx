@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 // renders is dead styling, and `asChild` would carry a radix-ui dependency for a
 // delegation no caller asks for.
 const VARIANTS = {
-  default: "bg-primary text-primary-foreground hover:bg-primary/90",
+  default: "once-solid-button",
   ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
 }
 
