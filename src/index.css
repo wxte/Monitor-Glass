@@ -612,3 +612,292 @@
     transform: none;
   }
 }
+
+
+/* Once UI palette adaptation v2.3.
+   Neutral slate + blue brand + indigo accent values are adapted from
+   once-ui-system/core (MIT). The existing ThreeUI geometry/glass treatment
+   remains, while color semantics follow Once UI's token model. */
+:root,
+.dark {
+  --once-slate-100: oklch(0.1397 0.0199 283.53);
+  --once-slate-200: oklch(0.2007 0.0199 284.46);
+  --once-slate-300: oklch(0.3710 0.0188 281.33);
+  --once-slate-400: oklch(0.4710 0.0193 281.85);
+  --once-slate-500: oklch(0.5694 0.0199 282.24);
+  --once-slate-600: oklch(0.6801 0.0205 282.58);
+  --once-slate-700: oklch(0.7703 0.0198 282.66);
+  --once-slate-800: oklch(0.8706 0.0206 282.91);
+  --once-slate-900: oklch(0.9104 0.0203 282.94);
+  --once-slate-1000: oklch(0.9497 0.0201 282.96);
+  --once-slate-1100: oklch(0.9696 0.0147 281.96);
+  --once-slate-1200: oklch(0.9858 0.0067 277.17);
+
+  --once-blue-500: oklch(0.5721 0.2254 263.69);
+  --once-blue-600: oklch(0.6743 0.1670 261.54);
+  --once-blue-700: oklch(0.7670 0.1165 257.88);
+  --once-indigo-600: oklch(0.6833 0.1679 287.37);
+  --once-green-600: oklch(0.6486 0.1950 146.22);
+  --once-green-700: oklch(0.7426 0.2344 144.85);
+  --once-aqua-600: oklch(0.6567 0.1112 194.02);
+  --once-orange-600: oklch(0.6902 0.2005 39.65);
+  --once-red-600: oklch(0.6930 0.1970 27.63);
+
+  --background: var(--once-slate-100);
+  --foreground: var(--once-slate-1200);
+  --card: oklch(0.2007 0.0199 284.46 / .70);
+  --card-foreground: var(--once-slate-1200);
+  --popover: oklch(0.2007 0.0199 284.46 / .94);
+  --popover-foreground: var(--once-slate-1200);
+  --primary: var(--once-blue-600);
+  --primary-foreground: var(--once-slate-100);
+  --secondary: oklch(0.3710 0.0188 281.33 / .28);
+  --secondary-foreground: var(--once-slate-1100);
+  --muted: oklch(0.3710 0.0188 281.33 / .20);
+  --muted-foreground: var(--once-slate-700);
+  --accent: oklch(0.6833 0.1679 287.37 / .18);
+  --accent-foreground: var(--once-slate-1100);
+  --border: oklch(0.7703 0.0198 282.66 / .13);
+  --input: oklch(0.7703 0.0198 282.66 / .15);
+  --ring: var(--once-blue-600);
+  --warn: var(--once-orange-600);
+  --danger: var(--once-red-600);
+
+  --chart-1: var(--once-green-600);
+  --chart-2: var(--once-aqua-600);
+  --chart-3: var(--once-orange-600);
+  --chart-4: var(--once-indigo-600);
+  --chart-5: var(--once-blue-600);
+
+  --bar-track: oklch(0.7703 0.0198 282.66 / .10);
+  --bar-ok: linear-gradient(to right, var(--once-blue-500), var(--once-blue-600));
+  --bar-warn: linear-gradient(to right, oklch(0.60 0.17 39.65), var(--once-orange-600));
+  --bar-danger: linear-gradient(to right, oklch(0.58 0.19 27.63), var(--once-red-600));
+  --dot-online: linear-gradient(180deg, var(--once-green-700), var(--once-green-600));
+  --dot-offline: linear-gradient(180deg, oklch(0.78 0.1286 27.87), var(--once-red-600));
+}
+
+.ambient-stage {
+  background:
+    radial-gradient(38% 34% at 8% 16%, oklch(0.6743 0.1670 261.54 / .15), transparent 72%),
+    radial-gradient(32% 30% at 92% 18%, oklch(0.6833 0.1679 287.37 / .095), transparent 74%),
+    radial-gradient(34% 28% at 54% 92%, oklch(0.3710 0.0188 281.33 / .16), transparent 76%),
+    linear-gradient(180deg, var(--once-slate-100) 0%, oklch(0.165 0.022 283.8) 48%, var(--once-slate-100) 100%);
+}
+
+.ambient-stage::before {
+  background:
+    radial-gradient(circle at 24% 30%, oklch(0.7670 0.1165 257.88 / .050), transparent 18%),
+    radial-gradient(circle at 72% 58%, oklch(0.6833 0.1679 287.37 / .035), transparent 20%);
+  filter: blur(36px);
+}
+
+.ambient-stage::after {
+  background:
+    radial-gradient(circle at 76% 24%, oklch(0.8706 0.0206 282.91 / .026), transparent 16%),
+    radial-gradient(circle at 18% 72%, oklch(0.6743 0.1670 261.54 / .025), transparent 19%);
+  filter: blur(42px);
+}
+
+.threeui-header {
+  background: linear-gradient(180deg, oklch(0.1397 0.0199 283.53 / .96), oklch(0.1397 0.0199 283.53 / .32), transparent);
+}
+
+.threeui-glass-bar,
+.server-summary,
+.server-card,
+.monitor-shell,
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card,
+.monitor-note,
+.detail-float-card,
+.latency-float-card {
+  border-color: oklch(0.7703 0.0198 282.66 / .12);
+  background:
+    linear-gradient(160deg, oklch(0.8706 0.0206 282.91 / .075), oklch(0.7703 0.0198 282.66 / .018)),
+    oklch(0.2007 0.0199 284.46 / .68);
+}
+
+.threeui-glass-bar {
+  box-shadow:
+    0 24px 54px -28px oklch(0.05 0.01 284 / .96),
+    inset 0 1px 0 oklch(0.9497 0.0201 282.96 / .22),
+    inset 0 -1px 0 oklch(0.7703 0.0198 282.66 / .055),
+    inset 0 0 0 1px oklch(0.7703 0.0198 282.66 / .045);
+}
+
+.threeui-nav-item,
+.threeui-admin {
+  color: oklch(0.7703 0.0198 282.66 / .82);
+}
+
+.threeui-nav-item:hover,
+.threeui-nav-item:focus-visible,
+.threeui-admin:hover,
+.threeui-admin:focus-visible {
+  color: var(--once-slate-1200);
+  border-color: oklch(0.7703 0.0198 282.66 / .20);
+  background: linear-gradient(180deg, oklch(0.8706 0.0206 282.91 / .14), oklch(0.3710 0.0188 281.33 / .10));
+}
+
+.threeui-nav-item[aria-current="page"] {
+  color: var(--once-slate-100);
+  border-color: oklch(0.9497 0.0201 282.96 / .70);
+  background: linear-gradient(180deg, var(--once-slate-1200), var(--once-slate-1000) 72%, var(--once-slate-900));
+  box-shadow:
+    0 8px 22px -12px oklch(0.6743 0.1670 261.54 / .32),
+    inset 0 1px 0 oklch(1 0 0 / .92),
+    inset 0 -1px oklch(0.1397 0.0199 283.53 / .18);
+}
+
+.server-panel,
+.monitor-shell {
+  --card: oklch(0.2007 0.0199 284.46 / .72);
+  --card-foreground: var(--once-slate-1200);
+  --foreground: var(--once-slate-1200);
+  --muted-foreground: var(--once-slate-700);
+  --border: oklch(0.7703 0.0198 282.66 / .12);
+  --server-tile: oklch(0.3710 0.0188 281.33 / .16);
+}
+
+.server-card {
+  --background: var(--once-slate-100);
+}
+
+.server-card-open {
+  border-color: oklch(0.6743 0.1670 261.54 / .25);
+  background:
+    linear-gradient(160deg, oklch(0.8706 0.0206 282.91 / .085), oklch(0.7703 0.0198 282.66 / .018)),
+    oklch(0.2007 0.0199 284.46 / .76);
+  box-shadow:
+    0 34px 70px -30px oklch(0.05 0.01 284 / .98),
+    inset 0 1px 0 oklch(0.9497 0.0201 282.96 / .22),
+    inset 0 -1px 0 oklch(0.7703 0.0198 282.66 / .06),
+    inset 0 0 0 1px oklch(0.7703 0.0198 282.66 / .06),
+    0 0 26px oklch(0.6743 0.1670 261.54 / .055);
+}
+
+.metric-tile {
+  border-color: oklch(0.7703 0.0198 282.66 / .075);
+  background: oklch(0.3710 0.0188 281.33 / .14);
+}
+
+.server-card-open .metric-tile {
+  border-color: oklch(0.7703 0.0198 282.66 / .11);
+  background: linear-gradient(180deg, oklch(0.5694 0.0199 282.24 / .11), oklch(0.3710 0.0188 281.33 / .12));
+}
+
+.metric-tile svg,
+.summary-icon,
+.detail-card-icon {
+  color: var(--once-blue-600) !important;
+}
+
+.metric-tile > span:last-child {
+  background: oklch(0.7703 0.0198 282.66 / .10);
+}
+
+.summary-icon,
+.detail-card-icon {
+  background: linear-gradient(180deg, oklch(0.5694 0.0199 282.24 / .13), oklch(0.3710 0.0188 281.33 / .13));
+  box-shadow:
+    inset 0 1px 0 oklch(0.9497 0.0201 282.96 / .16),
+    inset 0 0 0 1px oklch(0.7703 0.0198 282.66 / .07);
+}
+
+.system-detail-card,
+.latency-float-card,
+.monitor-shell,
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card {
+  background:
+    linear-gradient(160deg, oklch(0.5694 0.0199 282.24 / .07), oklch(0.3710 0.0188 281.33 / .025)),
+    oklch(0.2007 0.0199 284.46 / .74);
+}
+
+.server-online-pill,
+.monitor-chip {
+  color: var(--once-slate-800);
+  border-color: oklch(0.7703 0.0198 282.66 / .12);
+  background: linear-gradient(180deg, oklch(0.5694 0.0199 282.24 / .13), oklch(0.3710 0.0188 281.33 / .12));
+}
+
+.threeui-tool-button {
+  color: var(--once-slate-800) !important;
+  border-color: oklch(0.7703 0.0198 282.66 / .12) !important;
+  background:
+    linear-gradient(160deg, oklch(0.5694 0.0199 282.24 / .09), oklch(0.3710 0.0188 281.33 / .04)),
+    oklch(0.2007 0.0199 284.46 / .78) !important;
+}
+
+.threeui-tool-button:hover {
+  color: var(--once-slate-100) !important;
+  background: linear-gradient(180deg, var(--once-slate-1200), var(--once-slate-1000)) !important;
+}
+
+/* Presence indicator: keep the naked dot, restore only a diffuse light bloom.
+   No orbit, no border ring, no surrounding glass tag. */
+.status-orbit,
+.dark .status-orbit {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.server-status-dot {
+  isolation: isolate;
+}
+
+[data-online="true"] .server-status-dot {
+  box-shadow:
+    0 0 8px 2px oklch(0.7426 0.2344 144.85 / .52),
+    0 0 20px 6px oklch(0.6486 0.1950 146.22 / .22),
+    0 0 34px 11px oklch(0.6486 0.1950 146.22 / .08);
+  animation: presence-bloom 2.8s ease-in-out infinite alternate;
+}
+
+[data-online="true"] .server-status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  z-index: -1;
+  pointer-events: none;
+  border: 0;
+  border-radius: 999px;
+  background: radial-gradient(circle,
+    oklch(0.7426 0.2344 144.85 / .22) 0%,
+    oklch(0.6486 0.1950 146.22 / .10) 34%,
+    transparent 72%);
+  filter: blur(3px);
+}
+
+@keyframes presence-bloom {
+  from {
+    box-shadow:
+      0 0 7px 2px oklch(0.7426 0.2344 144.85 / .42),
+      0 0 17px 5px oklch(0.6486 0.1950 146.22 / .17),
+      0 0 28px 9px oklch(0.6486 0.1950 146.22 / .06);
+  }
+  to {
+    box-shadow:
+      0 0 10px 3px oklch(0.7426 0.2344 144.85 / .62),
+      0 0 24px 8px oklch(0.6486 0.1950 146.22 / .27),
+      0 0 40px 13px oklch(0.6486 0.1950 146.22 / .10);
+  }
+}
+
+@media (max-width: 760px) {
+  [data-online="true"] .server-status-dot {
+    animation-duration: 3.4s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-online="true"] .server-status-dot {
+    animation: none;
+  }
+}

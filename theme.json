@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "ThreeUI Liquid Glass：黑蓝青暖金光场、干净在线绿点与轻薄磨砂玻璃",
-  "version": "2.2.0",
+  "description": "ThreeUI 玻璃结构 + Once UI Slate/Blue/Indigo 配色与扩散式在线状态光晕",
+  "version": "2.3.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
