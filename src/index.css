@@ -1,92 +1,151 @@
-/* Scan this app's own source and nothing else. Tailwind's automatic detection
-   walks the whole repository, so a word in a workflow or a README would become a
-   utility class in the shipped stylesheet and change every asset hash. */
+/* Scan this app's own source and nothing else. */
 @import "tailwindcss" source(none);
 @source "../index.html";
 @source "../src";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* The classic ServerStatus palette: Bootstrap 3's greys, its green, amber and red
-   as top-to-bottom gradients on bars and status dots, and a navy-grey dark mode.
-   The chart hues are separate and muted, so five probes stay distinguishable
-   without competing with the bars. */
+/* Once UI site replication.
+   The user's selected palette is neutral=gray, brand=moss, accent=orange,
+   solid=contrast, solidStyle=flat, border=conservative, surface=filled. */
 :root {
-  --radius: 0.375rem;
-  --background: #f5f5f5;
-  --foreground: #212121;
+  --radius: 0.75rem;
+
+  /* neutral: gray */
+  --once-gray-100:  oklch(0.1448 0 0);
+  --once-gray-200:  oklch(0.1957 0 0);
+  --once-gray-300:  oklch(0.3677 0 0);
+  --once-gray-400:  oklch(0.4640 0 0);
+  --once-gray-500:  oklch(0.5624 0 0);
+  --once-gray-600:  oklch(0.6698 0 0);
+  --once-gray-700:  oklch(0.7636 0 0);
+  --once-gray-800:  oklch(0.8638 0 0);
+  --once-gray-900:  oklch(0.9067 0 0);
+  --once-gray-1000: oklch(0.9461 0 0);
+  --once-gray-1100: oklch(0.9642 0 0);
+  --once-gray-1200: oklch(0.9821 0 0);
+
+  /* brand: moss (the olive-green swatch selected in the Once UI panel) */
+  --once-moss-100:  oklch(0.1428 0.0184 124.91);
+  --once-moss-200:  oklch(0.1932 0.0314 125.79);
+  --once-moss-300:  oklch(0.3622 0.0864 129.16);
+  --once-moss-400:  oklch(0.4533 0.1200 131.81);
+  --once-moss-500:  oklch(0.5476 0.1544 134.27);
+  --once-moss-600:  oklch(0.6530 0.1960 136.49);
+  --once-moss-700:  oklch(0.7464 0.2307 138.07);
+  --once-moss-800:  oklch(0.8461 0.2198 139.34);
+  --once-moss-900:  oklch(0.8918 0.1711 141.04);
+  --once-moss-1000: oklch(0.9363 0.1073 142.78);
+  --once-moss-1100: oklch(0.9591 0.0621 142.95);
+  --once-moss-1200: oklch(0.9806 0.0229 143.37);
+
+  /* semantic online status stays Once UI green rather than brand moss */
+  --once-green-600:  oklch(0.6486 0.1950 146.22);
+  --once-green-700:  oklch(0.7426 0.2344 144.85);
+
+  /* accent: orange */
+  --once-orange-100:  oklch(0.1419 0.0236 27.24);
+  --once-orange-200:  oklch(0.2001 0.0446 28.40);
+  --once-orange-300:  oklch(0.3850 0.1356 32.92);
+  --once-orange-400:  oklch(0.4850 0.1760 33.49);
+  --once-orange-500:  oklch(0.5834 0.2086 34.23);
+  --once-orange-600:  oklch(0.6902 0.2005 39.65);
+  --once-orange-700:  oklch(0.7786 0.1403 47.34);
+  --once-orange-800:  oklch(0.8719 0.0781 55.14);
+  --once-orange-900:  oklch(0.9115 0.0506 56.44);
+  --once-orange-1000: oklch(0.9487 0.0271 56.76);
+
+  /* light theme mirrors Once UI's light semantic mapping */
+  --background: #ffffff;
+  --foreground: var(--once-gray-100);
   --card: #ffffff;
-  --card-foreground: #212121;
+  --card-foreground: var(--once-gray-100);
   --popover: #ffffff;
-  --popover-foreground: #212121;
-  --primary: #337ab7;
+  --popover-foreground: var(--once-gray-100);
+
+  --primary: var(--once-moss-500);
+  --primary-strong: var(--once-moss-400);
+  --primary-soft: var(--once-moss-1000);
+  --primary-softer: var(--once-moss-1100);
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #212121;
-  --muted: #f9f9f9;
-  --muted-foreground: #777777;
-  --accent: #e6e6e6;
-  --accent-foreground: #212121;
-  --destructive: #a94442;
-  --border: #dddddd;
-  --input: #cccccc;
-  --ring: #66afe9;
-  --nav: #f9f9f9;
-  --chart-1: oklch(0.56 0.09 252);
-  --chart-2: oklch(0.62 0.08 162);
-  --chart-3: oklch(0.7 0.1 72);
-  --chart-4: oklch(0.58 0.09 342);
-  --chart-5: oklch(0.62 0.06 212);
-  /* Text on the card. Bootstrap's own text shades, since the bar colours are too
-     light to read as text on white. */
-  --warn: #8a6d3b;
-  --danger: #a94442;
-  --bar-track: #f5f5f5;
-  --bar-text: #000000;
-  --bar-ok: linear-gradient(rgb(92 184 92), rgb(68 157 68));
-  --bar-warn: linear-gradient(rgb(240 173 78), rgb(236 151 31));
-  --bar-danger: linear-gradient(rgb(217 83 79), rgb(201 48 44));
-  --dot-online: var(--bar-ok);
-  --dot-offline: var(--bar-danger);
+
+  --accent: var(--once-orange-600);
+  --accent-soft: var(--once-orange-1000);
+  --accent-foreground: var(--once-orange-100);
+
+  --secondary: var(--once-gray-1100);
+  --secondary-foreground: var(--once-gray-200);
+  --muted: var(--once-gray-1100);
+  --muted-foreground: var(--once-gray-500);
+  --destructive: oklch(0.6930 0.1970 27.63);
+  --border: var(--once-gray-900);
+  --input: var(--once-gray-900);
+  --ring: var(--once-moss-600);
+  --nav: rgb(255 255 255 / .94);
+
+  /* Once UI solid=contrast + solidStyle=flat */
+  --solid-brand: var(--once-gray-300);
+  --solid-brand-hover: var(--once-gray-200);
+  --solid-on-brand: #ffffff;
+  --solid-border: transparent;
+
+  --chart-1: var(--once-moss-600);
+  --chart-2: oklch(0.6743 0.1670 261.54);
+  --chart-3: var(--once-orange-600);
+  --chart-4: oklch(0.6833 0.1679 287.37);
+  --chart-5: oklch(0.6567 0.1112 194.02);
+
+  --warn: var(--once-orange-600);
+  --danger: oklch(0.6930 0.1970 27.63);
+  --bar-track: var(--once-gray-1000);
+  --bar-text: #ffffff;
+  --bar-ok: linear-gradient(to right, var(--once-moss-500), var(--once-moss-600));
+  --bar-warn: linear-gradient(to right, var(--once-orange-500), var(--once-orange-600));
+  --bar-danger: linear-gradient(to right, oklch(0.5877 0.2394 28.95), oklch(0.6930 0.1970 27.63));
+  --dot-online: linear-gradient(180deg, var(--once-green-700), var(--once-green-600));
+  --dot-offline: linear-gradient(180deg, oklch(0.7801 0.1286 27.87), oklch(0.6930 0.1970 27.63));
 }
 
 .dark {
-  --background: #31363b;
-  --foreground: #f1f1f1;
-  --card: #1c1d26;
-  --card-foreground: #f1f1f1;
-  --popover: #22232e;
-  --popover-foreground: #f1f1f1;
-  --primary: #4992ff;
-  --primary-foreground: #ffffff;
-  --secondary: #22232e;
-  --secondary-foreground: #f1f1f1;
-  --muted: #22232e;
-  --muted-foreground: #aaaaaa;
-  --accent: #303241;
-  --accent-foreground: #f1f1f1;
-  --destructive: #e0605c;
-  --border: #3a3e41;
-  --input: rgb(255 255 255 / 15%);
-  --ring: #4992ff;
-  --nav: #1c2127;
-  --chart-1: oklch(0.72 0.08 252);
-  --chart-2: oklch(0.72 0.08 162);
-  --chart-3: oklch(0.78 0.1 76);
-  --chart-4: oklch(0.7 0.09 342);
-  --chart-5: oklch(0.74 0.06 212);
-  --warn: #f0ad4e;
-  --danger: #e0605c;
-  --bar-track: rgb(255 255 255 / 7.5%);
-  --bar-text: #ffffff;
-  /* Darker and horizontal on the dark ground, which is what lets white labels
-     read on the fill. */
-  --bar-ok: linear-gradient(to right, rgb(77 133 58), rgb(54 126 54));
-  --bar-warn: linear-gradient(to right, rgb(153 95 13), rgb(181 113 15));
-  --bar-danger: linear-gradient(to right, rgb(145 35 32), rgb(161 38 35));
-  --dot-online: linear-gradient(rgb(77 133 58), rgb(54 126 54));
-  --dot-offline: linear-gradient(rgb(155 37 34), rgb(161 38 35));
+  --background: var(--once-gray-100);
+  --foreground: var(--once-gray-1200);
+  --card: var(--once-gray-200);
+  --card-foreground: var(--once-gray-1200);
+  --popover: var(--once-gray-200);
+  --popover-foreground: var(--once-gray-1200);
+
+  --primary: var(--once-moss-900);
+  --primary-strong: var(--once-moss-1000);
+  --primary-soft: var(--once-moss-200);
+  --primary-softer: var(--once-moss-200);
+  --primary-foreground: var(--once-gray-100);
+
+  --accent: var(--once-orange-700);
+  --accent-soft: var(--once-orange-200);
+  --accent-foreground: var(--once-gray-1200);
+
+  --secondary: var(--once-gray-300);
+  --secondary-foreground: var(--once-gray-1100);
+  --muted: var(--once-gray-300);
+  --muted-foreground: var(--once-gray-700);
+  --destructive: oklch(0.7801 0.1286 27.87);
+  --border: var(--once-gray-300);
+  --input: var(--once-gray-300);
+  --ring: var(--once-moss-800);
+  --nav: rgb(24 24 24 / .94);
+
+  --solid-brand: var(--once-gray-1000);
+  --solid-brand-hover: #ffffff;
+  --solid-on-brand: #000000;
+  --solid-border: transparent;
+
+  --chart-1: var(--once-moss-800);
+  --chart-2: oklch(0.7670 0.1165 257.88);
+  --chart-3: var(--once-orange-700);
+  --chart-4: oklch(0.7749 0.1187 288.76);
+  --chart-5: oklch(0.7499 0.1286 192.20);
+
+  --bar-track: var(--once-gray-300);
 }
 
 @theme inline {
@@ -126,10 +185,1037 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  /* Without a reserved gutter, leaving a page taller than the fold widens it. */
   html { scrollbar-gutter: stable; }
-  body { @apply bg-background text-foreground; }
+  body {
+    @apply text-foreground;
+    background: var(--background);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: -0.01em;
+  }
+  #root { min-height: 100svh; }
 }
 
-/* Tabular figures keep live numbers from shifting as they update. */
 .tnum { font-variant-numeric: tabular-nums; }
+
+.app-shell { background: transparent; }
+
+/* Once UI page language: the selected Neutral=Gray drives the page atmosphere.
+   Brand Moss is reserved for emphasis; page and loading surfaces stay neutral. */
+.once-backdrop {
+  overflow: hidden;
+  background:
+    radial-gradient(48% 22% at 52% 2%, oklch(0.9461 0 0 / .72), transparent 76%),
+    linear-gradient(180deg, #ffffff 0%, #fcfcfc 48%, #ffffff 100%);
+}
+
+.once-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .28;
+  background-image: radial-gradient(circle, oklch(0.6698 0 0 / .22) .65px, transparent .75px);
+  background-size: 20px 20px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 32%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 32%);
+}
+
+.dark .once-backdrop {
+  background:
+    radial-gradient(42% 24% at 52% 2%, oklch(0.3677 0 0 / .18), transparent 76%),
+    var(--once-gray-100);
+}
+
+.dark .once-backdrop::before {
+  opacity: .16;
+  background-image: radial-gradient(circle, oklch(0.7636 0 0 / .22) .65px, transparent .75px);
+}
+
+.once-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--nav);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.once-header-inner { color: var(--foreground); }
+
+.once-brand {
+  color: var(--foreground);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.once-nav {
+  padding: 2px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+}
+
+.once-nav-item,
+.once-admin {
+  min-height: 32px;
+  border: 1px solid transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+  transition: background .14s ease, color .14s ease, border-color .14s ease;
+}
+
+.once-nav-item:hover,
+.once-nav-item:focus-visible {
+  color: var(--foreground);
+  background: var(--card);
+}
+
+.once-nav-item[aria-current="page"] {
+  color: var(--solid-on-brand);
+  border-color: var(--solid-border);
+  background: var(--solid-brand);
+}
+
+.once-admin {
+  color: var(--solid-on-brand);
+  border-color: var(--solid-border);
+  background: var(--solid-brand);
+}
+
+.once-admin:hover,
+.once-admin:focus-visible {
+  background: var(--solid-brand-hover);
+}
+
+.once-solid-button {
+  color: var(--solid-on-brand);
+  border: 0;
+  background: var(--solid-brand);
+}
+
+.once-solid-button:hover {
+  background: var(--solid-brand-hover);
+}
+
+.server-panel,
+.monitor-shell {
+  --server-shadow: none;
+  --server-shadow-hover: 0 8px 24px -20px rgb(0 0 0 / .24);
+}
+
+/* surface=filled: white cards in light mode, neutral-gray filled surfaces in dark */
+.server-summary,
+.server-card,
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card,
+.monitor-note,
+.detail-float-card,
+.latency-float-card {
+  color: var(--card-foreground);
+  border-color: var(--border);
+  background: var(--card);
+  box-shadow: none;
+}
+
+.server-summary {
+  border-radius: 12px;
+  background: transparent;
+}
+
+.server-card {
+  overflow: clip;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  /* iOS Safari can retain stale paint coordinates for animated descendants
+     across client-side route switches when content-visibility is enabled. */
+  content-visibility: visible;
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.server-card-hit {
+  border-radius: inherit;
+  outline: none;
+}
+
+.server-card-hit:focus-visible {
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--primary) 42%, transparent);
+}
+
+.server-metrics {
+  overflow: hidden;
+  border: 1px solid var(--once-gray-1000);
+  border-radius: 10px;
+  background: var(--once-gray-1200);
+}
+
+.metric-tile {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent;
+  box-shadow: none;
+  transition: background .14s ease;
+}
+
+.server-metrics .metric-tile + .metric-tile {
+  border-left: 1px solid var(--once-gray-1000) !important;
+}
+
+.dark .server-metrics {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-300);
+}
+
+.dark .server-metrics .metric-tile + .metric-tile {
+  border-left-color: var(--once-gray-400) !important;
+}
+
+.metric-tile svg,
+.summary-icon,
+.detail-card-icon {
+  color: var(--primary) !important;
+}
+
+.metric-tile > span:last-child {
+  background: var(--bar-track);
+}
+
+.summary-icon,
+.detail-card-icon {
+  border: 1px solid color-mix(in oklab, var(--primary) 18%, var(--border));
+  background: color-mix(in oklab, var(--primary-soft) 48%, #ffffff);
+  box-shadow: none;
+}
+
+.dark .summary-icon,
+.dark .detail-card-icon {
+  background: color-mix(in oklab, var(--primary-soft) 42%, var(--card));
+}
+
+.server-online-pill,
+.monitor-chip {
+  color: var(--muted-foreground);
+  border-color: var(--border);
+  background: var(--card);
+  box-shadow: none;
+}
+
+.system-detail-card,
+.latency-float-card {
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.system-detail-card { padding: 15px 17px; }
+
+.monitor-shell {
+  overflow: visible;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card {
+  border-color: var(--border);
+  background: var(--card);
+}
+
+.monitor-chart-card {
+  overflow: hidden;
+  min-width: 0;
+  box-shadow: none;
+}
+
+.detail-float-card .detail-os-icon {
+  fill: color-mix(in oklab, var(--brand) 72%, var(--foreground));
+}
+
+.once-tool-button {
+  color: var(--muted-foreground) !important;
+  border: 1px solid var(--border) !important;
+  background: var(--card) !important;
+  box-shadow: 0 2px 7px rgb(0 0 0 / .045) !important;
+}
+
+.once-tool-button:hover {
+  color: var(--foreground) !important;
+  background: var(--secondary) !important;
+}
+
+/* Vercel navigation demo status geometry:
+   16px soft shell + 8px solid core. Keep the user's requested live motion, but
+   constrain it to a small breathing halo so the status marker never dominates
+   the server name or shifts its visual centre. */
+.status-orbit,
+.dark .status-orbit {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.status-dot {
+  isolation: isolate;
+}
+
+.status-dot-halo {
+  z-index: 1;
+  pointer-events: none;
+  background: var(--once-gray-1100);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-gray-700) 24%, transparent);
+}
+
+.status-dot-core {
+  inset: 25%;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--once-gray-600);
+  box-shadow: none;
+}
+
+.status-dot[data-status="online"] .status-dot-halo {
+  background: color-mix(in oklab, var(--once-green-700) 16%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-green-600) 18%, transparent);
+}
+
+.status-dot[data-status="online"] .status-dot-core {
+  background: var(--once-green-600);
+  box-shadow: 0 0 4px oklch(0.7426 0.2344 144.85 / .24);
+}
+
+.status-dot[data-status="offline"] .status-dot-halo {
+  background: color-mix(in oklab, var(--destructive) 12%, #fff);
+}
+
+.status-dot[data-status="offline"] .status-dot-core {
+  background: var(--destructive);
+}
+
+.status-dot-pulse {
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background: color-mix(in oklab, var(--once-green-700) 24%, transparent);
+  transform: scale(.78);
+  transform-origin: center;
+  opacity: .34;
+  animation: once-status-pulse 2.1s infinite ease-out;
+}
+
+@keyframes once-status-pulse {
+  0% {
+    transform: scale(.78);
+    opacity: .34;
+  }
+  72%,
+  100% {
+    transform: scale(1.34);
+    opacity: 0;
+  }
+}
+
+.dark .status-dot-halo {
+  background: var(--once-gray-300);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-gray-700) 18%, transparent);
+}
+
+.dark .status-dot-core {
+  background: var(--once-gray-700);
+}
+
+.dark .status-dot[data-status="online"] .status-dot-halo {
+  background: color-mix(in oklab, var(--once-green-700) 18%, var(--once-gray-200));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-green-700) 20%, transparent);
+}
+
+.dark .status-dot[data-status="online"] .status-dot-core {
+  background: var(--once-green-700);
+  box-shadow: 0 0 5px oklch(0.7426 0.2344 144.85 / .30);
+}
+
+.dark .status-dot[data-status="offline"] .status-dot-halo {
+  background: color-mix(in oklab, var(--destructive) 16%, var(--once-gray-200));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .server-card:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--border) 64%, var(--once-gray-600) 36%);
+    box-shadow: var(--server-shadow-hover);
+  }
+
+  .metric-tile:hover {
+    border-color: color-mix(in oklab, var(--border) 68%, var(--once-gray-600) 32%);
+    background: var(--secondary);
+  }
+
+  .monitor-chart-card:hover {
+    border-color: color-mix(in oklab, var(--border) 68%, var(--once-gray-600) 32%);
+  }
+}
+
+@media (max-width: 760px) {
+  .once-header-inner { height: 52px; }
+
+  .once-nav {
+    border-radius: 11px;
+  }
+
+  .server-card {
+    border-radius: 12px;
+  }
+
+  .server-summary,
+  .system-detail-card,
+  .latency-float-card {
+    border-radius: 12px;
+  }
+
+  .metric-tile { min-height: 40px; }
+
+  .once-backdrop::before { opacity: .20; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot-pulse {
+    animation: none;
+    opacity: .12;
+    transform: scale(1);
+  }
+
+  .server-card,
+  .server-card *,
+  .monitor-chart-card {
+    transition-duration: 0s !important;
+  }
+
+  .server-card:hover,
+  .monitor-chart-card:hover {
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .server-metrics .metric-tile:hover {
+    background: color-mix(in oklab, var(--once-gray-1100) 72%, transparent);
+  }
+  .dark .server-metrics .metric-tile:hover {
+    background: color-mix(in oklab, var(--once-gray-400) 48%, transparent);
+  }
+}
+
+
+/* Loading states use the selected Once UI Neutral=Gray.
+   Never use Accent Orange for chart skeletons. */
+.once-skeleton {
+  background:
+    linear-gradient(
+      90deg,
+      var(--once-gray-1100) 0%,
+      var(--once-gray-1000) 42%,
+      var(--once-gray-1100) 72%
+    );
+  background-size: 220% 100%;
+  border: 1px solid var(--once-gray-1000);
+}
+
+.dark .once-skeleton {
+  background:
+    linear-gradient(
+      90deg,
+      var(--once-gray-300) 0%,
+      var(--once-gray-400) 42%,
+      var(--once-gray-300) 72%
+    );
+  background-size: 220% 100%;
+  border-color: var(--once-gray-400);
+}
+
+
+/* v2.7 — closer to the actual Once UI site:
+   gray/black carries structure; Moss is no longer painted across every metric. */
+:root {
+  --chart-1: var(--once-gray-300);
+  --chart-2: var(--once-gray-500);
+  --chart-3: var(--once-orange-600);
+  --chart-4: var(--once-gray-400);
+  --chart-5: var(--once-gray-600);
+  --bar-ok: linear-gradient(to right, var(--once-gray-400), var(--once-gray-300));
+}
+
+.dark {
+  --chart-1: var(--once-gray-1000);
+  --chart-2: var(--once-gray-800);
+  --chart-3: var(--once-orange-700);
+  --chart-4: var(--once-gray-900);
+  --chart-5: var(--once-gray-700);
+  --bar-ok: linear-gradient(to right, var(--once-gray-800), var(--once-gray-1000));
+}
+
+/* The overview is a first-class server card, not a secondary summary strip. */
+.server-summary-card {
+  background: var(--card);
+}
+
+.summary-icon {
+  color: var(--once-gray-400) !important;
+  border: 1px solid var(--once-gray-900);
+  background: var(--once-gray-1100);
+}
+
+.dark .summary-icon {
+  color: var(--once-gray-900) !important;
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-300);
+}
+
+.summary-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Server cards echo Once UI's large rounded editorial cards. */
+.server-card {
+  border-radius: 22px;
+}
+
+.server-metrics {
+  border-radius: 14px;
+  background: var(--once-gray-1200);
+}
+
+.metric-tile svg {
+  color: var(--once-gray-400) !important;
+}
+
+.dark .metric-tile svg {
+  color: var(--once-gray-900) !important;
+}
+
+/* Monitor page: neutral group hierarchy instead of Moss-selected rows and green charts. */
+.node-picker,
+.monitor-node-head,
+.monitor-range,
+.monitor-chart-card,
+.monitor-note {
+  border-radius: 24px;
+  border-color: var(--once-gray-1000);
+  background: #fff;
+}
+
+.dark .node-picker,
+.dark .monitor-node-head,
+.dark .monitor-range,
+.dark .monitor-chart-card,
+.dark .monitor-note {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-200);
+}
+
+.node-picker {
+  padding: 12px;
+}
+
+.monitor-node-link {
+  color: var(--foreground);
+}
+
+.monitor-node-link:hover {
+  background: var(--once-gray-1200);
+}
+
+.monitor-node-link[aria-current="page"] {
+  color: var(--foreground);
+  background: var(--once-gray-1100);
+  font-weight: 560;
+}
+
+.dark .monitor-node-link:hover {
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-node-link[aria-current="page"] {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
+}
+
+.monitor-range {
+  gap: 6px;
+  padding: 7px;
+}
+
+.monitor-range-tab {
+  color: var(--once-gray-500);
+  border-color: var(--once-gray-900);
+  background: #fff;
+}
+
+.monitor-range-tab:hover {
+  color: var(--once-gray-200);
+  background: var(--once-gray-1200);
+}
+
+.monitor-range-tab[aria-pressed="true"] {
+  color: #fff;
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-range-tab {
+  color: var(--once-gray-700);
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-200);
+}
+
+.dark .monitor-range-tab:hover {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
+}
+
+.dark .monitor-range-tab[aria-pressed="true"] {
+  color: #000;
+  border-color: var(--once-gray-1000);
+  background: var(--once-gray-1000);
+}
+
+.monitor-node-head {
+  padding: 18px 20px;
+}
+
+.monitor-chart-card {
+  padding: 18px;
+  box-shadow: none;
+}
+
+.monitor-chart-card h4 {
+  color: var(--once-gray-500);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.monitor-chip {
+  color: var(--once-gray-500);
+  border-color: var(--once-gray-900);
+  background: #fff;
+}
+
+.dark .monitor-chip {
+  color: var(--once-gray-700);
+  border-color: var(--once-gray-400);
+  background: var(--once-gray-200);
+}
+
+/* Brand Moss stays available for rare actions, but data visualization is neutral. */
+.detail-card-icon {
+  color: var(--once-gray-400) !important;
+  border-color: var(--once-gray-900) !important;
+  background: var(--once-gray-1100) !important;
+}
+
+.dark .detail-card-icon {
+  color: var(--once-gray-900) !important;
+  border-color: var(--once-gray-400) !important;
+  background: var(--once-gray-300) !important;
+}
+
+@media (max-width: 760px) {
+  .server-card {
+    border-radius: 20px;
+  }
+
+  .node-picker,
+  .monitor-node-head,
+  .monitor-range,
+  .monitor-chart-card,
+  .monitor-note {
+    border-radius: 22px;
+  }
+
+  .monitor-chart-card {
+    padding: 16px;
+  }
+}
+
+
+/* Final interaction polish: pressed monitor tags and probe chips are driven by
+   semantic state attributes, not transient class combinations. */
+.monitor-range-tab,
+.monitor-chip {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.monitor-range-tab:focus-visible,
+.monitor-chip:focus-visible,
+.monitor-node-link:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--foreground) 28%, transparent);
+  outline-offset: 2px;
+}
+
+.monitor-chip[aria-pressed="false"] {
+  opacity: .42;
+}
+
+.monitor-chip[aria-pressed="true"] {
+  opacity: 1;
+}
+
+
+/* Touch Safari keeps :hover after taps. On coarse pointers, stateful controls
+   are painted only from aria-current / aria-pressed so route and range tags
+   cannot look selected twice after navigation. */
+@media (hover: none), (pointer: coarse) {
+  .once-nav-item:hover {
+    color: var(--muted-foreground);
+    background: transparent;
+  }
+
+  .once-nav-item[aria-current="page"],
+  .once-nav-item[aria-current="page"]:hover {
+    color: var(--solid-on-brand);
+    background: var(--solid-brand);
+  }
+
+  .monitor-node-link:hover {
+    background: transparent;
+  }
+
+  .monitor-node-link[aria-current="page"],
+  .monitor-node-link[aria-current="page"]:hover {
+    color: var(--foreground);
+    background: var(--once-gray-1100);
+  }
+
+  .dark .monitor-node-link[aria-current="page"],
+  .dark .monitor-node-link[aria-current="page"]:hover {
+    color: var(--once-gray-1200);
+    background: var(--once-gray-300);
+  }
+
+  .monitor-range-tab:hover {
+    color: var(--once-gray-500);
+    background: #fff;
+  }
+
+  .monitor-range-tab[aria-pressed="true"],
+  .monitor-range-tab[aria-pressed="true"]:hover {
+    color: #fff;
+    border-color: var(--once-gray-300);
+    background: var(--once-gray-300);
+  }
+
+  .dark .monitor-range-tab:hover {
+    color: var(--once-gray-700);
+    background: var(--once-gray-200);
+  }
+
+  .dark .monitor-range-tab[aria-pressed="true"],
+  .dark .monitor-range-tab[aria-pressed="true"]:hover {
+    color: #000;
+    border-color: var(--once-gray-1000);
+    background: var(--once-gray-1000);
+  }
+}
+
+
+/* v2.8 — ServerStatus interaction model + Once UI presentation.
+   Details live in an overlay drawer so opening a node never reflows the server list. */
+.server-detail-backdrop {
+  background: rgb(0 0 0 / .26);
+  animation: detail-backdrop-in .16s ease-out both;
+}
+
+.server-detail-drawer {
+  contain: layout paint style;
+  color: var(--foreground);
+  border-left: 1px solid var(--border);
+  background: var(--background);
+  box-shadow: -24px 0 64px -36px rgb(0 0 0 / .42);
+  animation: detail-drawer-in .22s cubic-bezier(.2,.8,.2,1) both;
+  will-change: transform;
+}
+
+.server-detail-head {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--background) 94%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.server-detail-close {
+  color: var(--once-gray-500);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.server-detail-close:hover,
+.server-detail-close:focus-visible {
+  color: var(--once-gray-200);
+  background: var(--once-gray-1100);
+}
+
+.server-detail-close:active {
+  transform: scale(.94);
+}
+
+.dark .server-detail-close {
+  color: var(--once-gray-800);
+  background: transparent;
+}
+
+.dark .server-detail-close:hover,
+.dark .server-detail-close:focus-visible {
+  color: var(--once-gray-1200);
+  background: var(--once-gray-300);
+}
+
+.server-detail-scroll {
+  scrollbar-gutter: stable;
+}
+
+.detail-groups {
+  overflow: hidden;
+  margin: .15rem -.15rem -.15rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--once-gray-1200);
+}
+
+.dark .detail-groups {
+  background: var(--once-gray-200);
+}
+
+.detail-group {
+  padding: 12px 14px;
+}
+
+.detail-group + .detail-group {
+  border-top: 1px solid var(--border);
+}
+
+.system-detail-card {
+  padding: 12px;
+}
+
+.latency-float-card {
+  overflow: hidden;
+}
+
+@keyframes detail-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes detail-drawer-in {
+  from { transform: translate3d(26px,0,0); opacity: .72; }
+  to { transform: translate3d(0,0,0); opacity: 1; }
+}
+
+/* Monitor: one grouped identity/range surface, then the data cards. */
+.monitor-overview {
+  border-color: var(--once-gray-1000);
+  background: #fff;
+}
+
+.dark .monitor-overview {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-200);
+}
+
+.monitor-overview .monitor-node-head,
+.monitor-overview .monitor-range,
+.monitor-overview .monitor-note {
+  border-radius: 0;
+  background: transparent;
+}
+
+.monitor-overview .monitor-node-head {
+  padding: 14px 18px;
+}
+
+.monitor-overview .monitor-range {
+  padding: 8px 12px;
+}
+
+.monitor-overview .monitor-note {
+  color: var(--muted-foreground);
+}
+
+/* Keep expensive historical charts visually stable while live WS telemetry updates. */
+.monitor-chart-card {
+  contain: layout style;
+}
+
+/* ServerStatus-like calm interaction: no list geometry shift on hover. */
+@media (hover: hover) and (pointer: fine) {
+  .server-card:hover {
+    transform: none;
+  }
+}
+
+@media (min-width: 761px) {
+  .detail-groups {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .detail-group:nth-child(2n) {
+    border-left: 1px solid var(--border);
+  }
+
+  .detail-group:nth-child(2) {
+    border-top: 0;
+  }
+}
+
+/* On phones the node picker becomes a light horizontal rail instead of a tall
+   card list. The detail content starts almost immediately, like ServerStatus's
+   full-width mobile drawer. */
+@media (max-width: 760px) {
+  .monitor-shell {
+    display: block;
+  }
+
+  .node-picker {
+    position: static !important;
+    max-height: none !important;
+    margin-bottom: 12px;
+    padding: 7px !important;
+    overflow: hidden;
+    border-radius: 18px !important;
+  }
+
+  .node-picker > input {
+    display: none;
+  }
+
+  .node-picker > nav {
+    display: flex;
+    min-height: 0;
+    gap: 6px;
+    margin-top: 0 !important;
+    padding: 0 1px 1px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .node-picker > nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .monitor-node-link {
+    flex: 0 0 auto;
+    min-width: max-content;
+    gap: 7px;
+    padding: 7px 10px !important;
+    border: 1px solid var(--once-gray-1000);
+    border-radius: 999px !important;
+    background: #fff;
+  }
+
+  .monitor-node-link span.min-w-0 {
+    max-width: 132px;
+  }
+
+  .monitor-node-link[aria-current="page"],
+  .monitor-node-link[aria-current="page"]:hover {
+    color: #fff;
+    border-color: var(--once-gray-300);
+    background: var(--once-gray-300);
+  }
+
+  .dark .monitor-node-link {
+    border-color: var(--once-gray-400);
+    background: var(--once-gray-200);
+  }
+
+  .dark .monitor-node-link[aria-current="page"],
+  .dark .monitor-node-link[aria-current="page"]:hover {
+    color: #000;
+    border-color: var(--once-gray-1000);
+    background: var(--once-gray-1000);
+  }
+
+  .monitor-overview {
+    border-radius: 20px !important;
+  }
+
+  .monitor-overview .monitor-node-head {
+    padding: 13px 14px;
+  }
+
+  .monitor-overview .monitor-range {
+    flex-wrap: nowrap;
+    gap: 5px;
+    padding: 7px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .monitor-overview .monitor-range::-webkit-scrollbar {
+    display: none;
+  }
+
+  .monitor-range-tab {
+    flex: 0 0 auto;
+  }
+
+  .server-detail-backdrop {
+    background: rgb(0 0 0 / .20);
+  }
+
+  .server-detail-drawer {
+    width: 100vw;
+    max-width: none;
+    border-left: 0;
+    box-shadow: none;
+  }
+
+  .server-detail-head {
+    padding-top: calc(.75rem + env(safe-area-inset-top));
+  }
+
+  .server-detail-scroll {
+    padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+  }
+
+  .detail-groups {
+    border-radius: 14px;
+  }
+
+  .detail-group {
+    padding: 11px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-detail-backdrop,
+  .server-detail-drawer {
+    animation: none;
+  }
+}
+
+
+/* Network chart uses Once UI neutral hierarchy rather than an accent color. */
+:root {
+  --network-rx: #8a8a8a;
+  --network-tx: #2f2f2f;
+}
+
+.dark {
+  --network-rx: #8f8f8f;
+  --network-tx: #e7e7e7;
+}
+
+
+@media (max-width: 760px) {
+  .server-summary-card .summary-metrics .metric-tile {
+    min-height: 44px;
+  }
+}

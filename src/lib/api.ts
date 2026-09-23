@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 
 export type Metrics = {
   uptime: number
@@ -52,6 +52,8 @@ export type Node = {
   total_tx: number
   month_rx: number
   month_tx: number
+  /** This period's usage as the plan meters it (`traffic_mode`). Absent on older hubs. */
+  month_used?: number
   month_start: string
   day_rx: number
   day_tx: number
@@ -61,7 +63,7 @@ export type Node = {
   remark?: string
 }
 
-export class ApiError extends Error {
+class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
     super(message)
@@ -110,7 +112,10 @@ export function useNodes() {
     let closed = false
 
     const receive = (list: Node[]) => {
-      setNodes(safeNodes(list))
+      const next = safeNodes(list)
+      // Live telemetry arrives every two seconds. Treat those paints as
+      // non-urgent so taps, route changes and scrolling win on mobile Safari.
+      startTransition(() => setNodes(next))
       setError(null)
       setClosed(false)
     }

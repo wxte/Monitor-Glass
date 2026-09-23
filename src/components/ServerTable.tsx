@@ -1,11 +1,12 @@
-import { lazy, Suspense, useState, type CSSProperties, type ReactNode } from "react"
+import { lazy, Suspense, useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react"
+import { createPortal } from "react-dom"
+import { ArrowDown, ArrowUp, ChevronRight, Cpu, Database, HardDrive, MemoryStick, Network, Server, X, type LucideIcon } from "lucide-react"
 import {
   siAlmalinux, siAlpinelinux, siArchlinux, siCentos, siDebian, siFedora, siLinux, siOpensuse, siRedhat,
   siRockylinux, siUbuntu, type SimpleIcon,
 } from "simple-icons"
 
 import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Node } from "@/lib/api"
 import {
   bytes, compact, CYCLES, daysUntil, distro, duration, FOREVER, money, monthUsage, osName, cpuName, pair,
@@ -35,15 +36,17 @@ export function deployed(node: Node) {
 }
 
 export function Dot({ node, className }: { node: Node; className?: string }) {
+  const state = node.online ? "online" : deployed(node) ? "offline" : "pending"
   return (
     <span
-      title={node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
-      className={cn(
-        "inline-block size-3 shrink-0 rounded-full align-middle",
-        node.online ? "bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
-        className,
-      )}
-    />
+      title={state === "online" ? "在线" : state === "offline" ? "离线" : "未接入"}
+      data-status={state}
+      className={cn("status-dot relative inline-block size-4 shrink-0 align-middle", className)}
+    >
+      {node.online && <span aria-hidden="true" className="status-dot-pulse absolute rounded-full" />}
+      <span aria-hidden="true" className="status-dot-halo absolute inset-0 rounded-full" />
+      <span aria-hidden="true" className="status-dot-core absolute rounded-full" />
+    </span>
   )
 }
 
@@ -88,62 +91,151 @@ export function OsIcon({ os, className }: { os: string; className?: string }) {
   )
 }
 
-/**
- * The label sits over both halves of the bar in the text colour, which is why the
- * fills are light in the light theme and dark in the dark one.
- */
-function Bar({ pct, label }: { pct: number | null; label?: string }) {
-  const v = pct === null ? 0 : Math.min(100, Math.max(0, pct))
-  const tone = v >= 90 ? "bg-(image:--bar-danger)" : v >= 80 ? "bg-(image:--bar-warn)" : "bg-(image:--bar-ok)"
+
+const SLOT = { compact: 5.6, bytes: 7.3, rate: 10.2 }
+
+function Num({ ch, className, children }: { ch: number; className?: string; children: ReactNode }) {
   return (
-    <div className="relative h-5 overflow-hidden rounded bg-bar-track shadow-[inset_0_1px_2px_rgb(0_0_0/0.1)] @max-3xl:h-4">
-      <div className={cn("h-full rounded-l-[3px] transition-[width] duration-500", tone)} style={{ width: `${v}%` }} />
-      <span className="tnum absolute inset-y-0 left-1.5 flex items-center text-[10px] leading-none text-bar-text @max-3xl:left-0.5 @max-3xl:text-[8px]">
-        {label ?? (pct === null ? "—" : `${v.toFixed(1)}%`)}
-      </span>
+    <span
+      className={cn("tnum inline-block min-w-(--slot) text-right", className)}
+      style={{ "--slot": ch + "ch" } as CSSProperties}
+    >
+      {children}
+    </span>
+  )
+}
+
+function Line({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="grid min-w-0 grid-cols-[4.6em_minmax(0,1fr)] gap-x-2">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="tnum min-w-0 break-words text-foreground/95">{children}</span>
     </div>
   )
 }
 
-function Expiry({ node }: { node: Node }) {
-  const days = daysUntil(node.expires_at)
-  if (days === null) return <span className="text-muted-foreground" title="永不到期">{FOREVER}</span>
-  if (days < 0) return <span className="text-danger">已过期</span>
-  return <span className={cn(days <= 7 && "text-warn")}>{days} 天</span>
-}
-
-/**
- * Column widths and what folds away, applied to the header and every cell alike.
- * The panel is the container, so the table follows its own width rather than the
- * viewport's. Below 768px it switches to a fixed layout that fits a phone without
- * sideways scrolling, keeping the columns that change every push.
- */
-const COL = {
-  status: "w-14 @max-3xl:w-[6%]",
-  name: "max-w-60 min-w-32 truncate @max-3xl:w-[14%] @max-3xl:max-w-none @max-3xl:min-w-0 @max-sm:w-[17%]",
-  location: "w-20 @max-3xl:w-[7%] @max-sm:hidden",
-  os: "min-w-24 @max-6xl:hidden",
-  uptime: "min-w-18 @max-3xl:hidden",
-  expiry: "min-w-18 @max-6xl:hidden",
-  load: "w-16 @max-3xl:hidden",
-  speed: "min-w-30 @max-3xl:w-[21%] @max-3xl:min-w-0",
-  bar: "w-[7.5%] min-w-22 @max-3xl:w-[10%] @max-3xl:min-w-0 @max-sm:w-[11%]",
-  traffic: "w-[7.5%] min-w-22 @max-3xl:w-[22%] @max-3xl:min-w-0 @max-sm:w-[23%]",
-}
-
-/** One fact per line, the label in a fixed column so the values align. */
-function Line({ label, children }: { label: string; children: ReactNode }) {
+function DetailCard({
+  title,
+  icon: Icon,
+  className,
+  children,
+}: {
+  title: string
+  icon: LucideIcon
+  className?: string
+  children: ReactNode
+}) {
   return (
-    <div className="grid min-w-0 grid-cols-[5.5em_minmax(0,1fr)] gap-x-2">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="tnum break-words">{children}</span>
+    <section className={cn("detail-float-card rounded-2xl border p-3", className)}>
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium tracking-wide text-muted-foreground">
+        <span className="detail-card-icon grid size-6 place-items-center rounded-lg">
+          <Icon className="size-3.5 text-foreground/60 dark:text-white/65" />
+        </span>
+        <span>{title}</span>
+      </div>
+      <div className="space-y-1 text-[12px] leading-5 md:text-[13px]">{children}</div>
+    </section>
+  )
+}
+
+function DetailGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="detail-group min-w-0">
+      <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-muted-foreground">{title}</h4>
+      <div className="space-y-1">{children}</div>
+    </section>
+  )
+}
+
+function meterTone(pct: number | null) {
+  if (pct === null) return "bg-muted-foreground/25"
+  if (pct >= 90) return "bg-red-500"
+  if (pct >= 75) return "bg-orange-400"
+  return "bg-foreground/65 dark:bg-white/70"
+}
+
+function MiniMeter({ pct }: { pct: number | null }) {
+  const value = pct === null ? 0 : Math.max(0, Math.min(100, pct))
+  return (
+    <span className="mt-1 block h-1 overflow-hidden rounded-full bg-foreground/7 dark:bg-white/8">
+      <span
+        className={cn("block h-full rounded-full transition-[width] duration-500", meterTone(pct))}
+        style={{ width: value + "%" }}
+      />
+    </span>
+  )
+}
+
+function MetricTile({
+  label,
+  value,
+  pct,
+  icon: Icon,
+  className,
+}: {
+  label: string
+  value: string
+  pct: number | null
+  icon: LucideIcon
+  className?: string
+}) {
+  return (
+    <div className={cn("metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2", className)}>
+      <div className="flex min-w-0 items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
+        <Icon className="size-3 shrink-0 text-foreground/60 dark:text-white/65" />
+        <span className="truncate">{label}</span>
+      </div>
+      <div className="tnum mt-1 truncate text-[9px] font-medium leading-none md:text-xs">{value}</div>
+      <MiniMeter pct={pct} />
+    </div>
+  )
+}
+
+function SpeedTile({ rx, tx }: { rx: number; tx: number }) {
+  return (
+    <div className="metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2">
+      <div className="flex items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
+        <Network className="size-3 text-foreground/60 dark:text-white/65" />
+        <span>网速</span>
+      </div>
+      <div className="tnum mt-1 grid gap-0.5 text-[9px] font-medium leading-none md:text-xs">
+        <span className="flex min-w-0 items-center gap-1">
+          <ArrowDown className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+          <span className="truncate">{compact(rx)}/s</span>
+        </span>
+        <span className="flex min-w-0 items-center gap-1">
+          <ArrowUp className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+          <span className="truncate">{compact(tx)}/s</span>
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function TrafficTile({ rx, tx }: { rx: number; tx: number }) {
+  return (
+    <div className="metric-tile min-w-0 rounded-[0.7rem] border border-border/55 px-1.5 py-1 md:rounded-xl md:px-2.5 md:py-2">
+      <div className="flex items-center gap-1 text-[8px] leading-none text-muted-foreground md:text-[10px]">
+        <Database className="size-3 shrink-0 text-foreground/60 dark:text-white/65" />
+        <span>总流量</span>
+      </div>
+      <div className="tnum mt-1 grid gap-0.5 text-[9px] font-medium leading-none md:text-xs">
+        <span className="flex min-w-0 items-center gap-1">
+          <ArrowDown className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+          <span className="truncate">{bytes(rx)}</span>
+        </span>
+        <span className="flex min-w-0 items-center gap-1">
+          <ArrowUp className="size-3 shrink-0 text-foreground/90 dark:text-white/90" />
+          <span className="truncate">{bytes(tx)}</span>
+        </span>
+      </div>
     </div>
   )
 }
 
 function Details({ node }: { node: Node }) {
   if (!deployed(node)) {
-    return <p className="px-4 py-3 text-muted-foreground">尚未接入。在后台生成安装命令并执行一次。</p>
+    return <p className="px-4 py-6 text-center text-muted-foreground">尚未接入。在后台生成安装命令并执行一次。</p>
   }
   const m = node.online ? node.metrics : null
   const usage = (used: number, total: number) => `${pair(used, total)}（${percent(used, total).toFixed(1)}%）`
@@ -152,168 +244,239 @@ function Details({ node }: { node: Node }) {
   const days = daysUntil(node.expires_at)
 
   return (
-    <div className="space-y-3 px-4 pt-2 pb-3 text-[13px] leading-6 @max-3xl:px-2 @max-3xl:text-xs @max-3xl:leading-5">
-      {/* Three across, one topic a row: the machine, what it holds, what it is
-          doing, what it has moved, and its term. Low enough that the chart
-          beneath stays in view when a row opens. */}
-      <div className="grid gap-x-8 @2xl:grid-cols-2 @5xl:grid-cols-3">
-        <Line label="系统">
-          <span className="inline-flex items-center gap-1.5 align-middle">
-            <OsIcon os={node.os} />
-            {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
-          </span>
-        </Line>
-        <Line label="架构">
-          {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
-            .filter(Boolean)
-            .join(" · ") || "—"}
-        </Line>
-        <Line label="CPU">
-          {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
-          {m && `（${m.cpu.toFixed(1)}%）`}
-        </Line>
+    <div className="space-y-3 text-[13px] leading-6">
+      <DetailCard title="节点详情" icon={Server} className="system-detail-card">
+        <div className="detail-groups grid gap-0 md:grid-cols-2">
+          <DetailGroup title="系统信息">
+            <Line label="系统">
+              <span className="inline-flex items-center gap-1.5 align-middle">
+                <OsIcon os={node.os} className="detail-os-icon" />
+                {[osName(node.os), node.kernel].filter(Boolean).join(" · ") || "—"}
+              </span>
+            </Line>
+            <Line label="架构">
+              {[node.arch, node.virt !== "none" && node.virt, node.agent_version && `agent ${node.agent_version}`]
+                .filter(Boolean)
+                .join(" · ") || "—"}
+            </Line>
+            <Line label="CPU">
+              {node.cpu_name ? `${cpuName(node.cpu_name)} × ${node.cpu_cores}` : `${node.cpu_cores} 核`}
+              {m && `（${m.cpu.toFixed(1)}%）`}
+            </Line>
+          </DetailGroup>
 
-        <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
-        <Line label="交换">
-          {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
-        </Line>
-        <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
+          <DetailGroup title="资源">
+            <Line label="内存">{m ? usage(m.mem_used, m.mem_total) : bytes(node.mem_total)}</Line>
+            <Line label="交换">
+              {node.swap_total > 0 ? (m ? usage(m.swap_used, m.swap_total) : bytes(node.swap_total)) : "未启用"}
+            </Line>
+            <Line label="硬盘">{m ? usage(m.disk_used, m.disk_total) : bytes(node.disk_total)}</Line>
+            <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
+          </DetailGroup>
 
-        <Line label="负载">{m ? m.load.map((n) => n.toFixed(2)).join(" / ") : "—"}</Line>
-        <Line label="进程 / 连接">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
-        <Line label="网速">{m ? `↓ ${rate(m.net_rx)} · ↑ ${rate(m.net_tx)}` : "—"}</Line>
+          <DetailGroup title="网络与连接">
+            <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
+            <Line label="网速">
+              {m ? (
+                <>
+                  ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
+                </>
+              ) : "—"}
+            </Line>
+            <Line label="今日">{flow(node.day_rx, node.day_tx)}</Line>
+            <Line label="本月">{flow(node.month_rx, node.month_tx)}</Line>
+            <Line label="总流量">{flow(node.total_rx, node.total_tx)}</Line>
+          </DetailGroup>
 
-        <Line label="今日流量">{flow(node.day_rx, node.day_tx)}</Line>
-        <Line label="本月流量">{flow(node.month_rx, node.month_tx)}</Line>
-        <Line label="总流量">{flow(node.total_rx, node.total_tx)}</Line>
+          <DetailGroup title="服务">
+            <Line label={node.online ? "在线" : "离线"}>
+              {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
+            </Line>
+            <Line label="续费">
+              {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
+            </Line>
+            <Line label="到期">
+              {node.expires_at
+                ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
+                : "长期有效"}
+            </Line>
+            {node.traffic_reset_day > 0 && <Line label="流量重置">每月 {node.traffic_reset_day} 日</Line>}
+          </DetailGroup>
+        </div>
+      </DetailCard>
 
-        <Line label={node.online ? "在线" : "离线"}>
-          {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
-        </Line>
-        <Line label="续费">
-          {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
-        </Line>
-        <Line label="到期">
-          {node.expires_at
-            ? `${node.expires_at}（${days !== null && days < 0 ? `已过期 ${-days} 天` : `剩余 ${days} 天`}）`
-            : "长期有效"}
-        </Line>
-
-        {node.traffic_reset_day > 0 && (
-          <Line label="流量重置">每月 {node.traffic_reset_day} 日重置</Line>
-        )}
-      </div>
-
-      <div className="space-y-2 border-t pt-3">
+      <div className="latency-float-card space-y-2 rounded-2xl border p-3">
         <div className="flex items-baseline justify-between gap-3 text-xs">
           <span className="text-muted-foreground">网络延迟 · 最近 24 小时</span>
-          <Link href={`/node/${node.id}`} className="text-primary hover:underline">查看资源图表 →</Link>
+          <Link href={`/node/${node.id}`} className="text-foreground/70 hover:text-foreground">查看资源图表 →</Link>
         </div>
-        {/* Fetched when the row opens, from the chart page's chunk, which App
-            warms at start, so the table itself carries no recharts. */}
-        <Suspense fallback={<Skeleton className="h-[280px] @max-3xl:h-[220px]" />}>
-          <Latency id={node.id} className="h-[280px] @max-3xl:h-[220px]" />
+        <Suspense fallback={<Skeleton className="h-[240px] @max-3xl:h-[190px]" />}>
+          <Latency id={node.id} className="h-[240px] @max-3xl:h-[190px]" />
         </Suspense>
       </div>
     </div>
   )
 }
 
-function Row({ node, index }: { node: Node; index: number }) {
-  const [open, setOpen] = useState(false)
+function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void }) {
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose()
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    addEventListener("keydown", close)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      removeEventListener("keydown", close)
+    }
+  }, [onClose])
+
+  return createPortal(
+    <div
+      className="server-detail-backdrop fixed inset-0 z-[60] flex justify-end"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <aside className="server-detail-drawer flex h-full w-full max-w-[620px] flex-col" role="dialog" aria-modal="true" aria-label={`${node.name} 详情`}>
+        <header className="server-detail-head sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b px-4 py-3 md:px-5">
+          <Dot node={node} />
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <h3 className="truncate text-base font-semibold tracking-[-0.02em]">{node.name}</h3>
+              <Flag code={node.country} className="shrink-0 text-xs text-muted-foreground" />
+            </div>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              {[node.online ? "在线" : deployed(node) ? "离线" : "未接入", distro(node.os)].filter(Boolean).join(" · ")}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="server-detail-close grid size-9 shrink-0 place-items-center rounded-full"
+            onClick={onClose}
+            aria-label="关闭详情"
+            title="关闭详情"
+          >
+            <X className="size-4" strokeWidth={2.2} />
+          </button>
+        </header>
+        <div className="server-detail-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 md:p-4">
+          <Details node={node} />
+        </div>
+      </aside>
+    </div>,
+    document.body,
+  )
+}
+
+function ServerCard({ node, onOpen }: { node: Node; onOpen: (id: number) => void }) {
   const m = node.online ? node.metrics : null
   const traffic = monthUsage(node)
-  // Parity from the node rather than :nth-child, so an opened detail row takes its
-  // node's shade instead of shifting every row beneath it.
-  const shade = index % 2 ? "bg-muted" : ""
-  const toggle = () => setOpen((o) => !o)
+  const memPct = m ? percent(m.mem_used, m.mem_total) : null
+  const diskPct = m ? percent(m.disk_used, m.disk_total) : null
+  const trafficPct = node.traffic_limit > 0 ? percent(traffic, node.traffic_limit) : null
+  const state = node.online ? "在线" : deployed(node) ? "离线" : "未接入"
+  const sub = [state, m ? duration(m.uptime) : "", distro(node.os)].filter(Boolean).join(" · ")
 
   return (
-    <>
-      <TableRow
-        aria-expanded={open}
-        tabIndex={0}
-        onClick={toggle}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), toggle())}
-        className={cn("cursor-pointer border-0 hover:bg-accent", shade)}
+    <article className="server-card" data-online={node.online ? "true" : "false"}>
+      <button
+        type="button"
+        onClick={() => onOpen(node.id)}
+        className="server-card-hit grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 p-2 text-left sm:p-2.5 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,4fr)_28px] md:gap-2.5 md:p-3"
       >
-        <TableCell className={COL.status}><Dot node={node} className="mx-auto block @max-3xl:size-2.5" /></TableCell>
-        <TableCell className={COL.name} title={node.name}>{node.name}</TableCell>
-        <TableCell className={COL.location}><Flag code={node.country} /></TableCell>
-        <TableCell className={COL.os}>
-          <span className="inline-flex items-center justify-center gap-1.5">
-            <OsIcon os={node.os} />
-            {distro(node.os) || "—"}
+        <div className="flex min-w-0 items-center gap-2 md:gap-3">
+          <span className="status-orbit grid size-5 shrink-0 place-items-center rounded-full md:size-6">
+            <Dot node={node} className="server-status-dot" />
           </span>
-        </TableCell>
-        <TableCell className={COL.uptime}>{m ? duration(m.uptime) : "—"}</TableCell>
-        <TableCell className={COL.expiry}><Expiry node={node} /></TableCell>
-        <TableCell className={COL.load}>{m ? m.load[0].toFixed(2) : "—"}</TableCell>
-        <TableCell className={COL.speed}>{m ? `${compact(m.net_rx)} | ${compact(m.net_tx)}` : "— | —"}</TableCell>
-        <TableCell className={COL.bar}><Bar pct={m ? m.cpu : null} /></TableCell>
-        <TableCell className={COL.bar}><Bar pct={m ? percent(m.mem_used, m.mem_total) : null} /></TableCell>
-        <TableCell className={COL.bar}><Bar pct={m ? percent(m.disk_used, m.disk_total) : null} /></TableCell>
-        <TableCell
-          className={COL.traffic}
-          title={`本月已用 ${node.traffic_limit > 0 ? `${pair(traffic, node.traffic_limit)}（${((traffic / node.traffic_limit) * 100).toFixed(1)}%）` : `${bytes(traffic)} · 无流量配额`}`}
-        >
-          <Bar
-            pct={node.traffic_limit > 0 ? percent(traffic, node.traffic_limit) : null}
-            label={`${compact(traffic)} / ${node.traffic_limit > 0 ? compact(node.traffic_limit) : FOREVER}`}
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="truncate text-sm font-semibold tracking-[-0.01em] md:text-[15px]" title={node.name}>{node.name}</span>
+              <Flag code={node.country} className="shrink-0 text-[10px]" />
+            </div>
+            <div className="mt-0.5 truncate text-[9px] text-muted-foreground md:mt-1 md:text-[11px]">{sub || "—"}</div>
+          </div>
+        </div>
+
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground md:order-last md:justify-self-end" />
+
+        <div className="server-metrics col-span-2 grid min-w-0 grid-cols-[1.15fr_repeat(4,minmax(0,1fr))] md:col-span-1 md:col-start-2 md:row-start-1">
+          <SpeedTile rx={m?.net_rx ?? 0} tx={m?.net_tx ?? 0} />
+          <MetricTile label="CPU" value={m ? m.cpu.toFixed(1) + "%" : "—"} pct={m?.cpu ?? null} icon={Cpu} />
+          <MetricTile label="内存" value={memPct === null ? "—" : memPct.toFixed(1) + "%"} pct={memPct} icon={MemoryStick} />
+          <MetricTile label="硬盘" value={diskPct === null ? "—" : diskPct.toFixed(1) + "%"} pct={diskPct} icon={HardDrive} />
+          <MetricTile
+            label="流量"
+            value={compact(traffic) + " / " + (node.traffic_limit > 0 ? compact(node.traffic_limit) : FOREVER)}
+            pct={trafficPct}
+            icon={Database}
           />
-        </TableCell>
-      </TableRow>
-      {open && (
-        <TableRow className={cn("border-0 hover:bg-transparent", shade)}>
-          <TableCell colSpan={12} className="border-t-0! p-0! text-left whitespace-normal">
-            <Details node={node} />
-          </TableCell>
-        </TableRow>
-      )}
-    </>
+        </div>
+      </button>
+    </article>
   )
 }
 
 export function ServerTable({ nodes }: { nodes: Node[] }) {
-  const online = nodes.filter((n) => n.online && n.metrics)
-  const sum = (pick: (n: Node) => number) => online.reduce((total, n) => total + pick(n), 0)
-  const totalRx = nodes.reduce((total, n) => total + n.total_rx, 0)
-  const totalTx = nodes.reduce((total, n) => total + n.total_tx, 0)
-  const heads: [keyof typeof COL, ReactNode][] = [
-    ["status", "状态"], ["name", "名称"], ["location", "位置"], ["os", "系统"], ["uptime", "在线"],
-    ["expiry", "到期"], ["load", "负载"], ["speed", "网速 ↓|↑"],
-    ["bar", "CPU"], ["bar", "内存"], ["bar", "硬盘"], ["traffic", "流量"],
-  ]
+  const [detailId, setDetailId] = useState<number | null>(null)
+  const closeDetail = useCallback(() => setDetailId(null), [])
+  const detailNode = detailId === null ? null : nodes.find((node) => node.id === detailId) ?? null
+  let onlineCount = 0
+  let rxRate = 0
+  let txRate = 0
+  let totalRx = 0
+  let totalTx = 0
+
+  for (const node of nodes) {
+    totalRx += node.total_rx
+    totalTx += node.total_tx
+    if (node.online) onlineCount++
+    if (node.online && node.metrics) {
+      rxRate += node.metrics.net_rx
+      txRate += node.metrics.net_tx
+    }
+  }
 
   return (
-    <section className="@container rounded-md border bg-card p-5 text-card-foreground shadow-sm max-md:p-2">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-3 gap-y-1 px-1 pb-3 max-md:pb-2 @max-3xl:grid-cols-1">
-        <h2 className="text-lg font-semibold max-md:text-sm">服务器</h2>
-        <div className="tnum flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground max-md:text-[10px]">
-          <span className="whitespace-nowrap">
-            在线 {nodes.filter((n) => n.online).length} / {nodes.length} · ↓ {compact(sum((n) => n.metrics!.net_rx))}/s · ↑{" "}
-            {compact(sum((n) => n.metrics!.net_tx))}/s
-          </span>
-          <span className="whitespace-nowrap" title="所有节点累计下载与上传流量">总流量 ↓ {bytes(totalRx)} · ↑ {bytes(totalTx)}</span>
+    <section className="server-panel @container space-y-3">
+      <div className="flex flex-wrap items-end justify-between gap-2 px-1">
+        <div>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] md:text-2xl">服务器</h2>
+          <p className="mt-0.5 text-[11px] text-muted-foreground md:text-xs">实时监控 · 稳定运行 · 全局总览</p>
         </div>
+        <span className="server-online-pill rounded-full border px-2.5 py-1 text-[10px] shadow-sm">
+          {onlineCount === nodes.length ? "全部在线" : "在线 " + onlineCount + " / " + nodes.length}
+        </span>
       </div>
-      <Table className="text-center text-sm @max-3xl:table-fixed @max-3xl:text-[10px]">
-        <TableHeader>
-          <TableRow className="border-0 hover:bg-transparent">
-            {heads.map(([col, label], i) => (
-              <TableHead key={i} className={cn("h-8 border-t px-1.5 text-center font-semibold @max-3xl:px-0.5", COL[col])}>
-                {label}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        {/* Rules between rows rather than under them, as the header row starts. */}
-        <TableBody className="[&_td]:h-[29px] [&_td]:border-t [&_td]:px-1.5 [&_td]:py-1 @max-3xl:[&_td]:px-0.5">
-          {nodes.map((n, i) => (
-            <Row key={n.id} node={n} index={i} />
-          ))}
-        </TableBody>
-      </Table>
+
+      <article className="server-card server-summary-card">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-1.5 p-2.5 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,2fr)] md:gap-2.5 md:p-3">
+          <div className="flex min-w-0 items-center gap-2 md:gap-3">
+            <span className="summary-icon grid size-5 shrink-0 place-items-center rounded-full md:size-6">
+              <Server className="size-3.5 md:size-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold tracking-[-0.01em] md:text-[15px]">在线服务器</p>
+              <p className="tnum mt-0.5 text-[11px] text-muted-foreground md:text-xs">
+                {onlineCount} / {nodes.length} · {onlineCount === nodes.length ? "全部在线" : "运行中"}
+              </p>
+            </div>
+          </div>
+
+          <div className="server-metrics summary-metrics grid min-w-0 grid-cols-2">
+            <SpeedTile rx={rxRate} tx={txRate} />
+            <TrafficTile rx={totalRx} tx={totalTx} />
+          </div>
+        </div>
+      </article>
+
+      <div className="space-y-1.5 md:space-y-2">
+        {nodes.map((node) => <ServerCard key={node.id} node={node} onOpen={setDetailId} />)}
+      </div>
+
+      {detailNode && <ServerDetailDrawer node={detailNode} onClose={closeDetail} />}
     </section>
   )
 }

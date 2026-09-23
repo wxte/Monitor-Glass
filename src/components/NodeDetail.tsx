@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { memo, useEffect, useMemo, useState } from "react"
 import {
   Area, AreaChart, Brush, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis,
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { deployed, Dot, Flag } from "@/components/ServerTable"
 import { api, type Node } from "@/lib/api"
 import {
-  axisBytes, axisTop, bytes, clockFor, quarters, rate, timeTicks, uptime,
+  axisBytes, axisTop, bytes, clockFor, despike, quarters, rate, timeTicks,
 } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -65,10 +65,21 @@ const SERIES = { dot: false as const, strokeWidth: 1.5, isAnimationActive: false
 // 28px, placing a CPU spike and the network spike that caused it at different x.
 const Y_WIDTH = 68
 
-// Hue alone separates the probes. A dash pattern would not: once every ping in a
-// day is on the chart its period is shorter than the jitter, and dotted and dashed
-// lines both read as texture.
+// The three mainland carrier probes use the visual language requested for the
+// dashboard: neutral gray, reference green #2BEA5E and reference red #FA471E.
+// Unknown/custom probes still fall back to the theme chart palette.
 const PALETTE = [1, 2, 3, 4, 5].map((i) => `var(--color-chart-${i})`)
+const PROBE_GRAY = "#7A7A7A"
+const PROBE_GREEN = "#2BEA5E"
+const PROBE_RED = "#FA471E"
+
+function probeColor(name: string, fallbackIndex: number) {
+  const key = name.toLowerCase()
+  if (key.includes("联通") || key.includes("unicom")) return PROBE_GRAY
+  if (key.includes("电信") || key.includes("telecom")) return PROBE_GREEN
+  if (key.includes("移动") || key.includes("mobile")) return PROBE_RED
+  return PALETTE[Math.max(0, fallbackIndex) % PALETTE.length]
+}
 
 // recharts paints its tooltip white unless told otherwise, which is a white box
 // on the dark theme.
@@ -82,20 +93,20 @@ const TIP = {
 
 function Panel({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div>
+    <section className="monitor-chart-card rounded-2xl border border-border/55 p-3 md:p-4">
       <h4 className="mb-2 text-xs font-medium text-muted-foreground">{title}</h4>
-      <div className="h-40 w-full text-muted-foreground">{children}</div>
-    </div>
+      <div className="h-44 w-full text-muted-foreground">{children}</div>
+    </section>
   )
 }
 
 function Tab({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
   return (
     <button
+      type="button"
+      aria-pressed={active}
       onClick={onClick}
-      className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
-        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-      }`}
+      className="monitor-range-tab rounded-full border px-3.5 py-1.5 text-xs transition-colors"
     >
       {children}
     </button>
@@ -157,6 +168,23 @@ function Failed({ message, retry }: { message: string; retry: () => void }) {
   )
 }
 
+/**
+ * How many samples of a probe's own series make up seven minutes of neighbours.
+ *
+ * The window the filter judges against has to be a duration, not a count: the
+ * hub buckets a window to the `points` asked for above, so the same day arrives
+ * as one-minute buckets on a desktop and two-minute ones on a phone, and a fixed
+ * count would clip a five-minute stall on the first while keeping it on the
+ * second. The smallest gap is the bucket interval; a longer one is the node
+ * being offline. Odd, so the window has a middle, and bounded so a sparse probe
+ * still has neighbours and a dense one does not pay for a wide sort.
+ */
+function despikeWindow(points: { ts: number }[]): number {
+  let step = Infinity
+  for (let i = 1; i < points.length; i++) step = Math.min(step, points[i].ts - points[i - 1].ts)
+  return Math.min(15, Math.max(3, Math.round(420 / step) | 1))
+}
+
 // A real time axis rather than the category axis recharts defaults to: on a
 // category axis ticks are selected by index, so a period the agent was offline for
 // collapses to nothing.
@@ -179,11 +207,15 @@ function timeAxis(rows: { ts: number }[], hours: number, from = 0, to = rows.len
  * expanded row both draw it: the legend above, sized to its chips, and the plot
  * with its brush below at the height `className` gives it.
  */
-export function Latency({ id, className }: { id: number; className?: string }) {
+function LatencyView({ id, className }: { id: number; className?: string }) {
   const { data, failed, retry } = useHistory(id, LATENCY_HOURS, "ping")
   // Probes switched off. Hiding a slow one is what makes the fast ones readable,
   // as the axis rescales to what remains.
   const [hiddenProbes, setHiddenProbes] = useState<number[]>([])
+  // Spikes pulled back to their neighbourhood. Off by default, since it is the
+  // raw round trips that answer whether the node stalled at 03:00; on, a single
+  // 2 s bucket stops setting the axis for the day around it.
+  const [smooth, setSmooth] = useState(false)
   // Where the brush has been dragged, so the axis reticks for the visible span.
   // Tagged with the window it was dragged on, so a new window starts unzoomed
   // without an effect to clear it.
@@ -216,7 +248,10 @@ export function Latency({ id, className }: { id: number; className?: string }) {
     [pingSeries, hiddenProbes],
   )
   // Keyed on the full list, so a line keeps its colour when others are hidden.
-  const color = (id: number) => PALETTE[pingSeries.findIndex((p) => p.id === id) % PALETTE.length]
+  const color = (id: number) => {
+    const index = pingSeries.findIndex((p) => p.id === id)
+    return probeColor(index >= 0 ? pingSeries[index].name : "", index)
+  }
 
   // The hub stamps every sample with its bucket rather than the second the probe
   // finished, so probes reporting at the bucket's rate share rows instead of each
@@ -224,24 +259,43 @@ export function Latency({ id, className }: { id: number; className?: string }) {
   // slower probe leaves gaps in its own column, which is what `connectNulls`
   // addresses.
   //
-  // Every probe is held here whether or not it is on screen: recharts resets the
-  // brush when the data array changes identity, and re-reads a controlled
-  // selection only when the index props change, which they do not. Hiding a probe
-  // therefore selects a `dataKey` rather than rebuilding the array.
+  // Every probe, and both versions of every sample, are held here whether or not
+  // they are on screen: recharts resets the brush when the data array changes
+  // identity, and re-reads a controlled selection only when the index props
+  // change, which they do not. Hiding a probe or clipping the spikes therefore
+  // selects a `dataKey` rather than rebuilding the array.
   const pingRows = useMemo(() => {
     const rows = new Map<
       number,
       { ts: number } & Record<string, number | [number, number] | null>
     >()
     for (const s of pingSeries) {
-      s.points.forEach((p) => {
+      const windowSize = despikeWindow(s.points)
+      const line = despike(s.points.map((p) => p.latency), windowSize)
+      // The band spans the same outliers as the line, and with one probe on
+      // screen it is what the axis is fitted to, so it is clipped alongside it
+      // rather than left to pull the axis back open.
+      const lo = despike(s.points.map((p) => p.band?.[0] ?? p.latency), windowSize)
+      const hi = despike(s.points.map((p) => p.band?.[1] ?? p.latency), windowSize)
+      s.points.forEach((p, i) => {
         const row = rows.get(p.ts) ?? { ts: p.ts * 1_000 }
         row[`t${s.id}`] = p.latency
+        row[`s${s.id}`] = line[i]
         row[`l${s.id}`] = p.loss ?? 0
         // A bucket with a single answer carries no band and spans only that answer. Left null, `connectNulls`
         // would bridge the hours between the few buckets that have one: 9 of
         // 1,438 in a day, the widest gap 268 minutes, drawn as one large wedge.
         row[`b${s.id}`] = p.band ?? (p.latency === null ? null : [p.latency, p.latency])
+        // Taken as the span of three filtered series rather than a pair: the two
+        // edges are filtered independently, so a bucket that answered slightly
+        // faster than usual can trip the low edge alone and come back above the
+        // high one -- [180, 178] against a line of 176, drawn backwards with the
+        // line outside it.
+        const [low, high] = [lo[i], hi[i]]
+        row[`c${s.id}`] =
+          low === null || high === null
+            ? null
+            : [Math.min(low, high, line[i] ?? low), Math.max(low, high, line[i] ?? high)]
         rows.set(p.ts, row)
       })
     }
@@ -264,10 +318,12 @@ export function Latency({ id, className }: { id: number; className?: string }) {
           return (
             <button
               key={s.id}
+              type="button"
+              aria-pressed={shown}
               onClick={() =>
                 setHiddenProbes((h) => (shown ? [...h, s.id] : h.filter((id) => id !== s.id)))
               }
-              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-opacity ${
+              className={`monitor-chip inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-opacity ${
                 shown ? "" : "opacity-40"
               }`}
             >
@@ -285,6 +341,15 @@ export function Latency({ id, className }: { id: number; className?: string }) {
             </button>
           )
         })}
+        <button
+          type="button"
+          onClick={() => setSmooth((on) => !on)}
+          aria-pressed={smooth}
+          title="把孤立的异常值换成邻近若干桶的中位数，持续的变化保持原样"
+          className={`monitor-chip rounded-full border px-2.5 py-1 text-xs transition-opacity ${smooth ? "" : "opacity-40"}`}
+        >
+          削峰
+        </button>
       </div>
 
       <div className={cn("w-full text-muted-foreground", className)}>
@@ -303,9 +368,13 @@ export function Latency({ id, className }: { id: number; className?: string }) {
                 // The line is drawn from what answered, so without this a bucket
                 // that lost most of its packets reads as normal. `dataKey` is
                 // `t7`; the loss sits at `l7`.
+                //
+                // Rounded because a clipped sample carries the median of an even
+                // window, which falls between two of the whole milliseconds the
+                // hub stores.
                 formatter={(v, name, item) => {
                   const loss = Number(item?.payload?.[`l${String(item.dataKey).slice(1)}`] ?? 0)
-                  return [`${Number(v)} ms${loss > 0 ? ` · 丢 ${loss}%` : ""}`, name]
+                  return [`${Math.round(Number(v))} ms${loss > 0 ? ` · 丢 ${loss}%` : ""}`, name]
                 }}
                 contentStyle={TIP}
               />
@@ -321,7 +390,7 @@ export function Latency({ id, className }: { id: number; className?: string }) {
                 shownProbes.map((s) => (
                   <Area
                     key={`band${s.id}`}
-                    dataKey={`b${s.id}`}
+                    dataKey={`${smooth ? "c" : "b"}${s.id}`}
                     stroke="none"
                     fill={color(s.id)}
                     fillOpacity={0.16}
@@ -334,7 +403,7 @@ export function Latency({ id, className }: { id: number; className?: string }) {
               {shownProbes.map((s) => (
                 <Line
                   key={s.id}
-                  dataKey={`t${s.id}`}
+                  dataKey={`${smooth ? "s" : "t"}${s.id}`}
                   name={s.name}
                   stroke={color(s.id)}
                   {...SERIES}
@@ -361,12 +430,11 @@ export function Latency({ id, className }: { id: number; className?: string }) {
   )
 }
 
-export function NodeDetail({ node }: { node: Node }) {
+export const Latency = memo(LatencyView)
+
+function NodeDetailView({ node }: { node: Node }) {
   const [hours, setHours] = useState(6)
   const { data, failed, retry } = useHistory(node.id, hours, "metrics")
-
-  const m = node.metrics
-  const away = node.last_seen ? Date.now() / 1000 - node.last_seen : 0
 
   // The hub answers in seconds; the time axis requires milliseconds.
   const metricRows = useMemo(
@@ -391,28 +459,30 @@ export function NodeDetail({ node }: { node: Node }) {
   }, [metricRows])
 
   return (
-    <div className="space-y-4">
-      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-        <Dot node={node} />
-        <h2 className="truncate text-lg font-semibold">{node.name}</h2>
-        <Flag code={node.country} className="text-sm" />
-        <span className="tnum text-xs text-muted-foreground">
-          {node.online ? `在线 ${m ? uptime(m.uptime) : ""}` : deployed(node) ? `离线 ${away >= 60 ? uptime(away) : ""}` : "未接入"}
-        </span>
-        {node.agent_version && <span className="text-xs text-muted-foreground">agent {node.agent_version}</span>}
-      </div>
+    <div className="monitor-detail space-y-4">
+      <section className="monitor-overview overflow-hidden rounded-[1.5rem] border">
+        <div className="monitor-node-head flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-0 px-4 py-3.5 md:px-5 md:py-4">
+          <Dot node={node} />
+          <h2 className="truncate text-lg font-semibold tracking-[-0.02em]">{node.name}</h2>
+          <Flag code={node.country} className="text-sm" />
+          <span className="text-xs text-muted-foreground">
+            {node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
+          </span>
+          {node.agent_version && <span className="text-xs text-muted-foreground">agent {node.agent_version}</span>}
+        </div>
 
-      {node.remark && (
-        <p className="rounded-md bg-muted px-3 py-2 text-sm whitespace-pre-wrap">{node.remark}</p>
-      )}
+        {node.remark && (
+          <p className="monitor-note border-x-0 border-b-0 border-t px-4 py-2.5 text-sm whitespace-pre-wrap md:px-5">{node.remark}</p>
+        )}
 
-      <div className="flex gap-1 border-t pt-4">
-        {RANGES.map((r) => (
-          <Tab key={r.hours} active={hours === r.hours} onClick={() => setHours(r.hours)}>
-            {r.label}
-          </Tab>
-        ))}
-      </div>
+        <div className="monitor-range flex flex-wrap gap-1.5 border-x-0 border-b-0 border-t p-2 md:px-3">
+          {RANGES.map((r) => (
+            <Tab key={r.hours} active={hours === r.hours} onClick={() => setHours(r.hours)}>
+              {r.label}
+            </Tab>
+          ))}
+        </div>
+      </section>
 
       {!data ? (
         <Skeleton className="h-40 w-full" />
@@ -421,7 +491,7 @@ export function NodeDetail({ node }: { node: Node }) {
       ) : data.metrics.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">这段时间没有历史数据</p>
       ) : (
-        <div className="space-y-5">
+        <div className="grid gap-3 lg:grid-cols-2">
           <Panel title="CPU">
             <ResponsiveContainer>
               <AreaChart data={metricRows}>
@@ -465,8 +535,8 @@ export function NodeDetail({ node }: { node: Node }) {
             title={
               <>
                 网络速率
-                <span className="ml-3 text-chart-2">● 下行</span>
-                <span className="ml-2 text-chart-3">● 上行</span>
+                <span className="ml-3" style={{ color: "var(--network-rx)" }}>● 下行</span>
+                <span className="ml-2" style={{ color: "var(--network-tx)" }}>● 上行</span>
               </>
             }
           >
@@ -480,8 +550,8 @@ export function NodeDetail({ node }: { node: Node }) {
                   formatter={(v) => rate(Number(v))}
                   contentStyle={TIP}
                 />
-                <Line dataKey="net_rx" name="下行" stroke="var(--color-chart-2)" {...SERIES} />
-                <Line dataKey="net_tx" name="上行" stroke="var(--color-chart-3)" {...SERIES} />
+                <Line dataKey="net_rx" name="下行" stroke="var(--network-rx)" {...SERIES} />
+                <Line dataKey="net_tx" name="上行" stroke="var(--network-tx)" {...SERIES} />
               </LineChart>
             </ResponsiveContainer>
           </Panel>
@@ -509,3 +579,20 @@ export function NodeDetail({ node }: { node: Node }) {
     </div>
   )
 }
+
+function sameNodeDetail(prev: { node: Node }, next: { node: Node }) {
+  const a = prev.node
+  const b = next.node
+  return (
+    a.id === b.id &&
+    a.name === b.name &&
+    a.online === b.online &&
+    a.country === b.country &&
+    a.agent_version === b.agent_version &&
+    a.remark === b.remark &&
+    a.mem_total === b.mem_total &&
+    a.disk_total === b.disk_total
+  )
+}
+
+export const NodeDetail = memo(NodeDetailView, sameNodeDetail)

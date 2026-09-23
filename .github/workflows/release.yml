@@ -2,6 +2,7 @@ name: release
 
 on:
   push:
+    branches: ["main"]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -20,18 +21,34 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # The archive is an installable theme directory rather than a source
-      # snapshot: dist/ beside theme.json is the layout a hub reads from
-      # <themes>/<short>/, and theme.tar.gz is the one asset name its update button
-      # fetches. preview.png sits beside theme.json because it is the panel's
-      # thumbnail rather than content the theme serves.
+      # Installable Monitor theme archive: dist/ sits beside theme.json.
       - run: tar czf theme.tar.gz dist theme.json preview.png
       - run: sha256sum theme.tar.gz | cut -d' ' -f1 | tee theme.tar.gz.sha256
 
-      # A manual dispatch builds and packages without publishing, so the path can
-      # be exercised without cutting a release. gh ships on the runner, keeping a
-      # third-party action out of the contents:write step.
-      - if: startsWith(github.ref, 'refs/tags/')
-        run: gh release create "$GITHUB_REF_NAME" theme.tar.gz theme.tar.gz.sha256 --generate-notes --repo "$GITHUB_REPOSITORY"
+      - name: Resolve release tag
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="v$(node -p "require('./package.json').version")"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release when version is new
+        shell: bash
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $tag already exists; nothing to publish."
+            exit 0
+          fi
+
+          gh release create "$tag" theme.tar.gz theme.tar.gz.sha256 \
+            --target "$GITHUB_SHA" \
+            --generate-notes \
+            --title "Monitor Glass $tag" \
+            --repo "$GITHUB_REPOSITORY"
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,7 +1,15 @@
+# Third-Party Notices
+
+## Once UI
+
+Color tokens and palette values used by Monitor Glass are adapted from the
+open-source Once UI Core design system.
+
+Source: https://github.com/once-ui-system/core
+
 MIT License
 
-Copyright (c) 2026 stqfdyr
-Copyright (c) 2026 wxte
+Copyright (c) 2024-2026 Dopler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
