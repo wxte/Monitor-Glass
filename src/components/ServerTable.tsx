@@ -35,15 +35,25 @@ export function deployed(node: Node) {
 }
 
 export function Dot({ node, className }: { node: Node; className?: string }) {
+  const state = node.online ? "online" : deployed(node) ? "offline" : "pending"
   return (
     <span
-      title={node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
+      title={state === "online" ? "在线" : state === "offline" ? "离线" : "未接入"}
+      data-status={state}
       className={cn(
-        "inline-block size-3 shrink-0 rounded-full align-middle",
-        node.online ? "once-pulse-dot bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
+        "status-dot relative inline-grid size-3 shrink-0 place-items-center align-middle",
         className,
       )}
-    />
+    >
+      {node.online && <span aria-hidden="true" className="status-dot-pulse absolute rounded-full" />}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "status-dot-core relative z-[1] block size-full rounded-full",
+          node.online ? "bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
+        )}
+      />
+    </span>
   )
 }
 

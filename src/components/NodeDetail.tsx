@@ -92,10 +92,10 @@ function Panel({ title, children }: { title: React.ReactNode; children: React.Re
 function Tab({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
   return (
     <button
+      type="button"
+      aria-pressed={active}
       onClick={onClick}
-      className={`monitor-range-tab rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
-        active ? "monitor-range-tab-active" : ""
-      }`}
+      className="monitor-range-tab rounded-full border px-3.5 py-1.5 text-xs transition-colors"
     >
       {children}
     </button>
@@ -304,6 +304,8 @@ export function Latency({ id, className }: { id: number; className?: string }) {
           return (
             <button
               key={s.id}
+              type="button"
+              aria-pressed={shown}
               onClick={() =>
                 setHiddenProbes((h) => (shown ? [...h, s.id] : h.filter((id) => id !== s.id)))
               }
@@ -326,6 +328,7 @@ export function Latency({ id, className }: { id: number; className?: string }) {
           )
         })}
         <button
+          type="button"
           onClick={() => setSmooth((on) => !on)}
           aria-pressed={smooth}
           title="把孤立的异常值换成邻近若干桶的中位数，持续的变化保持原样"
