@@ -474,7 +474,9 @@
   background: var(--secondary) !important;
 }
 
-/* Naked online dot with diffuse presence bloom. No tag, no hard ring. */
+/* Once UI Pulse status:
+   a fixed strong green center with a medium green disc that expands and fades.
+   This mirrors packages/core/src/components/Pulse.module.scss: 2s ease-out infinite. */
 .status-orbit,
 .dark .status-orbit {
   background: transparent !important;
@@ -484,47 +486,44 @@
   -webkit-backdrop-filter: none !important;
 }
 
-.server-status-dot {
+.once-pulse-dot {
   position: relative;
   isolation: isolate;
+  background: var(--once-green-700) !important;
+  box-shadow: 0 0 7px oklch(0.7426 0.2344 144.85 / .32);
 }
 
-[data-online="true"] .server-status-dot {
-  box-shadow:
-    0 0 6px 2px oklch(0.7426 0.2344 144.85 / .36),
-    0 0 17px 6px oklch(0.6486 0.1950 146.22 / .15),
-    0 0 31px 11px oklch(0.6486 0.1950 146.22 / .055);
-  animation: presence-bloom 3.1s ease-in-out infinite alternate;
-}
-
-[data-online="true"] .server-status-dot::after {
+.once-pulse-dot::after {
   content: "";
   position: absolute;
-  inset: -10px;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
   z-index: -1;
   pointer-events: none;
   border-radius: 999px;
-  background: radial-gradient(
-    circle,
-    oklch(0.7426 0.2344 144.85 / .15) 0%,
-    oklch(0.6486 0.1950 146.22 / .065) 38%,
-    transparent 74%
-  );
-  filter: blur(3px);
+  background: var(--once-green-600);
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center;
+  --once-pulse-opacity: .55;
+  opacity: var(--once-pulse-opacity);
+  animation: once-status-pulse 2s infinite ease-out;
 }
 
-@keyframes presence-bloom {
-  from {
-    box-shadow:
-      0 0 5px 2px oklch(0.7426 0.2344 144.85 / .28),
-      0 0 13px 5px oklch(0.6486 0.1950 146.22 / .11),
-      0 0 25px 9px oklch(0.6486 0.1950 146.22 / .035);
+.server-status-dot.once-pulse-dot::after {
+  width: 46px;
+  height: 46px;
+}
+
+@keyframes once-status-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: var(--once-pulse-opacity, .55);
   }
-  to {
-    box-shadow:
-      0 0 8px 3px oklch(0.7426 0.2344 144.85 / .48),
-      0 0 21px 7px oklch(0.6486 0.1950 146.22 / .19),
-      0 0 38px 13px oklch(0.6486 0.1950 146.22 / .07);
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
   }
 }
 
@@ -567,14 +566,13 @@
 
   .once-backdrop::before { opacity: .20; }
 
-  [data-online="true"] .server-status-dot {
-    animation-duration: 3.4s;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-online="true"] .server-status-dot {
+  .once-pulse-dot::after {
     animation: none;
+    opacity: .14;
+    transform: translate(-50%, -50%) scale(.72);
   }
 
   .server-card,
@@ -589,11 +587,12 @@
   }
 }
 
-.dark [data-online="true"] .server-status-dot {
-  box-shadow:
-    0 0 7px 2px oklch(0.7426 0.2344 144.85 / .50),
-    0 0 19px 6px oklch(0.6486 0.1950 146.22 / .22),
-    0 0 34px 11px oklch(0.6486 0.1950 146.22 / .08);
+.dark .once-pulse-dot {
+  box-shadow: 0 0 8px oklch(0.7426 0.2344 144.85 / .42);
+}
+
+.dark .once-pulse-dot::after {
+  --once-pulse-opacity: .68;
 }
 
 @media (hover: hover) and (pointer: fine) {

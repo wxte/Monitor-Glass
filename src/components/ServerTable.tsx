@@ -40,7 +40,7 @@ export function Dot({ node, className }: { node: Node; className?: string }) {
       title={node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
       className={cn(
         "inline-block size-3 shrink-0 rounded-full align-middle",
-        node.online ? "bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
+        node.online ? "once-pulse-dot bg-(image:--dot-online)" : deployed(node) ? "bg-(image:--dot-offline)" : "bg-muted-foreground/40",
         className,
       )}
     />
