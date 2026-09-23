@@ -300,7 +300,7 @@ function ServerCard({ node }: { node: Node }) {
         className="server-card-hit grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 p-2 text-left sm:p-2.5 md:grid-cols-[minmax(190px,1.05fr)_minmax(0,4fr)_28px] md:gap-2.5 md:p-3"
       >
         <div className="flex min-w-0 items-center gap-2 md:gap-3">
-          <span className="status-orbit grid size-7 shrink-0 place-items-center rounded-full md:size-9">
+          <span className="status-orbit grid size-5 shrink-0 place-items-center rounded-full md:size-6">
             <Dot node={node} className="server-status-dot size-2.5 md:size-3.5" />
           </span>
           <div className="min-w-0">
@@ -326,7 +326,7 @@ function ServerCard({ node }: { node: Node }) {
           )}
         />
 
-        <div className="col-span-2 grid min-w-0 grid-cols-[1.15fr_repeat(4,minmax(0,1fr))] gap-1 md:col-span-1 md:col-start-2 md:row-start-1 md:gap-2">
+        <div className="server-metrics col-span-2 grid min-w-0 grid-cols-[1.15fr_repeat(4,minmax(0,1fr))] md:col-span-1 md:col-start-2 md:row-start-1">
           <SpeedTile rx={m?.net_rx ?? 0} tx={m?.net_tx ?? 0} />
           <MetricTile label="CPU" value={m ? m.cpu.toFixed(1) + "%" : "—"} pct={m?.cpu ?? null} icon={Cpu} />
           <MetricTile label="内存" value={memPct === null ? "—" : memPct.toFixed(1) + "%"} pct={memPct} icon={MemoryStick} />

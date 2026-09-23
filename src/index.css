@@ -5,8 +5,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Once UI exact preset used by the docs site:
-   neutral=gray, brand=emerald, accent=orange,
+/* Once UI site replication.
+   The user's selected palette is neutral=gray, brand=moss, accent=orange,
    solid=contrast, solidStyle=flat, border=conservative, surface=filled. */
 :root {
   --radius: 0.75rem;
@@ -25,19 +25,23 @@
   --once-gray-1100: oklch(0.9642 0 0);
   --once-gray-1200: oklch(0.9821 0 0);
 
-  /* brand: emerald */
-  --once-emerald-100:  oklch(0.1405 0.0134 186.49);
-  --once-emerald-200:  oklch(0.1941 0.0224 185.18);
-  --once-emerald-300:  oklch(0.3618 0.0618 175.55);
-  --once-emerald-400:  oklch(0.4533 0.0840 172.29);
-  --once-emerald-500:  oklch(0.5463 0.1068 169.32);
-  --once-emerald-600:  oklch(0.6520 0.1346 165.65);
-  --once-emerald-700:  oklch(0.7453 0.1597 163.56);
-  --once-emerald-800:  oklch(0.8472 0.1562 161.90);
-  --once-emerald-900:  oklch(0.8919 0.1278 162.96);
-  --once-emerald-1000: oklch(0.9366 0.0867 163.42);
-  --once-emerald-1100: oklch(0.9599 0.0451 164.53);
-  --once-emerald-1200: oklch(0.9808 0.0189 162.95);
+  /* brand: moss (the olive-green swatch selected in the Once UI panel) */
+  --once-moss-100:  oklch(0.1428 0.0184 124.91);
+  --once-moss-200:  oklch(0.1932 0.0314 125.79);
+  --once-moss-300:  oklch(0.3622 0.0864 129.16);
+  --once-moss-400:  oklch(0.4533 0.1200 131.81);
+  --once-moss-500:  oklch(0.5476 0.1544 134.27);
+  --once-moss-600:  oklch(0.6530 0.1960 136.49);
+  --once-moss-700:  oklch(0.7464 0.2307 138.07);
+  --once-moss-800:  oklch(0.8461 0.2198 139.34);
+  --once-moss-900:  oklch(0.8918 0.1711 141.04);
+  --once-moss-1000: oklch(0.9363 0.1073 142.78);
+  --once-moss-1100: oklch(0.9591 0.0621 142.95);
+  --once-moss-1200: oklch(0.9806 0.0229 143.37);
+
+  /* semantic online status stays Once UI green rather than brand moss */
+  --once-green-600:  oklch(0.6486 0.1950 146.22);
+  --once-green-700:  oklch(0.7426 0.2344 144.85);
 
   /* accent: orange */
   --once-orange-100:  oklch(0.1419 0.0236 27.24);
@@ -59,10 +63,10 @@
   --popover: #ffffff;
   --popover-foreground: var(--once-gray-100);
 
-  --primary: var(--once-emerald-500);
-  --primary-strong: var(--once-emerald-400);
-  --primary-soft: var(--once-emerald-1000);
-  --primary-softer: var(--once-emerald-1100);
+  --primary: var(--once-moss-500);
+  --primary-strong: var(--once-moss-400);
+  --primary-soft: var(--once-moss-1000);
+  --primary-softer: var(--once-moss-1100);
   --primary-foreground: #ffffff;
 
   --accent: var(--once-orange-600);
@@ -76,7 +80,7 @@
   --destructive: oklch(0.6930 0.1970 27.63);
   --border: var(--once-gray-900);
   --input: var(--once-gray-900);
-  --ring: var(--once-emerald-600);
+  --ring: var(--once-moss-600);
   --nav: rgb(255 255 255 / .94);
 
   /* Once UI solid=contrast + solidStyle=flat */
@@ -85,7 +89,7 @@
   --solid-on-brand: #ffffff;
   --solid-border: transparent;
 
-  --chart-1: var(--once-emerald-600);
+  --chart-1: var(--once-moss-600);
   --chart-2: oklch(0.6743 0.1670 261.54);
   --chart-3: var(--once-orange-600);
   --chart-4: oklch(0.6833 0.1679 287.37);
@@ -95,10 +99,10 @@
   --danger: oklch(0.6930 0.1970 27.63);
   --bar-track: var(--once-gray-1000);
   --bar-text: #ffffff;
-  --bar-ok: linear-gradient(to right, var(--once-emerald-500), var(--once-emerald-600));
+  --bar-ok: linear-gradient(to right, var(--once-moss-500), var(--once-moss-600));
   --bar-warn: linear-gradient(to right, var(--once-orange-500), var(--once-orange-600));
   --bar-danger: linear-gradient(to right, oklch(0.5877 0.2394 28.95), oklch(0.6930 0.1970 27.63));
-  --dot-online: linear-gradient(180deg, var(--once-emerald-700), var(--once-emerald-600));
+  --dot-online: linear-gradient(180deg, var(--once-green-700), var(--once-green-600));
   --dot-offline: linear-gradient(180deg, oklch(0.7801 0.1286 27.87), oklch(0.6930 0.1970 27.63));
 }
 
@@ -110,10 +114,10 @@
   --popover: var(--once-gray-200);
   --popover-foreground: var(--once-gray-1200);
 
-  --primary: var(--once-emerald-900);
-  --primary-strong: var(--once-emerald-1000);
-  --primary-soft: var(--once-emerald-200);
-  --primary-softer: var(--once-emerald-200);
+  --primary: var(--once-moss-900);
+  --primary-strong: var(--once-moss-1000);
+  --primary-soft: var(--once-moss-200);
+  --primary-softer: var(--once-moss-200);
   --primary-foreground: var(--once-gray-100);
 
   --accent: var(--once-orange-700);
@@ -127,7 +131,7 @@
   --destructive: oklch(0.7801 0.1286 27.87);
   --border: var(--once-gray-300);
   --input: var(--once-gray-300);
-  --ring: var(--once-emerald-800);
+  --ring: var(--once-moss-800);
   --nav: rgb(24 24 24 / .94);
 
   --solid-brand: var(--once-gray-1000);
@@ -135,7 +139,7 @@
   --solid-on-brand: #000000;
   --solid-border: transparent;
 
-  --chart-1: var(--once-emerald-800);
+  --chart-1: var(--once-moss-800);
   --chart-2: oklch(0.7670 0.1165 257.88);
   --chart-3: var(--once-orange-700);
   --chart-4: oklch(0.7749 0.1187 288.76);
@@ -195,12 +199,12 @@
 
 .app-shell { background: transparent; }
 
-/* Once UI filled surface: clean white page, very faint emerald atmosphere,
-   neutral-gray structure, no glass haze and no decorative neon. */
+/* Once UI page language: neutral white/gray surfaces, low visual noise,
+   one subtle moss atmosphere near the top, no glass or neon. */
 .once-backdrop {
   overflow: hidden;
   background:
-    radial-gradient(48% 22% at 52% 2%, oklch(0.9366 0.0867 163.42 / .34), transparent 76%),
+    radial-gradient(48% 22% at 52% 2%, oklch(0.9363 0.1073 142.78 / .20), transparent 76%),
     linear-gradient(180deg, #ffffff 0%, #fdfdfd 48%, #ffffff 100%);
 }
 
@@ -218,7 +222,7 @@
 
 .dark .once-backdrop {
   background:
-    radial-gradient(42% 24% at 52% 2%, oklch(0.3618 0.0618 175.55 / .16), transparent 76%),
+    radial-gradient(42% 24% at 52% 2%, oklch(0.3622 0.0864 129.16 / .13), transparent 76%),
     var(--once-gray-100);
 }
 
@@ -243,10 +247,10 @@
 }
 
 .once-nav {
-  padding: 3px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--secondary) 72%, var(--card));
+  padding: 2px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
 }
 
 .once-nav-item,
@@ -314,13 +318,14 @@
 }
 
 .server-summary {
-  border-radius: 16px;
+  border-radius: 12px;
+  background: transparent;
 }
 
 .server-card {
   overflow: clip;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   content-visibility: auto;
   contain-intrinsic-size: auto 76px;
   transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
@@ -343,16 +348,36 @@
   box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--primary) 42%, transparent);
 }
 
+.server-metrics {
+  overflow: hidden;
+  border: 1px solid var(--once-gray-1000);
+  border-radius: 10px;
+  background: var(--once-gray-1200);
+}
+
 .metric-tile {
-  border-color: color-mix(in oklab, var(--border) 88%, transparent);
-  background: color-mix(in oklab, var(--secondary) 82%, var(--card));
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent;
   box-shadow: none;
-  transition: background .14s ease, border-color .14s ease;
+  transition: background .14s ease;
+}
+
+.server-metrics .metric-tile + .metric-tile {
+  border-left: 1px solid var(--once-gray-1000) !important;
+}
+
+.dark .server-metrics {
+  border-color: var(--once-gray-300);
+  background: var(--once-gray-300);
+}
+
+.dark .server-metrics .metric-tile + .metric-tile {
+  border-left-color: var(--once-gray-400) !important;
 }
 
 .server-card-open .metric-tile {
-  border-color: color-mix(in oklab, var(--primary) 14%, var(--border));
-  background: color-mix(in oklab, var(--primary-softer) 18%, var(--secondary));
+  background: color-mix(in oklab, var(--primary-softer) 13%, transparent);
 }
 
 .metric-tile svg,
@@ -393,12 +418,16 @@
 }
 
 .server-card-detail {
-  background: color-mix(in oklab, var(--secondary) 28%, transparent);
+  background: var(--once-gray-1200);
+}
+
+.dark .server-card-detail {
+  background: color-mix(in oklab, var(--once-gray-300) 54%, transparent);
 }
 
 .system-detail-card,
 .latency-float-card {
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--card);
 }
 
@@ -458,9 +487,9 @@
 
 [data-online="true"] .server-status-dot {
   box-shadow:
-    0 0 6px 2px oklch(0.7453 0.1597 163.56 / .44),
-    0 0 17px 6px oklch(0.6520 0.1346 165.65 / .19),
-    0 0 31px 11px oklch(0.6520 0.1346 165.65 / .07);
+    0 0 6px 2px oklch(0.7426 0.2344 144.85 / .36),
+    0 0 17px 6px oklch(0.6486 0.1950 146.22 / .15),
+    0 0 31px 11px oklch(0.6486 0.1950 146.22 / .055);
   animation: presence-bloom 3.1s ease-in-out infinite alternate;
 }
 
@@ -473,8 +502,8 @@
   border-radius: 999px;
   background: radial-gradient(
     circle,
-    oklch(0.7453 0.1597 163.56 / .18) 0%,
-    oklch(0.6520 0.1346 165.65 / .08) 38%,
+    oklch(0.7426 0.2344 144.85 / .15) 0%,
+    oklch(0.6486 0.1950 146.22 / .065) 38%,
     transparent 74%
   );
   filter: blur(3px);
@@ -483,15 +512,15 @@
 @keyframes presence-bloom {
   from {
     box-shadow:
-      0 0 5px 2px oklch(0.7453 0.1597 163.56 / .34),
-      0 0 13px 5px oklch(0.6520 0.1346 165.65 / .14),
-      0 0 25px 9px oklch(0.6520 0.1346 165.65 / .045);
+      0 0 5px 2px oklch(0.7426 0.2344 144.85 / .28),
+      0 0 13px 5px oklch(0.6486 0.1950 146.22 / .11),
+      0 0 25px 9px oklch(0.6486 0.1950 146.22 / .035);
   }
   to {
     box-shadow:
-      0 0 8px 3px oklch(0.7453 0.1597 163.56 / .55),
-      0 0 21px 7px oklch(0.6520 0.1346 165.65 / .23),
-      0 0 38px 13px oklch(0.6520 0.1346 165.65 / .085);
+      0 0 8px 3px oklch(0.7426 0.2344 144.85 / .48),
+      0 0 21px 7px oklch(0.6486 0.1950 146.22 / .19),
+      0 0 38px 13px oklch(0.6486 0.1950 146.22 / .07);
   }
 }
 
@@ -520,14 +549,14 @@
   }
 
   .server-card {
-    border-radius: 13px;
+    border-radius: 12px;
     contain-intrinsic-size: auto 76px;
   }
 
   .server-summary,
   .system-detail-card,
   .latency-float-card {
-    border-radius: 14px;
+    border-radius: 12px;
   }
 
   .metric-tile { min-height: 40px; }
@@ -553,5 +582,21 @@
   .server-card:hover,
   .monitor-chart-card:hover {
     transform: none;
+  }
+}
+
+.dark [data-online="true"] .server-status-dot {
+  box-shadow:
+    0 0 7px 2px oklch(0.7426 0.2344 144.85 / .50),
+    0 0 19px 6px oklch(0.6486 0.1950 146.22 / .22),
+    0 0 34px 11px oklch(0.6486 0.1950 146.22 / .08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .server-metrics .metric-tile:hover {
+    background: color-mix(in oklab, var(--once-gray-1100) 72%, transparent);
+  }
+  .dark .server-metrics .metric-tile:hover {
+    background: color-mix(in oklab, var(--once-gray-400) 48%, transparent);
   }
 }

@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 官方 Docs 预设：Gray + Emerald + Orange、Contrast、Flat、Filled",
-  "version": "2.5.0",
+  "description": "Once UI 官网复刻：Gray + Moss + Orange、Contrast Flat、Grouped Filled UI",
+  "version": "2.6.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
