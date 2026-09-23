@@ -869,3 +869,60 @@
 .monitor-chip[aria-pressed="true"] {
   opacity: 1;
 }
+
+
+/* Touch Safari keeps :hover after taps. On coarse pointers, stateful controls
+   are painted only from aria-current / aria-pressed so route and range tags
+   cannot look selected twice after navigation. */
+@media (hover: none), (pointer: coarse) {
+  .once-nav-item:hover {
+    color: var(--muted-foreground);
+    background: transparent;
+  }
+
+  .once-nav-item[aria-current="page"],
+  .once-nav-item[aria-current="page"]:hover {
+    color: var(--solid-on-brand);
+    background: var(--solid-brand);
+  }
+
+  .monitor-node-link:hover {
+    background: transparent;
+  }
+
+  .monitor-node-link[aria-current="page"],
+  .monitor-node-link[aria-current="page"]:hover {
+    color: var(--foreground);
+    background: var(--once-gray-1100);
+  }
+
+  .dark .monitor-node-link[aria-current="page"],
+  .dark .monitor-node-link[aria-current="page"]:hover {
+    color: var(--once-gray-1200);
+    background: var(--once-gray-300);
+  }
+
+  .monitor-range-tab:hover {
+    color: var(--once-gray-500);
+    background: #fff;
+  }
+
+  .monitor-range-tab[aria-pressed="true"],
+  .monitor-range-tab[aria-pressed="true"]:hover {
+    color: #fff;
+    border-color: var(--once-gray-300);
+    background: var(--once-gray-300);
+  }
+
+  .dark .monitor-range-tab:hover {
+    color: var(--once-gray-700);
+    background: var(--once-gray-200);
+  }
+
+  .dark .monitor-range-tab[aria-pressed="true"],
+  .dark .monitor-range-tab[aria-pressed="true"]:hover {
+    color: #000;
+    border-color: var(--once-gray-1000);
+    background: var(--once-gray-1000);
+  }
+}
