@@ -444,9 +444,10 @@
   background: var(--secondary) !important;
 }
 
-/* Once UI Pulse status.
-   Use real DOM layers instead of an animated pseudo-element so iOS Safari
-   cannot restore a stale transform origin after client-side route switches. */
+/* Vercel navigation demo status geometry:
+   16px soft shell + 8px solid core. Keep the user's requested live motion, but
+   constrain it to a small breathing halo so the status marker never dominates
+   the server name or shifts its visual centre. */
 .status-orbit,
 .dark .status-orbit {
   background: transparent !important;
@@ -460,37 +461,83 @@
   isolation: isolate;
 }
 
+.status-dot-halo {
+  z-index: 1;
+  pointer-events: none;
+  background: var(--once-gray-1100);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-gray-700) 24%, transparent);
+}
+
 .status-dot-core {
+  inset: 25%;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--once-gray-600);
   box-shadow: none;
 }
 
+.status-dot[data-status="online"] .status-dot-halo {
+  background: color-mix(in oklab, var(--once-green-700) 16%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-green-600) 18%, transparent);
+}
+
 .status-dot[data-status="online"] .status-dot-core {
-  box-shadow: 0 0 7px oklch(0.7426 0.2344 144.85 / .30);
+  background: var(--once-green-600);
+  box-shadow: 0 0 4px oklch(0.7426 0.2344 144.85 / .24);
+}
+
+.status-dot[data-status="offline"] .status-dot-halo {
+  background: color-mix(in oklab, var(--destructive) 12%, #fff);
+}
+
+.status-dot[data-status="offline"] .status-dot-core {
+  background: var(--destructive);
 }
 
 .status-dot-pulse {
-  left: -130%;
-  top: -130%;
-  width: 360%;
-  height: 360%;
+  inset: -20%;
   z-index: 0;
   pointer-events: none;
-  background: var(--once-green-600);
-  transform: scale(0);
+  background: color-mix(in oklab, var(--once-green-700) 24%, transparent);
+  transform: scale(.78);
   transform-origin: center;
-  opacity: .46;
-  animation: once-status-pulse 2s infinite ease-out;
+  opacity: .34;
+  animation: once-status-pulse 2.1s infinite ease-out;
 }
 
 @keyframes once-status-pulse {
   0% {
-    transform: scale(0);
-    opacity: .46;
+    transform: scale(.78);
+    opacity: .34;
   }
+  72%,
   100% {
-    transform: scale(1);
+    transform: scale(1.34);
     opacity: 0;
   }
+}
+
+.dark .status-dot-halo {
+  background: var(--once-gray-300);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-gray-700) 18%, transparent);
+}
+
+.dark .status-dot-core {
+  background: var(--once-gray-700);
+}
+
+.dark .status-dot[data-status="online"] .status-dot-halo {
+  background: color-mix(in oklab, var(--once-green-700) 18%, var(--once-gray-200));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--once-green-700) 20%, transparent);
+}
+
+.dark .status-dot[data-status="online"] .status-dot-core {
+  background: var(--once-green-700);
+  box-shadow: 0 0 5px oklch(0.7426 0.2344 144.85 / .30);
+}
+
+.dark .status-dot[data-status="offline"] .status-dot-halo {
+  background: color-mix(in oklab, var(--destructive) 16%, var(--once-gray-200));
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -537,7 +584,7 @@
   .status-dot-pulse {
     animation: none;
     opacity: .12;
-    transform: scale(.72);
+    transform: scale(1);
   }
 
   .server-card,
@@ -550,14 +597,6 @@
   .monitor-chart-card:hover {
     transform: none;
   }
-}
-
-.dark .status-dot[data-status="online"] .status-dot-core {
-  box-shadow: 0 0 8px oklch(0.7426 0.2344 144.85 / .40);
-}
-
-.dark .status-dot-pulse {
-  opacity: .58;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -909,19 +948,31 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-.server-detail-close {
-  color: var(--muted-foreground);
-  border: 1px solid var(--border);
-  background: var(--secondary);
+.server-detail-close,
+.monitor-detail-close {
+  color: #fff;
+  border: 1px solid var(--once-gray-300);
+  background: var(--once-gray-300);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .08);
 }
 
-.server-detail-close:hover {
-  color: var(--foreground);
+.server-detail-close:hover,
+.monitor-detail-close:hover {
+  color: #fff;
+  background: var(--once-gray-200);
+}
+
+.dark .server-detail-close,
+.dark .monitor-detail-close {
+  color: #000;
+  border-color: var(--once-gray-1000);
   background: var(--once-gray-1000);
 }
 
-.dark .server-detail-close:hover {
-  background: var(--once-gray-300);
+.dark .server-detail-close:hover,
+.dark .monitor-detail-close:hover {
+  color: #000;
+  background: #fff;
 }
 
 .server-detail-scroll {
