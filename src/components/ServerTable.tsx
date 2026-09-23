@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react"
+import { lazy, Suspense, useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react"
 import { ArrowDown, ArrowUp, ChevronRight, Cpu, Database, HardDrive, MemoryStick, Network, Server, X, type LucideIcon } from "lucide-react"
 import {
   siAlmalinux, siAlpinelinux, siArchlinux, siCentos, siDebian, siFedora, siLinux, siOpensuse, siRedhat,
@@ -395,6 +395,7 @@ function ServerCard({ node, onOpen }: { node: Node; onOpen: (id: number) => void
 
 export function ServerTable({ nodes }: { nodes: Node[] }) {
   const [detailId, setDetailId] = useState<number | null>(null)
+  const closeDetail = useCallback(() => setDetailId(null), [])
   const detailNode = detailId === null ? null : nodes.find((node) => node.id === detailId) ?? null
   let onlineCount = 0
   let rxRate = 0
@@ -456,7 +457,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
         {nodes.map((node) => <ServerCard key={node.id} node={node} onOpen={setDetailId} />)}
       </div>
 
-      {detailNode && <ServerDetailDrawer node={detailNode} onClose={() => setDetailId(null)} />}
+      {detailNode && <ServerDetailDrawer node={detailNode} onClose={closeDetail} />}
     </section>
   )
 }
