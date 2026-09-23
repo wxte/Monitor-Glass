@@ -199,13 +199,13 @@
 
 .app-shell { background: transparent; }
 
-/* Once UI page language: neutral white/gray surfaces, low visual noise,
-   one subtle moss atmosphere near the top, no glass or neon. */
+/* Once UI page language: the selected Neutral=Gray drives the page atmosphere.
+   Brand Moss is reserved for emphasis; page and loading surfaces stay neutral. */
 .once-backdrop {
   overflow: hidden;
   background:
-    radial-gradient(48% 22% at 52% 2%, oklch(0.9363 0.1073 142.78 / .20), transparent 76%),
-    linear-gradient(180deg, #ffffff 0%, #fdfdfd 48%, #ffffff 100%);
+    radial-gradient(48% 22% at 52% 2%, oklch(0.9461 0 0 / .72), transparent 76%),
+    linear-gradient(180deg, #ffffff 0%, #fcfcfc 48%, #ffffff 100%);
 }
 
 .once-backdrop::before {
@@ -222,7 +222,7 @@
 
 .dark .once-backdrop {
   background:
-    radial-gradient(42% 24% at 52% 2%, oklch(0.3622 0.0864 129.16 / .13), transparent 76%),
+    radial-gradient(42% 24% at 52% 2%, oklch(0.3677 0 0 / .18), transparent 76%),
     var(--once-gray-100);
 }
 
@@ -332,11 +332,11 @@
 }
 
 .server-card-open {
-  border-color: color-mix(in oklab, var(--primary) 38%, var(--border));
+  border-color: color-mix(in oklab, var(--once-gray-700) 34%, var(--border));
   background:
-    linear-gradient(180deg, color-mix(in oklab, var(--primary-softer) 34%, transparent), transparent 32%),
+    linear-gradient(180deg, color-mix(in oklab, var(--once-gray-1100) 58%, transparent), transparent 32%),
     var(--card);
-  box-shadow: 0 10px 28px -24px color-mix(in oklab, var(--primary) 40%, transparent);
+  box-shadow: 0 10px 28px -24px rgb(0 0 0 / .14);
 }
 
 .server-card-hit {
@@ -377,7 +377,11 @@
 }
 
 .server-card-open .metric-tile {
-  background: color-mix(in oklab, var(--primary-softer) 13%, transparent);
+  background: color-mix(in oklab, var(--once-gray-1100) 36%, transparent);
+}
+
+.dark .server-card-open .metric-tile {
+  background: color-mix(in oklab, var(--once-gray-400) 24%, transparent);
 }
 
 .metric-tile svg,
@@ -599,4 +603,31 @@
   .dark .server-metrics .metric-tile:hover {
     background: color-mix(in oklab, var(--once-gray-400) 48%, transparent);
   }
+}
+
+
+/* Loading states use the selected Once UI Neutral=Gray.
+   Never use Accent Orange for chart skeletons. */
+.once-skeleton {
+  background:
+    linear-gradient(
+      90deg,
+      var(--once-gray-1100) 0%,
+      var(--once-gray-1000) 42%,
+      var(--once-gray-1100) 72%
+    );
+  background-size: 220% 100%;
+  border: 1px solid var(--once-gray-1000);
+}
+
+.dark .once-skeleton {
+  background:
+    linear-gradient(
+      90deg,
+      var(--once-gray-300) 0%,
+      var(--once-gray-400) 42%,
+      var(--once-gray-300) 72%
+    );
+  background-size: 220% 100%;
+  border-color: var(--once-gray-400);
 }
