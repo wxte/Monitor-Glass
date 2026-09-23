@@ -102,7 +102,7 @@
   --bar-ok: linear-gradient(to right, var(--once-moss-500), var(--once-moss-600));
   --bar-warn: linear-gradient(to right, var(--once-orange-500), var(--once-orange-600));
   --bar-danger: linear-gradient(to right, oklch(0.5877 0.2394 28.95), oklch(0.6930 0.1970 27.63));
-  --dot-online: linear-gradient(180deg, var(--once-moss-700), var(--once-moss-600));
+  --dot-online: linear-gradient(180deg, var(--once-green-700), var(--once-green-600));
   --dot-offline: linear-gradient(180deg, oklch(0.7801 0.1286 27.87), oklch(0.6930 0.1970 27.63));
 }
 
@@ -549,14 +549,14 @@
   }
 
   .server-card {
-    border-radius: 13px;
+    border-radius: 12px;
     contain-intrinsic-size: auto 76px;
   }
 
   .server-summary,
   .system-detail-card,
   .latency-float-card {
-    border-radius: 14px;
+    border-radius: 12px;
   }
 
   .metric-tile { min-height: 40px; }
