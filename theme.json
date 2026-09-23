@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 官网复刻：稳定 Pulse、iOS 路由切换修复、监控 Tag 状态优化",
-  "version": "2.7.2",
+  "description": "Once UI 视觉 + ServerStatus 详情交互：抽屉详情、紧凑监控布局与移动端性能优化",
+  "version": "2.8.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
