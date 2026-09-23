@@ -463,7 +463,7 @@ function NodeDetailView({ node }: { node: Node }) {
             title="关闭详情"
             className="monitor-detail-close ml-auto grid size-9 shrink-0 place-items-center rounded-full"
           >
-            <X className="size-4.5" strokeWidth={2.2} />
+            <X className="size-4" strokeWidth={2.2} />
           </Link>
         </div>
 
