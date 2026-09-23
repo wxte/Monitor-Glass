@@ -62,7 +62,7 @@ function Toolbox({ dark, toggle }: { dark: boolean; toggle: () => void }) {
     addEventListener("scroll", sync, { passive: true })
     return () => removeEventListener("scroll", sync)
   }, [])
-  const style = "threeui-tool-button size-10 rounded-xl max-md:size-9"
+  const style = "once-tool-button size-10 rounded-xl max-md:size-9"
   return (
     <div className="fixed right-3 bottom-5 z-20 flex flex-col gap-2.5 max-md:bottom-3">
       {scrolled && (
@@ -82,7 +82,7 @@ function NavItem({ href, active, icon: Icon, children }: { href: string; active:
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className="threeui-nav-item inline-flex items-center gap-1.5 rounded-full px-3 text-sm max-sm:px-2.5"
+      className="once-nav-item inline-flex items-center gap-1.5 rounded-xl px-3 text-sm max-sm:px-2.5"
     >
       <Icon className="size-3.5" />
       {children}
@@ -138,13 +138,13 @@ export default function App() {
 
   return (
     <div className="app-shell relative isolate flex min-h-svh flex-col overflow-x-clip">
-      <div className="ambient-stage fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
-      <header className="threeui-header sticky top-0 z-20">
-        <div className="threeui-glass-bar mx-auto flex h-10 w-[94vw] max-w-[1680px] items-center px-1.5 max-md:w-[calc(100%-20px)]">
-          <Link href="/" className="threeui-brand mr-4 flex min-w-0 items-center gap-2 px-2 text-base max-sm:mr-1">
+      <div className="once-backdrop fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
+      <header className="once-header sticky top-0 z-20">
+        <div className="once-header-inner mx-auto flex h-14 w-[95vw] max-w-[1680px] items-center px-1 max-md:w-full max-md:px-3">
+          <Link href="/" className="once-brand mr-5 flex min-w-0 items-center gap-2 px-1 text-[17px] max-sm:mr-2">
             <span className="truncate font-medium tracking-[-0.02em]">{site}</span>
           </Link>
-          <nav className="threeui-nav flex shrink-0 items-center gap-1">
+          <nav className="once-nav flex shrink-0 items-center gap-1">
             <NavItem href="/" active={open === null} icon={House}>首页</NavItem>
             {sorted.length > 0 && (
               <NavItem href={`/node/${open ?? sorted[0].id}`} active={open !== null} icon={ChartLine}>监控</NavItem>
@@ -152,7 +152,7 @@ export default function App() {
           </nav>
           {/* The panel is a separate app built into the hub, so this is a
               navigation rather than a route. */}
-          <a href="/admin/" className="threeui-admin ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 text-sm max-sm:px-2">
+          <a href="/admin/" className="once-admin ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm max-sm:px-2">
             <UserRound className="size-3.5" />
             <span className="max-sm:sr-only">{me.authed ? "后台" : "登录"}</span>
           </a>
