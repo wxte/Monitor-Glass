@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "ThreeUI Liquid Glass 精修：更黑透玻璃、局部蓝紫光场、轻薄 Dock 与白色选中胶囊",
-  "version": "2.1.0",
+  "description": "ThreeUI Liquid Glass：黑蓝青暖金光场、干净在线绿点与轻薄磨砂玻璃",
+  "version": "2.2.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
