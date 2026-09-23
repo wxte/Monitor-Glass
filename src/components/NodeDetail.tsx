@@ -95,8 +95,8 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
       onClick={onClick}
       className={`rounded-full border px-3 py-1.5 text-xs transition-all ${
         active
-          ? "border-primary/20 bg-primary text-primary-foreground shadow-[0_6px_18px_rgb(33_196_91/0.18)]"
-          : "border-border/55 bg-background/35 text-muted-foreground hover:bg-white/45 dark:hover:bg-white/5"
+          ? "border-primary/20 bg-primary text-primary-foreground"
+          : "border-border bg-background text-muted-foreground hover:bg-secondary"
       }`}
     >
       {children}
