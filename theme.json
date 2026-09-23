@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 视觉 + ServerStatus 详情交互：抽屉详情、紧凑监控布局与移动端性能优化",
-  "version": "2.8.0",
+  "description": "Once UI 视觉 + ServerStatus 详情交互：高对比关闭按钮、系统信息分组与 Vercel 风格在线状态点",
+  "version": "2.8.1",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
