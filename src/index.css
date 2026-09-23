@@ -332,14 +332,6 @@
   transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 
-.server-card-open {
-  border-color: color-mix(in oklab, var(--once-gray-700) 34%, var(--border));
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--once-gray-1100) 58%, transparent), transparent 32%),
-    var(--card);
-  box-shadow: 0 10px 28px -24px rgb(0 0 0 / .14);
-}
-
 .server-card-hit {
   border-radius: inherit;
   outline: none;
@@ -377,14 +369,6 @@
   border-left-color: var(--once-gray-400) !important;
 }
 
-.server-card-open .metric-tile {
-  background: color-mix(in oklab, var(--once-gray-1100) 36%, transparent);
-}
-
-.dark .server-card-open .metric-tile {
-  background: color-mix(in oklab, var(--once-gray-400) 24%, transparent);
-}
-
 .metric-tile svg,
 .summary-icon,
 .detail-card-icon {
@@ -413,21 +397,6 @@
   border-color: var(--border);
   background: var(--card);
   box-shadow: none;
-}
-
-.live-pill {
-  color: color-mix(in oklab, var(--primary) 82%, var(--foreground));
-  border: 1px solid color-mix(in oklab, var(--primary) 24%, var(--border));
-  background: color-mix(in oklab, var(--primary-soft) 42%, var(--card));
-  box-shadow: none;
-}
-
-.server-card-detail {
-  background: var(--once-gray-1200);
-}
-
-.dark .server-card-detail {
-  background: color-mix(in oklab, var(--once-gray-300) 54%, transparent);
 }
 
 .system-detail-card,
@@ -688,18 +657,6 @@
 
 .dark .metric-tile svg {
   color: var(--once-gray-900) !important;
-}
-
-.live-pill {
-  color: var(--once-gray-500);
-  border-color: var(--once-gray-900);
-  background: var(--once-gray-1100);
-}
-
-.dark .live-pill {
-  color: var(--once-gray-800);
-  border-color: var(--once-gray-400);
-  background: var(--once-gray-300);
 }
 
 /* Monitor page: neutral group hierarchy instead of Moss-selected rows and green charts. */
