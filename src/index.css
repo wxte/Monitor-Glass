@@ -326,8 +326,9 @@
   overflow: clip;
   border: 1px solid var(--border);
   border-radius: 12px;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 76px;
+  /* iOS Safari can retain stale paint coordinates for animated descendants
+     across client-side route switches when content-visibility is enabled. */
+  content-visibility: visible;
   transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 
@@ -474,9 +475,9 @@
   background: var(--secondary) !important;
 }
 
-/* Once UI Pulse status:
-   a fixed strong green center with a medium green disc that expands and fades.
-   This mirrors packages/core/src/components/Pulse.module.scss: 2s ease-out infinite. */
+/* Once UI Pulse status.
+   Use real DOM layers instead of an animated pseudo-element so iOS Safari
+   cannot restore a stale transform origin after client-side route switches. */
 .status-orbit,
 .dark .status-orbit {
   background: transparent !important;
@@ -486,43 +487,39 @@
   -webkit-backdrop-filter: none !important;
 }
 
-.once-pulse-dot {
-  position: relative;
+.status-dot {
   isolation: isolate;
-  background: var(--once-green-700) !important;
-  box-shadow: 0 0 7px oklch(0.7426 0.2344 144.85 / .32);
 }
 
-.once-pulse-dot::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 34px;
-  height: 34px;
-  z-index: -1;
+.status-dot-core {
+  box-shadow: none;
+}
+
+.status-dot[data-status="online"] .status-dot-core {
+  box-shadow: 0 0 7px oklch(0.7426 0.2344 144.85 / .30);
+}
+
+.status-dot-pulse {
+  left: -130%;
+  top: -130%;
+  width: 360%;
+  height: 360%;
+  z-index: 0;
   pointer-events: none;
-  border-radius: 999px;
   background: var(--once-green-600);
-  transform: translate(-50%, -50%) scale(0);
+  transform: scale(0);
   transform-origin: center;
-  --once-pulse-opacity: .55;
-  opacity: var(--once-pulse-opacity);
+  opacity: .46;
   animation: once-status-pulse 2s infinite ease-out;
-}
-
-.server-status-dot.once-pulse-dot::after {
-  width: 46px;
-  height: 46px;
 }
 
 @keyframes once-status-pulse {
   0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: var(--once-pulse-opacity, .55);
+    transform: scale(0);
+    opacity: .46;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
     opacity: 0;
   }
 }
@@ -553,7 +550,6 @@
 
   .server-card {
     border-radius: 12px;
-    contain-intrinsic-size: auto 76px;
   }
 
   .server-summary,
@@ -569,10 +565,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .once-pulse-dot::after {
+  .status-dot-pulse {
     animation: none;
-    opacity: .14;
-    transform: translate(-50%, -50%) scale(.72);
+    opacity: .12;
+    transform: scale(.72);
   }
 
   .server-card,
@@ -587,12 +583,12 @@
   }
 }
 
-.dark .once-pulse-dot {
-  box-shadow: 0 0 8px oklch(0.7426 0.2344 144.85 / .42);
+.dark .status-dot[data-status="online"] .status-dot-core {
+  box-shadow: 0 0 8px oklch(0.7426 0.2344 144.85 / .40);
 }
 
-.dark .once-pulse-dot::after {
-  --once-pulse-opacity: .68;
+.dark .status-dot-pulse {
+  opacity: .58;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -769,7 +765,7 @@
   background: var(--once-gray-1200);
 }
 
-.monitor-range-tab-active {
+.monitor-range-tab[aria-pressed="true"] {
   color: #fff;
   border-color: var(--once-gray-300);
   background: var(--once-gray-300);
@@ -786,7 +782,7 @@
   background: var(--once-gray-300);
 }
 
-.dark .monitor-range-tab-active {
+.dark .monitor-range-tab[aria-pressed="true"] {
   color: #000;
   border-color: var(--once-gray-1000);
   background: var(--once-gray-1000);
@@ -849,4 +845,27 @@
   .monitor-chart-card {
     padding: 16px;
   }
+}
+
+
+/* Final interaction polish: pressed monitor tags and probe chips are driven by
+   semantic state attributes, not transient class combinations. */
+.monitor-range-tab,
+.monitor-chip {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.monitor-range-tab:focus-visible,
+.monitor-chip:focus-visible,
+.monitor-node-link:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--foreground) 28%, transparent);
+  outline-offset: 2px;
+}
+
+.monitor-chip[aria-pressed="false"] {
+  opacity: .42;
+}
+
+.monitor-chip[aria-pressed="true"] {
+  opacity: 1;
 }
