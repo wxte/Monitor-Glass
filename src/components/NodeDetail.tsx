@@ -196,7 +196,7 @@ function timeAxis(rows: { ts: number }[], hours: number, from = 0, to = rows.len
  * expanded row both draw it: the legend above, sized to its chips, and the plot
  * with its brush below at the height `className` gives it.
  */
-export function Latency({ id, className }: { id: number; className?: string }) {
+function LatencyView({ id, className }: { id: number; className?: string }) {
   const { data, failed, retry } = useHistory(id, LATENCY_HOURS, "ping")
   // Probes switched off. Hiding a slow one is what makes the fast ones readable,
   // as the axis rescales to what remains.
@@ -416,6 +416,8 @@ export function Latency({ id, className }: { id: number; className?: string }) {
   )
 }
 
+export const Latency = memo(LatencyView)
+
 function NodeDetailView({ node }: { node: Node }) {
   const [hours, setHours] = useState(6)
   const { data, failed, retry } = useHistory(node.id, hours, "metrics")
@@ -572,7 +574,6 @@ function sameNodeDetail(prev: { node: Node }, next: { node: Node }) {
     a.name === b.name &&
     a.online === b.online &&
     a.country === b.country &&
-    a.last_seen === b.last_seen &&
     a.agent_version === b.agent_version &&
     a.remark === b.remark &&
     a.mem_total === b.mem_total &&
