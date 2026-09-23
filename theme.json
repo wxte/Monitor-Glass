@@ -1,8 +1,8 @@
 {
   "name": "Monitor Glass",
   "short": "glass",
-  "description": "Once UI 官网复刻：Neutral Gray 主导、Moss 品牌强调、Orange 辅助，Contrast Flat Grouped Filled UI",
-  "version": "2.6.1",
+  "description": "Once UI 官网复刻：Gray/Black 主结构、Moss 稀疏强调、Orange 辅助，首页与监控页统一",
+  "version": "2.7.0",
   "author": "stqfdyr",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
