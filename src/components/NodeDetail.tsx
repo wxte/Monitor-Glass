@@ -3,7 +3,6 @@ import {
   Area, AreaChart, Brush, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis,
 } from "recharts"
-import { X } from "lucide-react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { deployed, Dot, Flag } from "@/components/ServerTable"
@@ -11,7 +10,6 @@ import { api, type Node } from "@/lib/api"
 import {
   axisBytes, axisTop, bytes, clockFor, despike, quarters, rate, timeTicks,
 } from "@/lib/format"
-import { Link } from "@/lib/route"
 import { cn } from "@/lib/utils"
 
 type Point = {
@@ -457,14 +455,6 @@ function NodeDetailView({ node }: { node: Node }) {
             {node.online ? "在线" : deployed(node) ? "离线" : "未接入"}
           </span>
           {node.agent_version && <span className="text-xs text-muted-foreground">agent {node.agent_version}</span>}
-          <Link
-            href="/"
-            aria-label="关闭详情"
-            title="关闭详情"
-            className="monitor-detail-close ml-auto grid size-9 shrink-0 place-items-center rounded-full"
-          >
-            <X className="size-4" strokeWidth={2.2} />
-          </Link>
         </div>
 
         {node.remark && (
