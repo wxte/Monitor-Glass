@@ -349,7 +349,12 @@ function ServerDetailDrawer({ node, onClose }: { node: Node; onClose: () => void
 
 function CompactMeter({ label, value, pct }: { label: string; value: string; pct: number | null }) {
   const level = pct !== null && pct >= 90 ? "danger" : pct !== null && pct >= 75 ? "warn" : "normal"
-  return <span className="compact-card-meter tnum" data-level={level} title={`${label} ${value}`} style={{ "--fill": `${Math.max(0, Math.min(100, pct ?? 0))}%` } as CSSProperties}>{value}</span>
+  return (
+    <span className="compact-card-meter tnum" data-level={level} title={`${label} ${value}`} style={{ "--fill": `${Math.max(0, Math.min(100, pct ?? 0))}%` } as CSSProperties}>
+      <span className="compact-card-meter-label">{value}</span>
+      <span className="compact-card-meter-label-filled" aria-hidden="true">{value}</span>
+    </span>
+  )
 }
 
 const ServerCard = memo(function ServerCard({ node, onOpen }: { node: Node; onOpen: (id: number) => void }) {

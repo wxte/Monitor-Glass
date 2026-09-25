@@ -2,7 +2,7 @@
   "name": "Monitor Glass",
   "short": "glass",
   "description": "独立 Monitor 公开页主题：Once UI 中性视觉、统一服务器卡片与高性能节点详情",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "wxte",
   "url": "https://github.com/wxte/Monitor-Glass"
 }
