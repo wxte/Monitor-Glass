@@ -219,9 +219,10 @@ test("phone cards balance metric widths and show the maximum traffic value", asy
       expect(widths[3]).toBeLessThanOrEqual(80)
     }
     const textFits = await meters.last().evaluate((el) => {
-      el.textContent = "1000G / 1000G"
+      const label = el.querySelector<HTMLElement>(".compact-card-meter-label")!
+      label.textContent = "1000G / 1000G"
       const range = document.createRange()
-      range.selectNodeContents(el)
+      range.selectNodeContents(label)
       return range.getBoundingClientRect().width <= el.clientWidth - 2
     })
     expect(textFits).toBe(true)
@@ -278,9 +279,9 @@ test("meter tracks and fills remain distinct in both themes", async ({ page }) =
         context.fillRect(0, 0, 1, 1)
         return Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3)
       }
-      const track = rgb(getComputedStyle(el).backgroundColor)
+      const track = rgb(getComputedStyle(el.closest(".server-card")!).backgroundColor)
       const fillStyle = getComputedStyle(el, "::before")
-      const fillColor = fillStyle.backgroundImage.match(/rgba?\([^)]+\)/)?.[0] ?? fillStyle.backgroundColor
+      const fillColor = fillStyle.backgroundImage.match(/(?:rgba?|oklch)\([^)]+\)/)?.[0] ?? fillStyle.backgroundColor
       const fill = rgb(fillColor)
       return Math.sqrt(track.reduce((sum, channel, i) => sum + (channel - fill[i]) ** 2, 0))
     })
@@ -441,6 +442,10 @@ test("monitor time and latency tags keep one pill finish in both themes", async 
       const css = getComputedStyle(el)
       return [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow]
     })
+    const selectedRange = await page.locator(".monitor-range-tab[aria-pressed=true]").evaluate((el) => {
+      const css = getComputedStyle(el)
+      return [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow]
+    })
     for (const selector of [".monitor-range-tab[aria-pressed=false]", ".monitor-chip[aria-pressed=true]"]) {
       const tags = page.locator(selector)
       expect(await tags.count()).toBeGreaterThan(0)
@@ -450,7 +455,7 @@ test("monitor time and latency tags keep one pill finish in both themes", async 
           return { radius: parseFloat(css.borderRadius), height: el.getBoundingClientRect().height, finish: [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow] }
         })
         expect(shape.radius).toBeGreaterThanOrEqual(shape.height / 2)
-        expect(shape.finish).toEqual(card)
+        expect(shape.finish).toEqual(selector.startsWith(".monitor-chip") ? selectedRange : card)
       }
     }
   }

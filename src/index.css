@@ -1343,7 +1343,7 @@
 }
 
 @media (max-width: 374px) {
-  .compact-card-grid { grid-template-columns: 12px minmax(32px, 1fr) 16px 48px repeat(3, clamp(30px, calc((100cqw - 214px) / 4), 34px)) clamp(60px, calc(100cqw - 260px), 74px); gap: 1px; }
+  .compact-card-grid { grid-template-columns: 12px minmax(32px, 1fr) 16px 48px repeat(3, clamp(30px, calc((100cqw - 214px) / 4), 34px)) clamp(64px, calc(100cqw - 256px), 78px); gap: 1px; }
   .compact-card-head { padding-inline: 6px; }
   .compact-card-head > :first-child { font-size: 0; }
   .server-card .compact-card-hit { padding-inline: 5px; }
