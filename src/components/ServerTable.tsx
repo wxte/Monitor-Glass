@@ -9,7 +9,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import type { Node } from "@/lib/api"
 import {
-  bytes, compact, CYCLES, daysUntil, distro, FOREVER, money, monthUsage, osName, cpuName, pair,
+  billingCycle, bytes, compact, daysUntil, distro, FOREVER, money, monthUsage, osName, cpuName, pair,
   percent, rate, uptime,
 } from "@/lib/format"
 import { Link } from "@/lib/route"
@@ -44,7 +44,7 @@ export function Dot({ node, className }: { node: Node; className?: string }) {
       data-status={state}
       className={cn("status-dot relative inline-block size-4 shrink-0 align-middle", className)}
     >
-      {node.online && <span aria-hidden="true" className="status-dot-pulse absolute rounded-full" />}
+      {state !== "pending" && <span aria-hidden="true" className="status-dot-pulse absolute rounded-full" />}
       <span aria-hidden="true" className="status-dot-halo absolute inset-0 rounded-full" />
       <span aria-hidden="true" className="status-dot-core absolute rounded-full" />
     </span>
@@ -228,7 +228,7 @@ function Details({ node }: { node: Node }) {
               {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
             </Line>
             <Line label="续费">
-              {node.price > 0 ? `${money(node.price, node.currency)} / ${CYCLES[node.billing_cycle] ?? node.billing_cycle}` : "免费"}
+              {node.price > 0 ? `${money(node.price, node.currency)} / ${billingCycle(node.billing_cycle)}` : "免费"}
             </Line>
             <Line label="到期">
               {node.expires_at
@@ -465,11 +465,11 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
               placeholder="搜索名称、地区、系统…"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="h-10 w-full rounded-xl border bg-transparent pl-9 pr-9 text-xs outline-none"
+              className="h-10 w-full rounded-full border bg-transparent pl-9 pr-9 text-xs outline-none"
             />
-            {query && <button type="button" onClick={() => setQuery("")} aria-label="清除搜索" className="absolute right-1 top-1 grid size-8 place-items-center rounded-lg text-muted-foreground"><X className="size-3.5" /></button>}
+            {query && <button type="button" onClick={() => setQuery("")} aria-label="清除搜索" className="absolute right-1 top-1 grid size-8 place-items-center rounded-full text-muted-foreground"><X className="size-3.5" /></button>}
           </div>
-          <div className="server-status-filters flex items-center gap-1 rounded-xl border p-1" role="group" aria-label="服务器状态筛选">
+          <div className="server-status-filters flex items-center gap-1 rounded-full border p-1" role="group" aria-label="服务器状态筛选">
             {STATUS_FILTERS.map((filter) => (
               <button
                 key={filter.value}
@@ -484,7 +484,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
             ))}
           </div>
           <div className="server-sort-controls flex items-center gap-1.5">
-            <select aria-label="服务器排序" value={preferences.sort} onChange={(event) => setPreferences((current) => ({ ...current, sort: event.target.value as NodeSortKey }))} className="server-sort-select h-10 rounded-xl border bg-transparent px-3 text-xs outline-none">
+            <select aria-label="服务器排序" value={preferences.sort} onChange={(event) => setPreferences((current) => ({ ...current, sort: event.target.value as NodeSortKey }))} className="server-sort-select h-10 rounded-full border bg-transparent px-3 text-xs outline-none">
               <option value="default">默认排序</option>
               <option value="name">名称</option>
               <option value="cpu">CPU 使用率</option>
@@ -497,7 +497,7 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
               aria-label={`当前${preferences.direction === "asc" ? "升序，切换为降序" : "降序，切换为升序"}`}
               title={preferences.direction === "asc" ? "升序" : "降序"}
               onClick={() => setPreferences((current) => ({ ...current, direction: current.direction === "asc" ? "desc" : "asc" }))}
-              className="server-sort-direction grid size-10 place-items-center rounded-xl border"
+              className="server-sort-direction grid size-10 place-items-center rounded-full border"
             ><SortArrow className="size-3.5" /></button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { nodes } from "./fixtures.mjs"
+import { history, nodes } from "./fixtures.mjs"
 
 test("search, empty state and status filters preserve the fleet summary", async ({ page }) => {
   await page.goto("/")
@@ -98,6 +98,28 @@ test("charts are loaded on demand and full monitoring navigation works", async (
   expect(errors).toEqual([])
 })
 
+test("hub 1.3.1 peak rates appear in the existing network chart", async ({ page }) => {
+  await page.goto("/node/1")
+  const network = page.locator(".monitor-chart-card").filter({ hasText: "网络速率" })
+  await expect(network.getByText("虚线峰值")).toBeVisible()
+  await expect(network.locator(".recharts-line-curve")).toHaveCount(4)
+})
+
+test("older hub history keeps the original two network lines", async ({ page }) => {
+  await page.route(/\/api\/nodes\/1\/metrics\?.*series=metrics/, (route) => {
+    const data = history(1, 6, "metrics")
+    data.metrics.forEach((point) => {
+      Reflect.deleteProperty(point, "net_rx_max")
+      Reflect.deleteProperty(point, "net_tx_max")
+    })
+    return route.fulfill({ json: data })
+  })
+  await page.goto("/node/1")
+  const network = page.locator(".monitor-chart-card").filter({ hasText: "网络速率" })
+  await expect(network.getByText("虚线峰值")).toHaveCount(0)
+  await expect(network.locator(".recharts-line-curve")).toHaveCount(2)
+})
+
 test("live OS changes update the monitoring header", async ({ page }) => {
   let os = "Debian 13"
   await page.route("**/api/nodes", (route) => route.fulfill({ json: { nodes: nodes.map((node) => node.id === 1 ? { ...node, os } : node) } }))
@@ -118,6 +140,8 @@ test("offline and high-usage nodes are actionable without invented live zeroes",
   await page.getByRole("button", { name: "离线 1", exact: true }).click()
   const offline = page.getByRole("button", { name: "查看 Tokyo 详情", exact: true })
   await expect(offline.locator(".status-dot")).toHaveAttribute("data-status", "offline")
+  await expect(offline.locator(".status-dot-pulse")).toHaveCount(1)
+  expect(await offline.locator(".status-dot-pulse").evaluate((el) => getComputedStyle(el).animationName)).toBe("once-status-pulse")
   await expect(offline.locator(".compact-card-speed")).toHaveText("—")
   await page.getByRole("button", { name: "异常 2", exact: true }).click()
   await expect(page.getByRole("button", { name: /^查看 .+ 详情$/ })).toHaveCount(2)
@@ -270,22 +294,10 @@ test("meter tracks and fills remain distinct in both themes", async ({ page }) =
   await page.goto("/")
   for (const theme of ["light", "dark"]) {
     if (theme === "dark") await page.getByRole("button", { name: "切换主题" }).click()
-    const distance = await page.locator(".compact-card-meter").first().evaluate((el) => {
-      const canvas = document.createElement("canvas")
-      canvas.width = canvas.height = 1
-      const context = canvas.getContext("2d")!
-      const rgb = (color: string) => {
-        context.fillStyle = color
-        context.fillRect(0, 0, 1, 1)
-        return Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3)
-      }
-      const track = rgb(getComputedStyle(el.closest(".server-card")!).backgroundColor)
-      const fillStyle = getComputedStyle(el, "::before")
-      const fillColor = fillStyle.backgroundImage.match(/(?:rgba?|oklch)\([^)]+\)/)?.[0] ?? fillStyle.backgroundColor
-      const fill = rgb(fillColor)
-      return Math.sqrt(track.reduce((sum, channel, i) => sum + (channel - fill[i]) ** 2, 0))
-    })
-    expect(distance).toBeGreaterThan(30)
+    const fill = page.locator(".compact-card-meter").first()
+    const expected = theme === "light" ? "rgb(48, 47, 51)" : "rgb(255, 254, 238)"
+    await expect.poll(() => fill.evaluate((el) => getComputedStyle(el, "::before").backgroundImage)).toContain(expected)
+    expect(await fill.evaluate((el) => getComputedStyle(el, "::before").backgroundImage)).toContain("rgba(0, 0, 0, 0)")
   }
 })
 
@@ -301,7 +313,7 @@ test("resource charts use rounded curves for every range and surfaces share the 
     await page.getByRole("button", { name: label, exact: true }).click()
     await expect(page.locator(".monitor-chart-card .recharts-surface").first()).toBeVisible()
     const curves = page.locator(".monitor-chart-card:not(.monitor-latency-card) .recharts-area-curve, .monitor-chart-card:not(.monitor-latency-card) .recharts-line-curve")
-    await expect(curves).toHaveCount(5)
+    await expect(curves).toHaveCount(7)
     for (const path of await curves.all()) expect(await path.getAttribute("d")).toContain("C")
   }
   for (const selector of [".monitor-overview", ".monitor-chart-card"]) {
@@ -322,8 +334,7 @@ test("monitor picker and status filters use consistent pill shapes and surfaces"
         buttonHeight: button.getBoundingClientRect().height,
       }
     })
-    const summaryRadius = await page.locator(".server-summary-card").evaluate((el) => parseFloat(getComputedStyle(el).borderRadius))
-    expect(filterShape.groupRadius).toBe(summaryRadius)
+    expect(filterShape.groupRadius).toBeGreaterThanOrEqual(filterShape.height / 2)
     expect(filterShape.buttonRadius).toBeGreaterThanOrEqual(filterShape.buttonHeight / 2)
     await page.goto("/node/1")
     await expect(page.locator(".monitor-chart-card").first()).toBeVisible()
@@ -372,8 +383,15 @@ test("large surfaces use the same chart card finish in both themes", async ({ pa
     for (const selector of [".server-search input", ".server-sort-select", ".server-sort-direction", ".server-status-filters"]) {
       expect(await page.locator(selector).evaluate((el) => {
         const css = getComputedStyle(el)
-        return [css.borderRadius, css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow]
-      })).toEqual(summary)
+        return {
+          radius: parseFloat(css.borderRadius),
+          height: el.getBoundingClientRect().height,
+          finish: [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow],
+        }
+      })).toEqual(expect.objectContaining({ finish: summary.slice(1) }))
+      const shape = await page.locator(selector).evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height, width: el.getBoundingClientRect().width }))
+      expect(shape.radius).toBeGreaterThanOrEqual(shape.height / 2)
+      if (selector === ".server-sort-direction") expect(shape.width).toBe(shape.height)
     }
     const rowFinish = await page.locator(".server-node-list > .server-card").first().evaluate((el) => {
       const css = getComputedStyle(el)
@@ -436,6 +454,10 @@ test("all latency ranges can switch between smoothed and raw curves", async ({ p
 test("monitor time and latency tags keep one pill finish in both themes", async ({ page }) => {
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme })
+    await page.goto("/")
+    for (const selector of ['.once-nav-item[aria-current="page"]', '.server-filter-button[aria-pressed="true"]']) {
+      expect(await page.locator(selector).evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe("none")
+    }
     await page.goto("/node/1")
     await expect(page.locator(".monitor-chip").first()).toBeVisible()
     const card = await page.locator(".monitor-chart-card").first().evaluate((el) => {
@@ -446,6 +468,8 @@ test("monitor time and latency tags keep one pill finish in both themes", async 
       const css = getComputedStyle(el)
       return [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow]
     })
+    expect(selectedRange[3]).not.toBe("none")
+    expect(await page.locator('.monitor-node-link[aria-current="page"]').evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe("none")
     for (const selector of [".monitor-range-tab[aria-pressed=false]", ".monitor-chip[aria-pressed=true]"]) {
       const tags = page.locator(selector)
       expect(await tags.count()).toBeGreaterThan(0)
@@ -486,9 +510,9 @@ for (const width of [320, 375, 390, 768, 1440, 1920]) {
       expect(Math.max(...centers) - Math.min(...centers)).toBeLessThan(3)
     }
     const cardShape = await card.evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
-    const searchRadius = await page.getByRole("searchbox").evaluate((el) => getComputedStyle(el).borderRadius)
+    const searchShape = await page.getByRole("searchbox").evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
     expect(cardShape.radius).toBeGreaterThanOrEqual(cardShape.height / 2)
-    expect(await page.locator(".server-summary-card").evaluate((el) => getComputedStyle(el).borderRadius)).toBe(searchRadius)
+    expect(searchShape.radius).toBeGreaterThanOrEqual(searchShape.height / 2)
     // The summary stays in one row, including the green all-online tag.
     const summary = page.locator(".server-summary-row")
     expect(await summary.evaluate((el) => Math.abs(el.children[0].getBoundingClientRect().top - el.children[1].getBoundingClientRect().top))).toBeLessThan(2)

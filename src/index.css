@@ -88,6 +88,9 @@
   --solid-brand-hover: var(--once-gray-200);
   --solid-on-brand: #ffffff;
   --solid-border: transparent;
+  --tag-active-bg: var(--once-gray-900);
+  --tag-active-shadow: 0 1px 4px rgb(0 0 0 / .10), 0 0 0 1px color-mix(in oklab, var(--border) 92%, transparent);
+  --meter-fill: #302F33;
 
   --chart-1: var(--once-moss-600);
   --chart-2: oklch(0.6743 0.1670 261.54);
@@ -138,6 +141,9 @@
   --solid-brand-hover: #ffffff;
   --solid-on-brand: #000000;
   --solid-border: transparent;
+  --tag-active-bg: var(--once-gray-300);
+  --tag-active-shadow: 0 2px 8px rgb(0 0 0 / .34), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
+  --meter-fill: #FFFEEE;
 
   --chart-1: var(--once-moss-800);
   --chart-2: oklch(0.7670 0.1165 257.88);
@@ -269,20 +275,22 @@
 }
 
 .once-nav-item[aria-current="page"] {
-  color: var(--solid-on-brand);
-  border-color: var(--solid-border);
-  background: var(--solid-brand);
+  color: var(--foreground);
+  border-color: var(--border);
+  background: var(--tag-active-bg);
+  box-shadow: var(--tag-active-shadow);
 }
 
 .once-admin {
-  color: var(--solid-on-brand);
-  border-color: var(--solid-border);
-  background: var(--solid-brand);
+  color: var(--foreground);
+  border-color: var(--border);
+  background: var(--tag-active-bg);
+  box-shadow: var(--tag-active-shadow);
 }
 
 .once-admin:hover,
 .once-admin:focus-visible {
-  background: var(--solid-brand-hover);
+  background: var(--tag-active-bg);
 }
 
 .once-solid-button {
@@ -437,10 +445,7 @@
   background: var(--secondary) !important;
 }
 
-/* Vercel navigation demo status geometry:
-   16px soft shell + 8px solid core. Keep the user's requested live motion, but
-   constrain it to a small breathing halo so the status marker never dominates
-   the server name or shifts its visual centre. */
+/* Small status core with a restrained pulse, inspired by the blog's Monitor link. */
 .status-orbit,
 .dark .status-orbit {
   background: transparent !important;
@@ -455,6 +460,7 @@
 }
 
 .status-dot-halo {
+  inset: 9%;
   z-index: 1;
   pointer-events: none;
   background: var(--once-gray-1100);
@@ -462,7 +468,7 @@
 }
 
 .status-dot-core {
-  inset: 25%;
+  inset: 20%;
   z-index: 2;
   pointer-events: none;
   background: var(--once-gray-600);
@@ -485,27 +491,32 @@
 
 .status-dot[data-status="offline"] .status-dot-core {
   background: var(--destructive);
+  box-shadow: 0 0 4px color-mix(in oklab, var(--destructive) 28%, transparent);
 }
 
 .status-dot-pulse {
-  inset: -20%;
+  inset: 9%;
   z-index: 0;
   pointer-events: none;
-  background: color-mix(in oklab, var(--once-green-700) 24%, transparent);
-  transform: scale(.78);
+  background: var(--once-green-700);
+  transform: scale(.82);
   transform-origin: center;
-  opacity: .34;
-  animation: once-status-pulse 2.1s infinite ease-out;
+  opacity: .3;
+  animation: once-status-pulse 1.6s cubic-bezier(0, 0, .2, 1) infinite;
+}
+
+.status-dot[data-status="offline"] .status-dot-pulse {
+  background: var(--destructive);
 }
 
 @keyframes once-status-pulse {
   0% {
-    transform: scale(.78);
-    opacity: .34;
+    transform: scale(.82);
+    opacity: .3;
   }
   72%,
   100% {
-    transform: scale(1.34);
+    transform: scale(1.55);
     opacity: 0;
   }
 }
@@ -531,6 +542,10 @@
 
 .dark .status-dot[data-status="offline"] .status-dot-halo {
   background: color-mix(in oklab, var(--destructive) 16%, var(--once-gray-200));
+}
+
+.dark .status-dot[data-status="offline"] .status-dot-core {
+  box-shadow: 0 0 4px color-mix(in oklab, var(--destructive) 35%, transparent);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -720,9 +735,10 @@
 }
 
 .monitor-node-link[aria-current="page"] {
-  color: #fff;
-  border-color: var(--once-gray-300);
-  background: var(--once-gray-300);
+  color: var(--foreground);
+  border-color: var(--border);
+  background: var(--tag-active-bg);
+  box-shadow: var(--tag-active-shadow);
   font-weight: 560;
 }
 
@@ -736,9 +752,9 @@
 }
 
 .dark .monitor-node-link[aria-current="page"] {
-  color: #000;
-  border-color: var(--once-gray-1000);
-  background: var(--once-gray-1000);
+  color: var(--foreground);
+  border-color: var(--border);
+  background: var(--tag-active-bg);
 }
 
 .monitor-range {
@@ -771,11 +787,11 @@
 .dark .monitor-range-tab[aria-pressed="true"]:hover,
 .dark .monitor-chip[aria-pressed="true"],
 .dark .monitor-chip[aria-pressed="true"]:hover {
-  color: var(--solid-on-brand);
-  border-color: var(--solid-brand);
-  background-color: var(--solid-brand);
+  color: var(--foreground);
+  border-color: var(--border);
+  background-color: var(--tag-active-bg);
   background-image: none;
-  box-shadow: none;
+  box-shadow: var(--tag-active-shadow);
 }
 
 .monitor-node-head {
@@ -858,8 +874,8 @@
 
   .once-nav-item[aria-current="page"],
   .once-nav-item[aria-current="page"]:hover {
-    color: var(--solid-on-brand);
-    background: var(--solid-brand);
+    color: var(--foreground);
+    background: var(--tag-active-bg);
   }
 
   .monitor-node-link:hover {
@@ -868,8 +884,8 @@
 
   .monitor-node-link[aria-current="page"],
   .monitor-node-link[aria-current="page"]:hover {
-    color: #fff;
-    background: var(--once-gray-300);
+    color: var(--foreground);
+    background: var(--tag-active-bg);
   }
 
   .dark .monitor-node-link:hover {
@@ -878,8 +894,8 @@
 
   .dark .monitor-node-link[aria-current="page"],
   .dark .monitor-node-link[aria-current="page"]:hover {
-    color: #000;
-    background: var(--once-gray-1000);
+    color: var(--foreground);
+    background: var(--tag-active-bg);
   }
 
   .monitor-range-tab:hover {
@@ -1192,8 +1208,8 @@
 .server-search { flex-basis: 220px; }
 .server-search input,
 .server-sort-select,
-.server-sort-direction { border-radius: var(--radius); }
-.server-status-filters { border-radius: var(--radius); }
+.server-status-filters { border-radius: 999px; }
+.server-sort-direction { border-radius: 50%; }
 .server-sort-select { color: var(--foreground); }
 .server-sort-select option { color: var(--foreground); background: var(--card); }
 .server-filter-button,
@@ -1201,8 +1217,8 @@
 .server-column-sort,
 .server-clear-filters { transition: background .15s ease, color .15s ease; }
 .server-filter-button { color: var(--muted-foreground); border-radius: 999px; }
-.server-filter-button[aria-pressed="true"] { color: var(--solid-on-brand); background: var(--solid-brand); }
-.server-monitor-link { color: var(--solid-on-brand); background: var(--solid-brand); }
+.server-filter-button[aria-pressed="true"] { color: var(--foreground); background: var(--tag-active-bg); box-shadow: var(--tag-active-shadow); }
+.server-monitor-link { color: var(--foreground); border: 1px solid var(--border); background: var(--tag-active-bg); box-shadow: var(--tag-active-shadow); }
 .server-clear-filters { color: var(--solid-brand); }
 .server-filter-button:not([aria-pressed="true"]):hover,
 .server-sort-direction:hover { background: var(--secondary); color: var(--foreground); }
@@ -1284,7 +1300,7 @@
   z-index: -1;
   inset: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--solid-brand) 0 var(--fill), transparent var(--fill) 100%);
+  background: linear-gradient(90deg, var(--meter-fill) 0 var(--fill), transparent var(--fill) 100%);
   content: "";
 }
 .compact-card-meter-label,
@@ -1306,7 +1322,7 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / .16);
 }
 .dark .compact-card-meter::before {
-  background: linear-gradient(90deg, #ededed 0 var(--fill), transparent var(--fill) 100%);
+  background: linear-gradient(90deg, var(--meter-fill) 0 var(--fill), transparent var(--fill) 100%);
 }
 .dark .compact-card-meter-label-filled { color: #171717; }
 .compact-card-os { display: none; align-items: center; justify-content: center; gap: 5px; overflow: hidden; white-space: nowrap; }

@@ -39,6 +39,8 @@ export function history(id, hours = 24, series = "metrics") {
     disk_used: node.metrics.disk_used,
     net_rx: node.metrics.net_rx * (1 + 0.4 * Math.sin(i / 5)),
     net_tx: node.metrics.net_tx * (1 + 0.3 * Math.cos(i / 9)),
+    net_rx_max: node.metrics.net_rx * (i % 12 === 0 ? 2.6 : 1.3),
+    net_tx_max: node.metrics.net_tx * (i % 17 === 0 ? 2.4 : 1.2),
   }))
   const ping = metrics.flatMap((point, i) => [1, 2, 3].map((task_id) => ({
     ts: point.ts, task_id, latency: 28 + task_id * 14 + 3 * Math.sin(i / 8 + task_id),

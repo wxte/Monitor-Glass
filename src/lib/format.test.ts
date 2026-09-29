@@ -4,7 +4,7 @@
 //
 // Nothing imports it, so the bundle never includes it.
 import {
-  axisBytes, axisTop, bytes, compact, cpuName, daysUntil, despike, distro, duration, monthUsage, osName, pair,
+  axisBytes, axisTop, billingCycle, bytes, compact, cpuName, daysUntil, despike, distro, duration, monthUsage, osName, pair,
   quarters, timeTicks, uptime,
 } from "./format.ts"
 
@@ -150,6 +150,10 @@ eq(duration(76 * 86400 + 5), "76 天", "超过一天只写天数")
 
 eq(osName("Debian GNU/Linux 12 (bookworm)"), "Debian 12", "发行版名去掉代号")
 eq(cpuName("Intel(R) Xeon(R) CPU E5-2680 8-Core Processor"), "Intel Xeon E5-2680", "CPU 名去掉商标和核数")
+eq(billingCycle("monthly"), "月付", "旧版付款周期保留中文名称")
+eq(billingCycle("18m"), "18 个月付", "新增长度按月显示")
+eq(billingCycle("60m"), "5 年付", "完整年份按年显示")
+eq(billingCycle("invalid"), "invalid", "未知周期保持原值")
 
 if (failed) {
   console.error(`\n${failed} 项不通过`)

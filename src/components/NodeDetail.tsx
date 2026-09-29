@@ -19,6 +19,9 @@ type Point = {
   disk_used: number
   net_rx: number
   net_tx: number
+  /** Hub 1.3.1 peak rate within this history bucket; absent on older hubs. */
+  net_rx_max?: number
+  net_tx_max?: number
 }
 // `latency` is the bucket's median round trip, null when every probe in it timed
 // out. `band` is the range its answers spanned, absent when they spanned nothing.
@@ -220,11 +223,13 @@ type MetricRow = Point & {
   disk_trend: number
   rx_trend: number
   tx_trend: number
+  rx_peak: number | null
+  tx_peak: number | null
 }
 
 // A short weighted window softens sample-to-sample jitter while the tooltip
 // continues to report the original reading. Never average across an offline gap.
-function smoothMetric(points: Point[], key: keyof Omit<Point, "ts">, radius: number): number[] {
+function smoothMetric(points: Point[], key: "cpu" | "mem_used" | "disk_used" | "net_rx" | "net_tx", radius: number): number[] {
   let step = Infinity
   for (let i = 1; i < points.length; i++) {
     const gap = points[i].ts - points[i - 1].ts
@@ -541,8 +546,12 @@ function NodeDetailView({ node }: { node: Node }) {
     return points.map((m, i) => ({
       ...m, ts: m.ts * 1_000,
       cpu_trend: cpu[i], mem_trend: mem[i], disk_trend: disk[i], rx_trend: rx[i], tx_trend: tx[i],
+      rx_peak: Number.isFinite(m.net_rx_max) ? Math.max(m.net_rx, m.net_rx_max!) : null,
+      tx_peak: Number.isFinite(m.net_tx_max) ? Math.max(m.net_tx, m.net_tx_max!) : null,
     }))
   }, [data, hours])
+
+  const hasPeaks = useMemo(() => metricRows.some((m) => m.rx_peak !== null || m.tx_peak !== null), [metricRows])
 
   // Axis tops for the two panels with no capacity to measure against. CPU and a
   // transfer rate do not express fullness: against a fixed 0-100, a machine
@@ -556,7 +565,7 @@ function NodeDetailView({ node }: { node: Node }) {
       // 0-0.4 and render every scheduler blip as a peak. Capped at 100.
       cpu: axisTop(max((m) => m.cpu), 4, 10, 100),
       // Base 1024, so the steps are round in the unit `axisBytes` prints.
-      rate: axisTop(max((m) => Math.max(m.net_rx, m.net_tx)), 1024, 1024),
+      rate: axisTop(max((m) => Math.max(m.net_rx, m.net_tx, m.net_rx_max ?? 0, m.net_tx_max ?? 0)), 1024, 1024),
     }
   }, [metricRows])
 
@@ -640,6 +649,7 @@ function NodeDetailView({ node }: { node: Node }) {
                 网络速率
                 <span className="ml-3" style={{ color: "var(--network-rx)" }}>● 下行</span>
                 <span className="ml-2" style={{ color: "var(--network-tx)" }}>● 上行</span>
+                {hasPeaks && <span className="ml-2">虚线峰值</span>}
               </>
             }
           >
@@ -650,9 +660,16 @@ function NodeDetailView({ node }: { node: Node }) {
                 <YAxis domain={[0, tops.rate]} ticks={quarters(tops.rate)} tickFormatter={axisBytes} unit="/s" width={Y_WIDTH} {...AXIS} />
                 <Tooltip
                   labelFormatter={(ts) => new Date(Number(ts)).toLocaleString("zh-CN")}
-                  formatter={(_v, _name, item) => rate(Number(item.payload[item.dataKey === "rx_trend" ? "net_rx" : "net_tx"]))}
+                  formatter={(_v, _name, item) => {
+                    const value = item.dataKey === "rx_trend" ? item.payload.net_rx
+                      : item.dataKey === "tx_trend" ? item.payload.net_tx
+                        : item.dataKey === "rx_peak" ? item.payload.rx_peak : item.payload.tx_peak
+                    return rate(Number(value))
+                  }}
                   contentStyle={TIP}
                 />
+                {hasPeaks && <Line dataKey="rx_peak" name="下行峰值" stroke="var(--network-rx)" strokeOpacity={0.48} strokeDasharray="4 3" {...SOFT_SERIES} strokeWidth={1} />}
+                {hasPeaks && <Line dataKey="tx_peak" name="上行峰值" stroke="var(--network-tx)" strokeOpacity={0.48} strokeDasharray="4 3" {...SOFT_SERIES} strokeWidth={1} />}
                 <Line dataKey="rx_trend" name="下行" stroke="var(--network-rx)" {...SOFT_SERIES} />
                 <Line dataKey="tx_trend" name="上行" stroke="var(--network-tx)" {...SOFT_SERIES} />
               </LineChart>

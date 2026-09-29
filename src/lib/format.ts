@@ -139,6 +139,16 @@ export const CYCLES: Record<string, string> = {
   once: "一次性",
 }
 
+/** Hub 1.3.1 stores uncommon billing periods as a number of months. */
+export function billingCycle(cycle: string): string {
+  if (CYCLES[cycle]) return CYCLES[cycle]
+  const match = /^(\d+)m$/.exec(cycle)
+  if (!match) return cycle
+  const months = Number(match[1])
+  if (!Number.isSafeInteger(months) || months < 1 || months > 1200) return cycle
+  return months % 12 === 0 ? `${months / 12} 年付` : `${months} 个月付`
+}
+
 // Hoisted out of `clock`: recharts calls a tickFormatter for every sample when
 // laying out an axis rather than once per tick drawn, and constructing an Intl
 // formatter per call was the largest single cost on the detail page -- 348 ms of
