@@ -39,12 +39,13 @@ type PendingRequest = {
   reject: (error: Error) => void
 }
 class MockSocket {
-  onmessage: ((event: { data: string }) => void) | null = null
+  onmessage: ((event: { data: string | Blob }) => void) | null = null
   onerror: (() => void) | null = null
   onclose: (() => void) | null = null
+  readyState = 1
   closed = false
-  message(data: unknown) { this.onmessage?.({ data: typeof data === "string" ? data : JSON.stringify(data) }) }
-  close() { this.closed = true; this.onclose?.() }
+  message(data: unknown) { this.onmessage?.({ data: typeof data === "string" || data instanceof Blob ? data : JSON.stringify(data) }) }
+  close() { this.closed = true; this.readyState = 3; this.onclose?.() }
 }
 
 const flush = () => new Promise<void>((resolve) => setImmediate(resolve))
@@ -53,40 +54,58 @@ const answer = (request: PendingRequest, value: unknown, status = 200) => reques
 async function liveTest(run: (context: {
   requests: PendingRequest[]
   sockets: MockSocket[]
+  socketUrls: string[]
   received: Node[][]
   errors: Error[]
+  document: { visibilityState: string; emit: () => void; listenerCount: () => number }
   stop: () => void
 }) => Promise<void>, constructorFails = false) {
   const requests: PendingRequest[] = []
   const sockets: MockSocket[] = []
+  const socketUrls: string[] = []
   const received: Node[][] = []
   const errors: Error[] = []
   const location = Object.getOwnPropertyDescriptor(globalThis, "location")
+  const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document")
+  const visibilityHandlers = new Set<() => void>()
+  const document = {
+    visibilityState: "visible",
+    addEventListener: (_type: string, handler: () => void) => visibilityHandlers.add(handler),
+    removeEventListener: (_type: string, handler: () => void) => visibilityHandlers.delete(handler),
+    emit: () => visibilityHandlers.forEach((handler) => handler()),
+    listenerCount: () => visibilityHandlers.size,
+  }
+  Object.defineProperty(globalThis, "document", { configurable: true, value: document })
   Object.defineProperty(globalThis, "location", { configurable: true, value: { protocol: "https:", host: "monitor.test" } })
   mock.timers.enable({ apis: ["setTimeout"] })
   mock.method(globalThis, "fetch", (_input: unknown, init?: RequestInit) => new Promise<Response>((resolve, reject) => {
     requests.push({ signal: init!.signal!, resolve, reject })
   }))
-  mock.method(globalThis, "WebSocket", function () {
+  mock.method(globalThis, "WebSocket", function (url: string) {
     if (constructorFails) throw new Error("WebSocket unavailable")
     const socket = new MockSocket()
     sockets.push(socket)
+    socketUrls.push(url)
     return socket
   })
   const stop = subscribeNodes({ onNodes: (nodes) => received.push(nodes), onError: (error) => errors.push(error) })
   try {
-    await run({ requests, sockets, received, errors, stop })
+    await run({ requests, sockets, socketUrls, received, errors, document, stop })
   } finally {
     stop()
     mock.timers.reset()
     mock.restoreAll()
     if (location) Object.defineProperty(globalThis, "location", location)
     else Reflect.deleteProperty(globalThis, "location")
+    if (originalDocument) Object.defineProperty(globalThis, "document", originalDocument)
+    else Reflect.deleteProperty(globalThis, "document")
   }
 }
 
-await liveTest(async ({ requests, sockets, received, errors }) => {
+await liveTest(async ({ requests, sockets, socketUrls, received, errors }) => {
+  assert.equal(socketUrls[0], "wss://monitor.test/api/ws?gzip", "gzip is requested when decompression is supported")
   sockets[0].message({ nodes: [changed] })
+  await flush()
   assert.equal(requests[0].signal.aborted, true, "a live snapshot cancels the initial fetch")
   answer(requests[0], { nodes: [node] })
   await flush()
@@ -97,6 +116,7 @@ await liveTest(async ({ requests, sockets, received, errors }) => {
   for (const invalid of ["not-json", { nodes: null }, null]) {
     const current = sockets.at(-1)!
     assert.doesNotThrow(() => current.message(invalid), "malformed messages cannot crash the UI")
+    await flush()
     assert.equal(current.closed, true)
     mock.timers.tick(5000)
     answer(requests.at(-1)!, { nodes: [node] })
@@ -104,14 +124,46 @@ await liveTest(async ({ requests, sockets, received, errors }) => {
   }
   assert.equal(errors.length, 3)
   sockets.at(-1)!.message({ nodes: [node] })
+  await flush()
   const count = requests.length
   mock.timers.tick(20000)
   await flush()
   assert.equal(requests.length, count, "a healthy stream stops fallback polling")
 })
 
+await liveTest(async ({ sockets, received, errors }) => {
+  assert.equal(typeof DecompressionStream, "function", "the test runtime supports gzip streams")
+  const json = JSON.stringify({ nodes: [changed] })
+  const compressed = new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))
+  const frame = await new Response(compressed).blob()
+  sockets[0].message(frame)
+  for (let i = 0; i < 10 && received.length === 0 && errors.length === 0; i++) await flush()
+  assert.equal(errors.length, 0, "a valid compressed frame must decode without closing the stream")
+  assert.equal(received.at(-1)?.[0].metrics?.cpu, 30, "gzip WebSocket snapshots are decoded")
+})
+
+await liveTest(async ({ requests, sockets, socketUrls, received, document, stop }) => {
+  assert.equal(sockets.length, 1)
+  assert.equal(requests.length, 1)
+  document.visibilityState = "hidden"
+  document.emit()
+  assert.equal(sockets[0].closed, true)
+  assert.equal(requests[0].signal.aborted, true)
+  document.visibilityState = "visible"
+  document.emit()
+  assert.equal(sockets.length, 2)
+  assert.equal(socketUrls[1], "wss://monitor.test/api/ws?gzip")
+  assert.equal(requests.length, 2)
+  answer(requests[1], { nodes: [node] })
+  await flush()
+  assert.equal(received.length, 1, "returning to the foreground fetches immediately")
+  stop()
+  assert.equal(document.listenerCount(), 0, "unmount removes the visibility listener")
+})
+
 await liveTest(async ({ requests, sockets, received }) => {
   sockets[0].message({ nodes: [node] })
+  await flush()
   answer(requests[0], { nodes: [node] })
   await flush()
   mock.timers.tick(29999)
@@ -124,6 +176,7 @@ await liveTest(async ({ requests, sockets, received }) => {
   answer(requests[1], { nodes: [node] })
   await flush()
   sockets[1].message({ nodes: [changed] })
+  await flush()
   assert.equal(received.at(-1)?.[0].metrics?.cpu, 30)
 })
 
@@ -167,6 +220,7 @@ await liveTest(async ({ requests, sockets }) => {
   sockets[0].close()
   mock.timers.tick(5000)
   sockets[1].message({ nodes: [node] })
+  await flush()
   assert.equal(requests[1].signal.aborted, true)
   sockets[1].close()
   mock.timers.tick(2500)

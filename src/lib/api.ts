@@ -31,6 +31,8 @@ export type Node = {
   country: string
   /** Public group label added in hub 1.3.0. */
   group?: string
+  /** Seconds since the last report, measured by the hub clock; null means never reported. */
+  last_seen_ago?: number | null
   last_seen: number
   metrics: Metrics | null
   os: string
@@ -134,9 +136,11 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
   let pollGeneration = 0
   let disposed = false
   let streamRevision = 0
+  let decodedFrames = Promise.resolve()
+  let visible = typeof document === "undefined" || document.visibilityState !== "hidden"
 
   const fetchOnce = async () => {
-    if (disposed || request) return
+    if (disposed || !visible || request) return
     const controller = new AbortController()
     const revision = streamRevision
     request = controller
@@ -154,11 +158,11 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
     poll = null
     const generation = pollGeneration
     void fetchOnce().finally(() => {
-      if (polling && !disposed && generation === pollGeneration) poll = setTimeout(pollOnce, 5000)
+      if (polling && !disposed && visible && generation === pollGeneration) poll = setTimeout(pollOnce, 5000)
     })
   }
   const startPolling = () => {
-    if (!polling && !disposed) {
+    if (!polling && !disposed && visible) {
       polling = true
       poll = setTimeout(pollOnce, 5000)
     }
@@ -170,9 +174,10 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
     poll = null
   }
 
-  const url = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/api/ws`
+  const gzip = typeof DecompressionStream === "function" ? "?gzip" : ""
+  const url = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/api/ws${gzip}`
   const reconnect = () => {
-    if (!disposed && !retry) retry = setTimeout(() => { retry = null; connect() }, 5000)
+    if (!disposed && visible && !retry) retry = setTimeout(() => { retry = null; connect() }, 5000)
   }
   const clearWatchdog = () => {
     if (watchdog) clearTimeout(watchdog)
@@ -184,7 +189,7 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
     // existing HTTP fallback, then reconnect instead of showing frozen metrics.
     watchdog = setTimeout(() => {
       watchdog = null
-      if (disposed || socket !== current) return
+      if (disposed || !visible || socket !== current) return
       socket = null
       current.onmessage = current.onerror = current.onclose = null
       try { current.close() } catch { /* A pending handshake may reject close(). */ }
@@ -193,7 +198,7 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
     }, 30000)
   }
   const connect = () => {
-    if (disposed) return
+    if (disposed || !visible) return
     let current: WebSocket
     try {
       current = new WebSocket(url)
@@ -205,25 +210,30 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
       return
     }
     current.onmessage = (event) => {
-      if (disposed || socket !== current) return
-      let next: Node[]
-      try {
-        next = safeNodes(JSON.parse(event.data)?.nodes)
-      } catch {
+      // Blob decompression is asynchronous; serialize frames so older payloads
+      // cannot finish after and overwrite newer snapshots.
+      decodedFrames = decodedFrames.then(async () => {
+        if (disposed || !visible || socket !== current) return
+        const text = typeof event.data === "string"
+          ? event.data
+          : await new Response(event.data.stream().pipeThrough(new DecompressionStream("gzip"))).text()
+        if (disposed || !visible || socket !== current || current.readyState !== 1) return
+        const next = safeNodes(JSON.parse(text)?.nodes)
+        streamRevision++
+        request?.abort()
+        request = null
+        onNodes(next)
+        stopPolling()
+        armWatchdog(current)
+      }).catch(() => {
+        if (disposed || !visible || socket !== current) return
         onError(new Error("实时数据格式异常，正在重新连接"))
         current.close()
-        return
-      }
-      streamRevision++
-      request?.abort()
-      request = null
-      onNodes(next)
-      stopPolling()
-      armWatchdog(current)
+      })
     }
     current.onerror = () => current.close()
     current.onclose = () => {
-      if (disposed || socket !== current) return
+      if (disposed || !visible || socket !== current) return
       clearWatchdog()
       socket = null
       startPolling()
@@ -231,13 +241,37 @@ export function subscribeNodes({ onNodes, onError }: NodeObserver) {
     }
   }
 
+  const onVisibilityChange = () => {
+    if (document.visibilityState === "hidden") {
+      visible = false
+      stopPolling()
+      clearWatchdog()
+      if (retry) clearTimeout(retry)
+      retry = null
+      request?.abort()
+      request = null
+      const current = socket
+      socket = null
+      if (current) {
+        current.onmessage = current.onerror = current.onclose = null
+        current.close()
+      }
+    } else if (!visible && !disposed) {
+      visible = true
+      void fetchOnce()
+      connect()
+    }
+  }
+  if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVisibilityChange)
+
   void fetchOnce()
-  connect()
+  if (visible) connect()
   return () => {
     disposed = true
     clearWatchdog()
     stopPolling()
     if (retry) clearTimeout(retry)
+    if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVisibilityChange)
     request?.abort()
     if (socket) {
       socket.onmessage = socket.onerror = socket.onclose = null

@@ -3,10 +3,14 @@ import { history, nodes } from "./fixtures.mjs"
 
 test("search, empty state and status filters preserve the fleet summary", async ({ page }) => {
   await page.goto("/")
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/favicon.png")
-  const icon = await page.request.get("/favicon.png")
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/favicon.svg")
+  const icon = await page.request.get("/favicon.svg")
   expect(icon.ok()).toBe(true)
-  expect(icon.headers()["content-type"]).toContain("image/png")
+  expect(icon.headers()["content-type"]).toContain("image/svg+xml")
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon.png")
+  const touchIcon = await page.request.get("/apple-touch-icon.png")
+  expect(touchIcon.ok()).toBe(true)
+  expect(touchIcon.headers()["content-type"]).toContain("image/png")
   await expect(page.getByRole("heading", { name: "服务器", exact: true })).toHaveCount(0)
   await expect(page.locator("footer")).toHaveCount(0)
   await expect(page.getByText(/显示 \d+ \/ \d+ 台服务器/)).toHaveCount(0)
@@ -132,6 +136,8 @@ test("live OS changes update the monitoring header", async ({ page }) => {
 test("offline and high-usage nodes are actionable without invented live zeroes", async ({ page }) => {
   const snapshot = structuredClone(nodes)
   snapshot[0].online = false
+  snapshot[0].last_seen = 1
+  snapshot[0].last_seen_ago = 7200
   snapshot[1].metrics.cpu = 96
   await page.route("**/api/nodes", (route) => route.fulfill({ json: { nodes: snapshot } }))
   await page.routeWebSocket("**/api/ws", (socket) => socket.send(JSON.stringify({ nodes: snapshot })))
@@ -143,6 +149,9 @@ test("offline and high-usage nodes are actionable without invented live zeroes",
   await expect(offline.locator(".status-dot-pulse")).toHaveCount(1)
   expect(await offline.locator(".status-dot-pulse").evaluate((el) => getComputedStyle(el).animationName)).toBe("once-status-pulse")
   await expect(offline.locator(".compact-card-speed")).toHaveText("—")
+  await offline.click()
+  await expect(page.getByRole("dialog")).toContainText("2 小时")
+  await page.getByRole("button", { name: "关闭详情", exact: true }).click()
   await page.getByRole("button", { name: "异常 2", exact: true }).click()
   await expect(page.getByRole("button", { name: /^查看 .+ 详情$/ })).toHaveCount(2)
   await expect(page.getByRole("button", { name: "查看 Singapore 详情" }).locator(".compact-card-meter").first()).toHaveAttribute("data-level", "danger")

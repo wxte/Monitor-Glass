@@ -173,7 +173,11 @@ function Details({ node }: { node: Node }) {
   const m = node.online ? node.metrics : null
   const usage = (used: number, total: number) => `${pair(used, total)}（${percent(used, total).toFixed(1)}%）`
   const flow = (rx: number, tx: number) => `↓ ${bytes(rx)} · ↑ ${bytes(tx)}`
-  const away = node.last_seen ? Date.now() / 1000 - node.last_seen : 0
+  const away = node.last_seen_ago === null
+    ? null
+    : typeof node.last_seen_ago === "number" && Number.isFinite(node.last_seen_ago) && node.last_seen_ago >= 0
+      ? node.last_seen_ago
+      : node.last_seen > 0 ? Math.max(0, Date.now() / 1000 - node.last_seen) : null
   const days = typeof node.expires_in === "number" && Number.isFinite(node.expires_in)
     ? node.expires_in
     : daysUntil(node.expires_at)
@@ -225,7 +229,7 @@ function Details({ node }: { node: Node }) {
 
           <DetailGroup title="服务">
             <Line label={node.online ? "在线" : "离线"}>
-              {node.online ? (m ? uptime(m.uptime) : "等待上报") : away >= 60 ? uptime(away) : "刚刚"}
+              {node.online ? (m ? uptime(m.uptime) : "等待上报") : away === null ? "从未上报" : away >= 60 ? uptime(away) : "刚刚"}
             </Line>
             <Line label="续费">
               {node.price > 0 ? `${money(node.price, node.currency)} / ${billingCycle(node.billing_cycle)}` : "免费"}
