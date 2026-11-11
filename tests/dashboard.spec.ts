@@ -25,6 +25,19 @@ test("blocked site storage keeps the list, theme toggle and monitoring usable", 
   expect(errors).toEqual([])
 })
 
+test("theme and title are settled before the app script arrives", async ({ page }) => {
+  // The script never loads, so anything asserted here came from index.html alone.
+  await page.route("**/assets/*.js", (route) => route.abort())
+  await page.emulateMedia({ colorScheme: "dark" })
+  await page.goto("/")
+  await expect(page.locator("html")).toHaveClass(/dark/)
+  await expect(page).toHaveTitle("Monitor")
+
+  await page.addInitScript(() => localStorage.setItem("theme", "light"))
+  await page.reload()
+  await expect(page.locator("html")).not.toHaveClass(/dark/)
+})
+
 test("full storage still allows changing the theme for this tab", async ({ page }) => {
   const errors: string[] = []
   page.on("pageerror", (error) => errors.push(error.message))
