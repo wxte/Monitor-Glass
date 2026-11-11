@@ -5,8 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>Komari Monitor</title>
-    <meta name="description" content="A simple server monitor tool." />
+    <title>Monitor</title>
+    <meta name="description" content="服务器实时状态" />
+    <!-- Before the first paint: the app applies the same rule once its script has
+         loaded, and until then a visitor on a dark system would be shown a white
+         page. Keep in step with useTheme in src/App.tsx. -->
+    <script>
+      (function () {
+        var saved = null
+        try { saved = localStorage.getItem("theme") } catch (e) { /* storage blocked: follow the system */ }
+        if (saved === "dark" || (saved !== "light" && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark")
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
