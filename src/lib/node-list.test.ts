@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import assert from "node:assert/strict"
 import type { Node } from "./api.ts"
-import { DEFAULT_LIST_PREFERENCES, LIST_PREFERENCES_KEY, needsAttention, readListPreferences, saveListPreferences, selectNodes, type NodeListPreferences } from "./node-list.ts"
+import { DEFAULT_LIST_PREFERENCES, LIST_PREFERENCES_KEY, needsAttention, nodeGroups, inGroup, expiryNotice, readListPreferences, saveListPreferences, selectNodes, type NodeListPreferences } from "./node-list.ts"
 
 const base: Node = {
   id: 1, name: "Tokyo 2", sort: 2, public: true, online: true, country: "JP", last_seen: 100,
@@ -69,4 +69,18 @@ assert.equal(Object.hasOwn(JSON.parse(saved), "query"), false)
 assert.deepEqual(readListPreferences({ getItem: () => { throw new Error("blocked") } }), DEFAULT_LIST_PREFERENCES)
 assert.doesNotThrow(() => saveListPreferences(preferences, { setItem: () => { throw new Error("full") } }))
 assert.deepEqual(readListPreferences(), DEFAULT_LIST_PREFERENCES, "reading without a browser is safe")
+const grouped: Node[] = [{ ...base, id: 11, sort: 3, group: "亚太" }, { ...base, id: 12, sort: 1, group: " 欧洲 " }, { ...base, id: 13, sort: 2, group: "亚太" }, { ...base, id: 14, sort: 0 }, { ...base, id: 15, sort: 4, group: "" }]
+assert.deepEqual(nodeGroups(grouped), ["欧洲", "亚太"], "groups appear once, in administrator order, without blanks")
+assert.deepEqual(nodeGroups(source), [], "a fleet without groups offers no group filter")
+assert.deepEqual(inGroup(grouped, "亚太").map((node) => node.id), [11, 13])
+assert.deepEqual(inGroup(grouped, "欧洲").map((node) => node.id), [12], "labels are compared trimmed")
+assert.equal(inGroup(grouped, null), grouped, "no group chosen leaves the list as it is")
+
+assert.equal(expiryNotice({ expires_at: null, expires_in: 2 }), null, "no renewal date, no notice")
+assert.equal(expiryNotice({ expires_at: "2030-01-01", expires_in: 8 }), null, "more than a week away is not yet a notice")
+assert.deepEqual(expiryNotice({ expires_at: "2030-01-01", expires_in: 7 }), { label: "7 天到期", short: "7天", level: "warn" })
+assert.deepEqual(expiryNotice({ expires_at: "2030-01-01", expires_in: 3 }), { label: "3 天到期", short: "3天", level: "danger" })
+assert.deepEqual(expiryNotice({ expires_at: "2030-01-01", expires_in: 0 }), { label: "今天到期", short: "今天", level: "danger" })
+assert.deepEqual(expiryNotice({ expires_at: "2030-01-01", expires_in: -2 }), { label: "已过期", short: "过期", level: "danger" })
+assert.deepEqual(expiryNotice({ expires_at: "2000-01-01" }), { label: "已过期", short: "过期", level: "danger" }, "an older hub sends no count; the date decides")
 console.log("node list: public search, status thresholds, stable sorting, missing metrics and safe preferences passed")

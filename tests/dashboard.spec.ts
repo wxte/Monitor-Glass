@@ -212,6 +212,48 @@ test("offline and high-usage nodes are actionable without invented live zeroes",
   await expect(page.getByRole("button", { name: "查看 Singapore 详情" }).locator(".compact-card-meter").first()).toHaveAttribute("data-level", "danger")
 })
 
+test("groups filter the list, a renewal within a week is flagged and meter figures are never clipped", async ({ page }) => {
+  const snapshot = structuredClone(nodes)
+  snapshot[0].group = "亚太"
+  snapshot[1].group = "亚太"
+  snapshot[4].group = "欧洲"
+  snapshot[1].expires_at = "2030-01-01"
+  snapshot[1].expires_in = 5
+  snapshot[2].os = "Windows Server 2022 Datacenter"
+  await page.route("**/api/nodes", (route) => route.fulfill({ json: { nodes: snapshot } }))
+  await page.goto("/")
+  const groups = page.getByRole("group", { name: "服务器分组筛选" })
+  await expect(groups.getByRole("button")).toHaveCount(3)
+  await groups.getByRole("button", { name: "亚太 2", exact: true }).click()
+  await expect(page.getByRole("button", { name: /^查看 .+ 详情$/ })).toHaveCount(2)
+  // The status tabs count the chosen group; the overview stays fleet-wide.
+  await expect(page.getByRole("button", { name: "全部 2", exact: true })).toBeVisible()
+  await expect(page.locator(".summary-online-count")).toHaveText("6 / 6")
+  await expect(page.getByRole("button", { name: "查看 Singapore 详情" }).locator(".compact-card-expiry-long")).toHaveText("5 天到期")
+  await expect(page.locator(".compact-card-expiry")).toHaveCount(1)
+  await page.locator(".server-clear-filters").click()
+  await expect(page.getByRole("button", { name: /^查看 .+ 详情$/ })).toHaveCount(6)
+  await expect(page.getByRole("button", { name: "查看 Hong Kong 详情" }).locator(".compact-card-os path")).toHaveAttribute("d", /^M3 3h8\.5/)
+  const meter = page.locator(".compact-card-meter").first()
+  expect(await meter.locator(".compact-card-meter-label").evaluate((el) => getComputedStyle(el).clipPath)).toBe("none")
+  const clear = await meter.evaluate((el) => {
+    const bar = parseFloat(getComputedStyle(el, "::before").height)
+    const label = el.querySelector(".compact-card-meter-label")!
+    const range = document.createRange()
+    range.selectNodeContents(label)
+    return { bar, gap: el.getBoundingClientRect().bottom - range.getBoundingClientRect().bottom }
+  })
+  expect(clear.bar).toBeLessThanOrEqual(3)
+  expect(clear.gap).toBeGreaterThan(0)
+})
+
+test("a fleet without groups shows no group filter", async ({ page }) => {
+  await page.goto("/")
+  await expect(page.getByRole("button", { name: "查看 Tokyo 详情", exact: true })).toBeVisible()
+  await expect(page.getByRole("group", { name: "服务器分组筛选" })).toHaveCount(0)
+  await expect(page.locator(".compact-card-expiry")).toHaveCount(0)
+})
+
 test("monitor indicators and location align with the home cards", async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 })
@@ -465,7 +507,9 @@ test("large surfaces use the same chart card finish in both themes", async ({ pa
         finish: [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow],
       }
     })
-    expect(rowFinish.radius).toBeGreaterThanOrEqual(rowFinish.height / 2)
+    // Rows share the overview's rounded rectangle; only controls and meters are pills.
+    expect(rowFinish.radius).toBe(parseFloat(summary[0]))
+    expect(rowFinish.radius).toBeLessThan(rowFinish.height / 2)
     expect(rowFinish.finish).toEqual(summary.slice(1))
     expect(await page.locator(".server-summary-card .metric-tile").first().evaluate((el) => getComputedStyle(el).transitionDuration)).toBe("0s")
     const summaryTile = page.locator(".server-summary-card .metric-tile").first()
@@ -575,7 +619,7 @@ for (const width of [320, 375, 390, 768, 1440, 1920]) {
     }
     const cardShape = await card.evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
     const searchShape = await page.getByRole("searchbox").evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
-    expect(cardShape.radius).toBeGreaterThanOrEqual(cardShape.height / 2)
+    expect(cardShape.radius).toBeLessThan(cardShape.height / 2)
     expect(searchShape.radius).toBeGreaterThanOrEqual(searchShape.height / 2)
     // The summary stays in one row without the redundant all-online tag.
     const summary = page.locator(".server-summary-row")

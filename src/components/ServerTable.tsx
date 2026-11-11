@@ -13,7 +13,10 @@ import {
   percent, rate, uptime,
 } from "@/lib/format"
 import { Link } from "@/lib/route"
-import { needsAttention, readListPreferences, saveListPreferences, selectNodes, type NodeSortKey, type NodeStatusFilter } from "@/lib/node-list"
+import {
+  expiryNotice, inGroup, needsAttention, nodeGroups, readListPreferences, saveListPreferences, selectNodes,
+  type NodeSortKey, type NodeStatusFilter,
+} from "@/lib/node-list"
 import { cn } from "@/lib/utils"
 
 // Emitted as files and fetched on first use, so a page carries only the flags its
@@ -66,7 +69,14 @@ export function Flag({ code, className }: { code: string; className?: string }) 
 // "Raspbian GNU/Linux" do not lead with one word to key on. The distributions a
 // VPS ships with; the rest take the penguin. Each logo costs 1-6 KB of entry
 // bundle, the Raspberry Pi alone 12 KB, so the list stays at what hosts offer.
-const DISTROS: [string, SimpleIcon][] = [
+type Logo = Pick<SimpleIcon, "hex" | "path">
+
+// Simple Icons carries no Microsoft marks, so Windows gets a plain four-pane
+// window of our own in the system's blue rather than the penguin.
+const WINDOWS: Logo = { hex: "0078D4", path: "M3 3h8.5v8.5H3zM12.5 3H21v8.5h-8.5zM3 12.5h8.5V21H3zM12.5 12.5H21V21h-8.5z" }
+
+const DISTROS: [string, Logo][] = [
+  ["windows", WINDOWS],
   ["debian", siDebian], ["raspbian", siDebian], ["ubuntu", siUbuntu], ["alpine", siAlpinelinux],
   ["centos", siCentos], ["rocky", siRockylinux], ["almalinux", siAlmalinux], ["red hat", siRedhat],
   ["fedora", siFedora], ["arch", siArchlinux], ["opensuse", siOpensuse],
@@ -93,15 +103,15 @@ export function OsIcon({ os, className }: { os: string; className?: string }) {
 }
 
 
-const SLOT = { compact: 5.6, bytes: 7.3, rate: 10.2 }
-
-function Num({ ch, className, children }: { ch: number; className?: string; children: ReactNode }) {
+/**
+ * Received and sent, in two columns that line up down the four rows that use
+ * them. A value changing length every two seconds then moves nothing beside it.
+ */
+function InOut({ rx, tx }: { rx: string; tx: string }) {
   return (
-    <span
-      className={cn("tnum inline-block min-w-(--slot) text-right", className)}
-      style={{ "--slot": ch + "ch" } as CSSProperties}
-    >
-      {children}
+    <span className="detail-in-out">
+      <span>↓ {rx}</span>
+      <span>↑ {tx}</span>
     </span>
   )
 }
@@ -172,7 +182,7 @@ function Details({ node }: { node: Node }) {
   }
   const m = node.online ? node.metrics : null
   const usage = (used: number, total: number) => `${pair(used, total)}（${percent(used, total).toFixed(1)}%）`
-  const flow = (rx: number, tx: number) => `↓ ${bytes(rx)} · ↑ ${bytes(tx)}`
+  const flow = (rx: number, tx: number) => <InOut rx={bytes(rx)} tx={bytes(tx)} />
   const away = node.last_seen_ago === null
     ? null
     : typeof node.last_seen_ago === "number" && Number.isFinite(node.last_seen_ago) && node.last_seen_ago >= 0
@@ -216,11 +226,7 @@ function Details({ node }: { node: Node }) {
           <DetailGroup title="网络与连接">
             <Line label="进程">{m ? `${m.procs} · TCP ${m.tcp} · UDP ${m.udp}` : "—"}</Line>
             <Line label="网速">
-              {m ? (
-                <>
-                  ↓ <Num ch={SLOT.rate}>{rate(m.net_rx)}</Num> · ↑ <Num ch={SLOT.rate}>{rate(m.net_tx)}</Num>
-                </>
-              ) : "—"}
+              {m ? <InOut rx={rate(m.net_rx)} tx={rate(m.net_tx)} /> : "—"}
             </Line>
             <Line label="今日">{flow(node.day_rx, node.day_tx)}</Line>
             <Line label="本月">{flow(node.month_rx, node.month_tx)}</Line>
@@ -356,7 +362,6 @@ function CompactMeter({ label, value, pct }: { label: string; value: string; pct
   return (
     <span className="compact-card-meter tnum" data-level={level} title={`${label} ${value}`} style={{ "--fill": `${Math.max(0, Math.min(100, pct ?? 0))}%` } as CSSProperties}>
       <span className="compact-card-meter-label">{value}</span>
-      <span className="compact-card-meter-label-filled" aria-hidden="true">{value}</span>
     </span>
   )
 }
@@ -367,6 +372,7 @@ const ServerCard = memo(function ServerCard({ node, onOpen }: { node: Node; onOp
   const memPct = m ? percent(m.mem_used, m.mem_total) : null
   const diskPct = m ? percent(m.disk_used, m.disk_total) : null
   const trafficPct = node.traffic_limit > 0 ? percent(traffic, node.traffic_limit) : null
+  const expiry = expiryNotice(node)
 
   return (
     <article className="server-card" data-online={node.online ? "true" : "false"}>
@@ -378,7 +384,13 @@ const ServerCard = memo(function ServerCard({ node, onOpen }: { node: Node; onOp
         className="compact-card-hit compact-card-grid"
       >
         <Dot node={node} className="compact-card-dot" />
-        <span className="compact-card-name" title={node.name}>{node.name}</span>
+        <span className="compact-card-title">
+          <span className="compact-card-name" title={node.name}>{node.name}</span>
+          {expiry && <span className="compact-card-expiry tnum" data-level={expiry.level} title={`${expiry.label}（${node.expires_at}）`}>
+            <span className="compact-card-expiry-long">{expiry.label}</span>
+            <span className="compact-card-expiry-short" aria-hidden="true">{expiry.short}</span>
+          </span>}
+        </span>
         <span className="compact-card-region"><Flag code={node.country} /></span>
         <span className="compact-card-os"><OsIcon os={node.os} /><span>{distro(node.os) || "—"}</span></span>
         <span className="compact-card-speed tnum" title={m ? `${compact(m.net_rx)} | ${compact(m.net_tx)}` : "—"}>{m ? `${compact(m.net_rx)} | ${compact(m.net_tx)}` : "—"}</span>
@@ -405,14 +417,18 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
   const deferredQuery = useDeferredValue(query)
   const closeDetail = useCallback(() => setDetailId(null), [])
   const detailNode = detailId === null ? null : nodes.find((node) => node.id === detailId) ?? null
-  const visibleNodes = useMemo(() => selectNodes(nodes, deferredQuery, preferences), [nodes, deferredQuery, preferences])
+  // Not remembered across visits: a saved label would outlive the group it named.
+  const [chosenGroup, setChosenGroup] = useState<string | null>(null)
+  const groups = useMemo(() => nodeGroups(nodes), [nodes])
+  const group = chosenGroup !== null && groups.includes(chosenGroup) ? chosenGroup : null
+  const scoped = useMemo(() => inGroup(nodes, group), [nodes, group])
+  const visibleNodes = useMemo(() => selectNodes(scoped, deferredQuery, preferences), [scoped, deferredQuery, preferences])
   const summary = useMemo(() => {
-    const values = { online: 0, attention: 0, rxRate: 0, txRate: 0, totalRx: 0, totalTx: 0 }
+    const values = { online: 0, rxRate: 0, txRate: 0, totalRx: 0, totalTx: 0 }
     for (const node of nodes) {
       values.totalRx += node.total_rx
       values.totalTx += node.total_tx
       if (node.online) values.online++
-      if (needsAttention(node)) values.attention++
       if (node.online && node.metrics) {
         values.rxRate += node.metrics.net_rx
         values.txRate += node.metrics.net_tx
@@ -420,13 +436,18 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
     }
     return values
   }, [nodes])
-  const statusCounts = { all: nodes.length, online: summary.online, offline: nodes.length - summary.online, attention: summary.attention }
-  const hasFilters = query.trim() !== "" || preferences.status !== "all"
+  // The overview above stays fleet-wide; the status tabs count what the chosen group holds.
+  const statusCounts = useMemo(() => {
+    const online = scoped.filter((node) => node.online).length
+    return { all: scoped.length, online, offline: scoped.length - online, attention: scoped.filter(needsAttention).length }
+  }, [scoped])
+  const hasFilters = query.trim() !== "" || preferences.status !== "all" || group !== null
 
   useEffect(() => saveListPreferences(preferences), [preferences])
 
   const clearFilters = () => {
     setQuery("")
+    setChosenGroup(null)
     setPreferences((current) => ({ ...current, status: "all" }))
   }
   const sortBy = (sort: NodeSortKey) => {
@@ -447,8 +468,8 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
               <Server className="size-3.5 md:size-4" />
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold tracking-[-0.01em] md:text-[15px]">在线服务器</p>
-              <p className="tnum mt-0.5 text-[11px] text-muted-foreground md:text-xs">{summary.online} / {nodes.length}</p>
+              <p className="summary-online-title truncate text-sm font-semibold tracking-[-0.01em]">在线服务器</p>
+              <p className="summary-online-count tnum mt-0.5 text-[11px] text-muted-foreground">{summary.online} / {nodes.length}</p>
             </div>
           </div>
 
@@ -505,6 +526,21 @@ export function ServerTable({ nodes }: { nodes: Node[] }) {
             ><SortArrow className="size-3.5" /></button>
           </div>
         </div>
+        {groups.length > 0 && (
+          <div className="server-group-filters server-status-filters flex items-center gap-1 rounded-full border p-1" role="group" aria-label="服务器分组筛选">
+            {[null, ...groups].map((value) => (
+              <button
+                key={value ?? ""}
+                type="button"
+                aria-pressed={group === value}
+                onClick={() => setChosenGroup(value)}
+                className="server-filter-button inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs"
+              >
+                {value ?? "全部分组"}<span className="tnum text-[10px] opacity-65">{inGroup(nodes, value).length}</span>
+              </button>
+            ))}
+          </div>
+        )}
         {hasFilters && <div className="flex justify-end px-1 text-xs text-muted-foreground">
           <button type="button" onClick={clearFilters} className="server-clear-filters rounded-md underline-offset-4 hover:underline">清除筛选</button>
         </div>}
