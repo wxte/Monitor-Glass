@@ -16,9 +16,7 @@ concurrency:
 jobs:
   # The release workflow repeats these gates before publishing an archive.
   build:
-    # Pinned: on the Ubuntu 26 image ubuntu-latest moved to, Playwright's apt
-    # dependencies cannot be fetched and the install step times out.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -28,7 +26,12 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npx playwright install --with-deps chromium
+      # The browser first, then its system packages. On a hosted runner those
+      # are a handful of fonts fetched from the Ubuntu mirror; when the mirror is
+      # unreachable apt retries for ten minutes and fails the job, so it gets
+      # three and the tests run with what the image already has.
+      - run: npx playwright install chromium
+      - run: timeout 180 npx playwright install-deps chromium || echo "::warning::Playwright system packages were not installed (apt mirror unreachable?)"
       - run: npm run test:browser
       - run: npm run check:release
       - run: npm run build
