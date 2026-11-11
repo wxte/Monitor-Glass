@@ -16,7 +16,9 @@ concurrency:
 jobs:
   # The release workflow repeats these gates before publishing an archive.
   build:
-    runs-on: ubuntu-latest
+    # Pinned: on the Ubuntu 26 image ubuntu-latest moved to, Playwright's apt
+    # dependencies cannot be fetched and the install step times out.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
