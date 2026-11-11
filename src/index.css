@@ -1260,7 +1260,9 @@
   .server-clear-filters { transition: none; }
 }
 
-.server-node-list > .server-card,
+/* Rows are rounded rectangles like the overview above them. Pills are kept for
+   what is pressed or read as a gauge: the controls and the meters. */
+.server-node-list > .server-card { border-radius: var(--radius); }
 .server-empty-state { border-radius: 999px; }
 
 .server-node-list { container-type: inline-size; }

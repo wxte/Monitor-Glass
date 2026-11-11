@@ -507,7 +507,9 @@ test("large surfaces use the same chart card finish in both themes", async ({ pa
         finish: [css.borderColor, css.backgroundColor, css.backgroundImage, css.boxShadow],
       }
     })
-    expect(rowFinish.radius).toBeGreaterThanOrEqual(rowFinish.height / 2)
+    // Rows share the overview's rounded rectangle; only controls and meters are pills.
+    expect(rowFinish.radius).toBe(parseFloat(summary[0]))
+    expect(rowFinish.radius).toBeLessThan(rowFinish.height / 2)
     expect(rowFinish.finish).toEqual(summary.slice(1))
     expect(await page.locator(".server-summary-card .metric-tile").first().evaluate((el) => getComputedStyle(el).transitionDuration)).toBe("0s")
     const summaryTile = page.locator(".server-summary-card .metric-tile").first()
@@ -617,7 +619,7 @@ for (const width of [320, 375, 390, 768, 1440, 1920]) {
     }
     const cardShape = await card.evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
     const searchShape = await page.getByRole("searchbox").evaluate((el) => ({ radius: parseFloat(getComputedStyle(el).borderRadius), height: el.getBoundingClientRect().height }))
-    expect(cardShape.radius).toBeGreaterThanOrEqual(cardShape.height / 2)
+    expect(cardShape.radius).toBeLessThan(cardShape.height / 2)
     expect(searchShape.radius).toBeGreaterThanOrEqual(searchShape.height / 2)
     // The summary stays in one row without the redundant all-online tag.
     const summary = page.locator(".server-summary-row")
