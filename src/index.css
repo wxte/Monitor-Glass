@@ -91,6 +91,7 @@
   --tag-active-bg: var(--once-gray-900);
   --tag-active-shadow: 0 1px 4px rgb(0 0 0 / .10), 0 0 0 1px color-mix(in oklab, var(--border) 92%, transparent);
   --meter-fill: #302F33;
+  --meter-warn: #C2700A;
 
   --chart-1: var(--once-moss-600);
   --chart-2: oklch(0.6743 0.1670 261.54);
@@ -144,6 +145,7 @@
   --tag-active-bg: var(--once-gray-300);
   --tag-active-shadow: 0 2px 8px rgb(0 0 0 / .34), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
   --meter-fill: #FFFEEE;
+  --meter-warn: #F0A23B;
 
   --chart-1: var(--once-moss-800);
   --chart-2: oklch(0.7670 0.1165 257.88);
@@ -1295,36 +1297,36 @@
   text-align: center;
   white-space: nowrap;
 }
+/* The fill is a thin bar under the figure, never behind it: a fill behind the
+   text cut every digit that straddled its edge into two colours, and at phone
+   sizes the half inside the fill could not be read. */
 .compact-card-meter::before {
   position: absolute;
   z-index: -1;
-  inset: 2px;
+  inset: auto 9px 4px;
+  height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--meter-fill) 0 var(--fill), transparent var(--fill) 100%);
+  background-color: color-mix(in oklab, var(--meter-fill) 12%, transparent);
   content: "";
 }
-.compact-card-meter-label,
-.compact-card-meter-label-filled {
+.compact-card-meter[data-level="warn"] { --meter-fill: var(--meter-warn); }
+.compact-card-meter[data-level="danger"] { --meter-fill: var(--destructive); }
+.compact-card-meter-label {
   position: absolute;
   z-index: 1;
-  inset: 0;
+  inset: 0 0 3px;
   display: grid;
   place-items: center;
   overflow: hidden;
   white-space: nowrap;
   pointer-events: none;
 }
-.compact-card-meter-label { clip-path: inset(0 0 0 var(--fill)); }
-.compact-card-meter-label-filled { color: #fff; clip-path: inset(0 calc(100% - var(--fill)) 0 0); }
 .dark .compact-card-meter {
   border-color: var(--border);
   background: transparent;
   box-shadow: 0 1px 2px rgb(0 0 0 / .16);
 }
-.dark .compact-card-meter::before {
-  background: linear-gradient(90deg, var(--meter-fill) 0 var(--fill), transparent var(--fill) 100%);
-}
-.dark .compact-card-meter-label-filled { color: #171717; }
 .compact-card-os { display: none; align-items: center; justify-content: center; gap: 5px; overflow: hidden; white-space: nowrap; }
 .compact-card-os > span { overflow: hidden; text-overflow: ellipsis; }
 .monitor-status-dot { width: 13px; height: 13px; }
@@ -1371,4 +1373,68 @@
 
 @media (max-width: 600px) {
   .detail-head-os > span { display: none; }
+}
+
+/* Phone meters are 18px tall: a 2px bar, and the figure sits above it. */
+@media (max-width: 767px) {
+  .compact-card-meter::before { inset: auto 5px 2px; height: 2px; }
+  .compact-card-meter-label { inset: 0 0 2px; }
+  /* The status column is a dot; its heading ran into "名称" beside it. */
+  .compact-card-head > :first-child { font-size: 0; }
+}
+
+/* Name and, when a renewal is within a week, its notice. */
+.compact-card-title { display: flex; min-width: 0; align-items: center; gap: 6px; }
+.compact-card-expiry {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--meter-warn);
+  background: color-mix(in oklab, var(--meter-warn) 13%, transparent);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+.compact-card-expiry[data-level="danger"] {
+  color: var(--destructive);
+  background: color-mix(in oklab, var(--destructive) 12%, transparent);
+}
+.compact-card-expiry-short { display: none; }
+@media (max-width: 767px) {
+  .compact-card-title { gap: 3px; }
+  .compact-card-expiry { padding: 0 3px; font-size: 8px; }
+  /* Hidden to the eye only: a screen reader still gets the full wording. */
+  .compact-card-expiry-long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .compact-card-expiry-short { display: inline; }
+}
+
+/* Group filter: one row of the same pills as the status filter, scrolling
+   sideways when a fleet has more groups than the row holds. */
+.server-group-filters {
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.server-group-filters::-webkit-scrollbar { display: none; }
+.server-group-filters .server-filter-button { flex: none; white-space: nowrap; }
+
+/* Drawer: received and sent in two columns shared by every row that has both. */
+.detail-in-out { display: grid; grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr); column-gap: 8px; }
+.detail-in-out > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Desktop overview: three equal cells -- online, speed, traffic -- each a small
+   label over one line of figures, in place of two stacked lines in a wide cell. */
+@media (min-width: 768px) {
+  .server-summary-card .server-summary-row { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); padding: 14px 8px; }
+  .server-summary-row > :first-child { padding: 0 16px; }
+  .summary-online-title { color: var(--muted-foreground); font-size: 11px; font-weight: 400; letter-spacing: 0; }
+  .summary-online-count { margin-top: 5px; color: var(--foreground); font-size: 17px; font-weight: 600; }
+  .server-summary-card .summary-metrics .metric-tile { display: flex; flex-direction: column; justify-content: center; padding: 0 20px; }
+  .server-summary-card .summary-metrics .metric-tile:first-child { border-left: 1px solid var(--once-gray-1000) !important; }
+  .dark .server-summary-card .summary-metrics .metric-tile:first-child { border-left-color: var(--once-gray-400) !important; }
+  .summary-metrics .metric-heading { font-size: 11px; }
+  .summary-metrics .metric-tile > div:last-child { display: flex; gap: 22px; margin-top: 7px; font-size: 17px; font-weight: 600; }
+  .summary-metrics .metric-tile > div:last-child svg { width: 14px; height: 14px; }
 }

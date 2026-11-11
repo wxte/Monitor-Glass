@@ -1,5 +1,5 @@
 import type { Node } from "./api.ts"
-import { monthUsage, percent } from "./format.ts"
+import { daysUntil, monthUsage, percent } from "./format.ts"
 
 export type NodeStatusFilter = "all" | "online" | "offline" | "attention"
 export type NodeSortKey = "default" | "name" | "cpu" | "memory" | "traffic" | "network"
@@ -97,4 +97,29 @@ export function selectNodes(nodes: readonly Node[], query: string, preferences: 
     if (av === null || bv === null) return av === bv ? fallback : av === null ? 1 : -1
     return direction * (av - bv) || fallback
   })
+}
+
+/** Group labels in administrator order, each once; nodes without a label belong to none. */
+export function nodeGroups(nodes: readonly Node[]): string[] {
+  const ordered = [...nodes].sort((a, b) => a.sort - b.sort || a.id - b.id)
+  return [...new Set(ordered.map((node) => node.group?.trim() ?? "").filter(Boolean))]
+}
+
+/** The chosen group's nodes, or all of them when none is chosen. */
+export function inGroup(nodes: readonly Node[], group: string | null): readonly Node[] {
+  return group === null ? nodes : nodes.filter((node) => (node.group?.trim() ?? "") === group)
+}
+
+/**
+ * A renewal date close enough to act on: within a week, or already past. The
+ * hub's own count of days is preferred, since it is taken on the hub's calendar.
+ */
+export function expiryNotice(node: Pick<Node, "expires_at" | "expires_in">): { label: string; short: string; level: "warn" | "danger" } | null {
+  if (!node.expires_at) return null
+  const days = typeof node.expires_in === "number" && Number.isFinite(node.expires_in) ? node.expires_in : daysUntil(node.expires_at)
+  if (days === null || days > 7) return null
+  // `short` is for a phone's name column, which has room for two characters.
+  if (days < 0) return { label: "已过期", short: "过期", level: "danger" }
+  if (days === 0) return { label: "今天到期", short: "今天", level: "danger" }
+  return { label: `${days} 天到期`, short: `${days}天`, level: days <= 3 ? "danger" : "warn" }
 }

@@ -1,6 +1,6 @@
 # Monitor Glass
 
-简洁的 [Monitor](https://github.com/monitor-probe/monitor) 公开状态页主题，支持深浅色、移动端和历史图表。当前版本 **v1.3.2**，适配 Monitor Hub **v1.4.1**。
+简洁的 [Monitor](https://github.com/monitor-probe/monitor) 公开状态页主题，支持深浅色、移动端和历史图表。当前版本 **v1.4.0**，适配 Monitor Hub **v1.4.1**。
 
 ![预览](preview.png)
 
