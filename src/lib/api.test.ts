@@ -137,7 +137,9 @@ await liveTest(async ({ sockets, received, errors }) => {
   const compressed = new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))
   const frame = await new Response(compressed).blob()
   sockets[0].message(frame)
-  for (let i = 0; i < 10 && received.length === 0 && errors.length === 0; i++) await flush()
+  // Decompression completes on the runtime's schedule, not ours: how many turns
+  // of the loop it takes differs between Node releases (24.22 needs more than ten).
+  for (let i = 0; i < 1000 && received.length === 0 && errors.length === 0; i++) await flush()
   assert.equal(errors.length, 0, "a valid compressed frame must decode without closing the stream")
   assert.equal(received.at(-1)?.[0].metrics?.cpu, 30, "gzip WebSocket snapshots are decoded")
 })
